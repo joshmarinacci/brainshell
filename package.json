@@ -8,7 +8,7 @@
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "watch": "watchify --transform reactify --debug --verbose ui/main.jsx -o bundle.js"
+    "watch": "watchify --transform reactify ui/main.jsx -o bundle.js --debug --verbose "
   },
   "repository": {
     "type": "git",
@@ -21,6 +21,7 @@
   },
   "homepage": "https://github.com/joshmarinacci/brainshell",
   "dependencies": {
+    "express": "^4.12.3",
     "react": "^0.13.2",
     "reactify": "^1.1.0"
   }
