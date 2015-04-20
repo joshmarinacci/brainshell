@@ -1,0 +1,27 @@
+{
+  "name": "brainshell",
+  "version": "1.0.0",
+  "description": "A magical wordprocessor for your brain",
+  "main": "index.js",
+  "directories": {
+    "test": "tests"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "watch": "watchify --transform reactify --debug --verbose ui/main.jsx -o bundle.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/joshmarinacci/brainshell.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/joshmarinacci/brainshell/issues"
+  },
+  "homepage": "https://github.com/joshmarinacci/brainshell",
+  "dependencies": {
+    "react": "^0.13.2",
+    "reactify": "^1.1.0"
+  }
+}

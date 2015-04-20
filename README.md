@@ -73,7 +73,11 @@ data fetching and analysis and filtering happens on the server, except for liter
 
 user browserify to compile everything
 
-today: get basic interface with unitless arithmetic, create doc w/title, auto-save doc every 10 seconds, load doc from database, compiled with browserify 
+today: get basic interface with unitless arithmetic, 
+create doc w/title, 
+auto-save doc every 10 seconds, 
+load doc from database, 
+compiled with browserify 
 
 
 

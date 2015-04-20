@@ -1,3 +1,8 @@
+var Q = require('q');
+var Arithmetic = require('../src/Arithmetic');
+var Expressions = require('../src/Expressions');
+var Symbols = require('../src/Symbols');
+var Literals = require('../src/Literals');
 /**
  * Created by josh on 4/20/15.
  */
@@ -9,41 +14,66 @@
 //4+5, implicit symbol % is the result of the expression
 
 
-function testAssignment1() {
-    var x = Symbol.make('x');
-    x.update(Literal.makeNumber(5));
-    x.onChange(function(symbol) {
-        console.log("symbo",symbol.name(),'has changed');
-        symbol.value().then(function(value) {
-            console.log("the new value is",value);
-        });
-    });
-    x.value().then(function(value,symbol){
-        console.log("the before value of ", symbol.name(),"is",value);
-    });
-    x.update(Literal.makeNumber(6));
-    x.value().then(function(value,symbol){
-        console.log("the before value of ", symbol.name(),"is",value);
-    });
-}
 
-function testExpression() {
+function testExpressionToString() {
+    var four = Literals.makeNumber(4);
+    var five = Literals.makeNumber(5);
+    var fun = Arithmetic.Add;
+    var funcall = Expressions.makeFunctionCall(fun,[four,five],{});
+    funcall.value().then(function(value) {
+        console.log("value of expression is", value);
+    }).done();
+    console.log('as code = ',funcall.toCode());
+}
+testExpressionToString();
+
+
+function testExpressionUpdate() {
     //x <= 5
     //y = x+5
     //y = add(x,5)
-    var x = Symbol.make('x');
-    x.update(Literal.makeNumber(5));
-    var y = Symbol.make('y');
-    var five = Literal.makeNumber(5);
+    var x = Symbols.make('x');
+    x.update(Literals.makeNumber(5));
+    var y = Symbols.make('y');
+    var five = Literals.makeNumber(5);
     var fun = Arithmetic.Add;
-    var funcall = Expressions.makeFunctionCall(fun,[x,5],{});
+    var funcall = Expressions.makeFunctionCall(fun,[x,five],{});
+    x.value().then(function(v) {
+        console.log('x value is ' + v);
+    }).done();
+    y.value().then(function(v) {
+        console.log("y value is ", v);
+    }).done();
     y.update(funcall);
-    y.value().then(function(value,symbol) {
-        console.log("the value of ",symbol.name(),'is',value);
+    y.value().then(function(v) {
+        console.log("the value of y is",v);
         //should be 10
-    });
-}
+    }).done();
 
+    console.log(y.toCode());
+}
+testExpressionUpdate();
+
+function testAssignment1() {
+    var x = Symbols.make('x');
+    x.update(Literals.makeNumber(5));
+    x.onChange(function(symbol) {
+        symbol.value().then(function(value) {
+            console.log("the new value of ",symbol.name(),"is",value);
+        });
+    });
+    x.value().then(function(value){
+        console.log("the before value of is",value);
+    }).done();
+    x.update(Literals.makeNumber(6));
+    x.value().then(function(value){
+        console.log("the after value of is",value);
+    }).done();
+}
+testAssignment1();
+
+
+/*
 function testIncrementalDataTable() {
 
     //spit out a new data row every second
@@ -58,6 +88,6 @@ function testIncrementalDataTable() {
     });
 }
 
-
+*/
 
 
