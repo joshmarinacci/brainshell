@@ -4,19 +4,36 @@ var Q = require('q');
  */
 
 var Literal = {
-    makeNumber: function(jsnum) {
+    makeNumber: function(jsnum, unit) {
         return {
             kind:'literal',
+            type:'numeric',
+            _unit: unit,
+            _value: jsnum,
             value: function() {
+                var self = this;
                 return Q.fcall(function() {
-                    return jsnum;
+                    return self;
                 });
             },
             toCode: function() {
-                return jsnum;
+                return this.toString();
+            },
+            isNumber: function() {
+                return this.type == 'numeric';
+            },
+            getNumber: function() {
+                return this._value;
+            },
+            hasUnit: function() {
+                return (typeof this._unit !== 'undefined');
             },
             toString: function() {
-                return 'LITERAL ' + jsnum;
+                var us = "";
+                if(this._unit) {
+                    us = ' ' + this._unit.toString();
+                }
+                return 'LITERAL ' + this._value + us;
             }
         }
     }
