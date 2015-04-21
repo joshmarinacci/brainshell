@@ -1,6 +1,11 @@
 /**
  * Created by josh on 4/20/15.
  */
+
+
+var DB = require('./database');
+DB.initDB();
+
 var express = require('express');
 
 var app = express();
@@ -16,36 +21,10 @@ app.all('*',function(req,res,next) {
     next();
 });
 
-var docs = [
-    {
-        title:'foo 1',
-        id: 'docid_1',
-        expressions: [
-            {
-                type:'code',
-                content: '4+5'
-            },
-            {
-                type:'code',
-                content:'6+7'
-            }
-        ]
-
-    },
-    {
-        title:'foo 2',
-        id: 'docid_2',
-        expressions: [
-            {
-                type:'code',
-                content:'8*9'
-            }
-        ]
-    }
-];
-
 app.get('/josh/docs', function(req,res) {
-    res.send(docs);
+    DB.getAllDocs(function(docs){
+        res.send(docs);
+    });
 });
 
 

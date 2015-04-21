@@ -30,11 +30,24 @@ var DocsStore = {
     }
 };
 
+var ListItem = React.createClass({
+    clicked: function() {
+        this.props.onSelect(this.props.item);
+    },
+    render: function() {
+        var cn = "";
+        if(this.props.item == this.props.selectedItem) {
+            cn += 'selected';
+        }
+        return <li className={cn} onClick={this.clicked}>{this.props.children}</li>;
+    }
+});
+
 var MainView = React.createClass({
     getInitialState: function() {
         return {
             docs:DocsStore.getDocs(),
-                selectedDoc:{ expressions:[] }
+            selectedDoc:{ expressions:[] }
         }
     },
     componentDidMount: function() {
@@ -50,11 +63,16 @@ var MainView = React.createClass({
     },
     contentChanged: function(expr, content) {
         expr.content = content;
-        console.log("content updated",expr);
+    },
+    docSelected: function(doc) {
+        this.setState({
+            selectedDoc:doc
+        })
     },
     render: function() {
+        var self = this;
         var docs = this.state.docs.map(function(doc) {
-            return <li key={doc.id}>{doc.title}</li>;
+            return <ListItem key={doc.id} item={doc} onSelect={self.docSelected} selectedItem={self.state.selectedDoc}>{doc.title}</ListItem>;
         });
         var self = this;
         var panels = this.state.selectedDoc.expressions.map(function(expr,i) {
@@ -71,7 +89,10 @@ var MainView = React.createClass({
                     <button>add</button>
                 </footer>
             </div>
-            <div className="vbox grow" id="editor-pane">{panels}</div>
+            <div className="vbox grow" id="editor-pane">
+                <header>{this.state.selectedDoc.title}</header>
+                {panels}
+            </div>
             <div className="vbox" id="help-pane">
                 <header>Resources</header>
                 <div className="form">

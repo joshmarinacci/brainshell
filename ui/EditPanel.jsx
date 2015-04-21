@@ -28,6 +28,11 @@ var EditPanel = React.createClass({
             raw: 'nothing'
         }
     },
+    componentDidMount: function() {
+        this.setState({
+            raw: this.props.expr.content
+        });
+    },
     changed: function() {
         //console.log('chnaged to ', this.refs.text.getDOMNode().value);
         this.setState({
