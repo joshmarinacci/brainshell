@@ -8,6 +8,13 @@ var Arithmetic = {
         fun: function(a,b) {
             return a+b;
         }
+    },
+    Multiply: {
+        type:'operation',
+        name:'*',
+        fun: function(a,b) {
+            return a*b;
+        }
     }
 };
 

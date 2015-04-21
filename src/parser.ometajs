@@ -1,0 +1,133 @@
+var Literals = require('./src/Literals');
+var Arithmetic = require('./src/Arithmetic');
+var Expressions = require('./src/Expressions');
+
+function parseExp(n,a,b,s,e) {
+    var str = a.join('');
+    if(b) {
+        str += '.' + b.join('');
+    }
+    var mant = parseFloat(str);
+    var exp = parseInt(e);
+    if(s) {
+        exp = -exp;
+    }
+
+    return mant * Math.pow(10,exp);
+}
+
+function parseInteger(n,x,p) {
+    var val = stripUnderscore(x).join('');
+    var numval = parseInt(val);
+    if(p) {
+        numval *= 0.01;
+    }
+    if(n) {
+        numval *= -1;
+    }
+    return numval;
+}
+
+function stripUnderscore(arr) {
+    return arr.filter(function(a) {
+        return a!='_';
+    });
+}
+
+function parseFloater(n,a,b,p) {
+    var A = stripUnderscore(a).join('');
+    var B = stripUnderscore(b).join('');
+    var fval = parseFloat(A+'.'+B);
+    if(p) fval *= 0.01;
+    if(n) fval *= -1;
+    return fval;
+}
+
+export ometa Parser {
+    sp        = (' '|'\n')*,
+    word      = (letter+):w ->  w.join(""),
+    dig       = digit | '_',
+    num       = '-'?:n dig+:a ('.' digit+)?:b ('e'|'E') '-'?:s digit+:e -> parseExp(n,a,b,s,e),
+    num       = '-'?:n dig+:a '.' dig+:b '%'?:p                         -> parseFloater(n,a,b,p),
+    num       = '-'?:n dig+:x '%'?:p                                    -> parseInteger(n,x,p),
+
+    //unitmodifier = ("cubic" | "cu" | "squared" | "square" | "sq"):c isUnitModifier(c) ' ' -> c,
+    //unit      = sp unitmodifier?:c word:u isUnit(u) -> units.Unit(u,c),
+    //numunit   = num:x unit:u             -> deps.NumberLiteral(x,u),
+    numsolo   = num:x                    -> Literals.makeNumber(x),
+    //numlit    = numunit | numsolo,
+    numlit    = numsolo,
+
+    //strlit    = sp '"' (~'"' anything)*:x  '"' sp -> deps.StringLiteral(x.join("")),
+    //strlit    = sp '\'' (~'\'' anything)*:x  '\'' sp -> deps.StringLiteral(x.join("")),
+
+    keyval    = sp (strlit | word):k sp ':' sp expr:v sp  -> deps.KeyValue(k,v),
+    listitem  = (sp keyval) | (sp expr),
+    listlit   = sp '[' sp listOf(#listitem, ','):e sp ']' sp -> deps.ListLiteral(e),
+
+    symbol    = sp letter:l (letter|digit)*:s sp -> deps.Symbol(l+s.join("")),
+    newsymbol = sp letter:l (letter|digit)*:s sp -> (l+s.join("")),
+    leftarrow = '=' | '\u21d0', //\u21d0 is ⇐
+
+    //op = "=>" -> deps.Pipeline,
+    //op = "^" -> deps.Exponent,
+    op = "+" -> Arithmetic.Add,
+    //op = "-" -> deps.Subtract,
+    op = "*" -> Arithmetic.Multiply,
+    //op = "/" -> deps.Divide,
+
+    expr      =     "this foo does nothing"
+              //|   expr:x       sp "as" unit:u            -> deps.ConvertUnit(x,u)
+              //|   expr:x       sp op:o sp   funcall:s    -> o.call(null,x,s)
+              //|   expr:x       sp op:o sp   symbol:s     -> o.call(null,x,s)
+                |   expr:x       sp op:o sp   numlit:y     -> Expressions.makeFunctionCall(o,[x,y],{})
+
+    //|   expr:x       sp op:o sp   listlit:y    -> o.call(null,x,y)
+              //| '(' expr:x ')' sp op:o sp '(' expr:y ')' -> o.call(null,x,y)
+              //|   numlit:x     sp op:o sp '(' expr:y ')' -> o.call(null,x,y)
+              //| '(' expr:x ')'                           -> x
+              //|   numlit:x     sp op:o sp   numlit:y     -> o.call(null,x,y)
+              //|   funcall:s
+              //|   funcall:s    sp op:o sp   expr:y       -> o.call(null,s,y)
+              //|   symbol:s -> s
+              //|   strlit:x -> x
+              |   numlit:x -> x
+              //|   listlit:x -> x
+              ,
+
+
+    arg       =  (sp keyval) | (sp funcall) | (sp expr),
+    funcall   = symbol:s "(" listOf(#arg, ','):as ")" -> deps.Funcall(s,as),
+    //funcall   = symbol:s '(' arg:e ')' -> deps.Funcall(s,[e]),
+    //funcall   = symbol:s '(' symbol:a1 ',' symbol:a2 ')' -> Funcall(s,[a1,a2]),
+    //funcall   = symbol:s '(' symbol:a1 ',' strlit:a2 ')' -> Funcall(s,[a1,a2]),
+    //assign    = symbol:s sp leftarrow (expr | strlit | funcall):e  -> Assignment(s,e),
+    assign      = newsymbol:s sp leftarrow sp (funcall | expr):e -> deps.Assignment(s,e),
+    //start     =  assign | strlit | funcall | expr | numlit
+    start       = assign | expr
+
+}
+
+Parser.isUnit = function(u) {
+    var ret = units.isValidUnitName(u);
+    if(ret == false) {
+        console.log("WARNING. INVALID UNIT NAME: ", u);
+    }
+    return ret;
+}
+Parser.isUnitModifier = function(u) {
+    var ret = units.isValidUnitModifierName(u);
+    if(ret == false) {
+        console.log("WARNING. INVALID UNIT NAME: ", u);
+    }
+    return ret;
+}
+
+/*
+(4+5) * 6
+group ( exp + exp) * exp
+
+(exp + exp) * exp
+exp + (exp * exp)
+
+*/

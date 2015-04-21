@@ -8,7 +8,6 @@ var Expressions = {
         return {
             kind:'funcall',
             value: function() {
-                console.log('fetching');
                 return Q.fcall(function() {
                     var args = arr.map(function(arg){
                         return arg.value();
