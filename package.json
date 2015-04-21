@@ -1,30 +1,32 @@
 {
-    "name": "brainshell",
-    "version": "1.0.0",
-    "description": "A magical wordprocessor for your brain",
-    "main": "index.js",
-    "directories": {
-        "test": "tests"
-    },
-    "scripts": {
-        "test": "echo \"Error: no test specified\" && exit 1",
-        "build":"node tools/compile.js src/parser.ometajs > parser_compiled.js",
-        "watch": "watchify --transform reactify ui/main.jsx -o bundle.js --debug --verbose "
-    },
-    "repository": {
-        "type": "git",
-        "url": "https://github.com/joshmarinacci/brainshell.git"
-    },
-    "author": "",
-    "license": "ISC",
-    "bugs": {
-        "url": "https://github.com/joshmarinacci/brainshell/issues"
-    },
-    "homepage": "https://github.com/joshmarinacci/brainshell",
-    "dependencies": {
-        "express": "^4.12.3",
-        "ometa-js": "^1.3.5",
-        "react": "^0.13.2",
-        "reactify": "^1.1.0"
-    }
+  "name": "brainshell",
+  "version": "1.0.0",
+  "description": "A magical wordprocessor for your brain",
+  "main": "index.js",
+  "directories": {
+    "test": "tests"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "node tools/compile.js src/parser.ometajs > parser_compiled.js",
+    "watch": "watchify --transform reactify ui/main.jsx -o bundle.js --debug --verbose "
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/joshmarinacci/brainshell.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/joshmarinacci/brainshell/issues"
+  },
+  "homepage": "https://github.com/joshmarinacci/brainshell",
+  "dependencies": {
+    "appy-style": "0.0.0",
+    "express": "^4.12.3",
+    "font-awesome": "^4.3.0",
+    "ometa-js": "^1.3.5",
+    "react": "^0.13.2",
+    "reactify": "^1.1.0"
+  }
 }
