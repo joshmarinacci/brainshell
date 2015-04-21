@@ -24,20 +24,34 @@ var EditPanel = React.createClass({
     getInitialState: function() {
         return {
             evaluated: false,
-            result: null
+            result: null,
+            raw: 'nothing'
         }
+    },
+    changed: function() {
+        //console.log('chnaged to ', this.refs.text.getDOMNode().value);
+        this.setState({
+            raw: this.refs.text.getDOMNode().value
+        });
     },
     doEval: function() {
         var self = this;
-        var expr = ParseExpression(this.props.content);
+        var expr = ParseExpression(this.state.raw);
         expr.value().then(function(v) {
+            self.props.onChange(self.props.expr,self.state.raw);
             self.setState({
                 result: v
             })
         })
     },
+    keyDown: function(e) {
+        if(e.ctrlKey && e.key == 'Enter') {
+            this.doEval();
+            e.preventDefault();
+            e.stopPropagation();
+        }
+    },
     render: function() {
-        var c = this.props.content;
         return (<div className="vbox panel">
             <header>
                 <button>move</button>
@@ -45,7 +59,13 @@ var EditPanel = React.createClass({
                 <button>delete</button>
                 <button>append</button>
             </header>
-            <textarea className="grow" value={c}></textarea>
+            <textarea
+                ref='text'
+                className="grow"
+                value={this.state.raw}
+                onChange={this.changed}
+                onKeyDown={this.keyDown}
+                ></textarea>
             <div className="results">
                 = {this.state.result}
             </div>

@@ -48,12 +48,17 @@ var MainView = React.createClass({
             self.setState(state);
         });
     },
+    contentChanged: function(expr, content) {
+        expr.content = content;
+        console.log("content updated",expr);
+    },
     render: function() {
         var docs = this.state.docs.map(function(doc) {
             return <li key={doc.id}>{doc.title}</li>;
         });
+        var self = this;
         var panels = this.state.selectedDoc.expressions.map(function(expr,i) {
-            return <EditPanel key={i} content={expr.content}/>
+            return <EditPanel key={i} expr={expr} onChange={self.contentChanged}/>
         });
         return(
             <div className="fill vbox">
