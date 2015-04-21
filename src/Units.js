@@ -1,3 +1,5 @@
+var Q = require('q');
+
 //these are the extra plurals and abbreviations.
 var names = {
     'inches':'inch',
@@ -213,6 +215,12 @@ units.forEach(function(unit) {
     //put into the map
     map[unit.name] = unit;
     unit.toString = UnitToString;
+    unit.value = function() {
+        var self = this;
+        return Q.fcall(function() {
+            return self;
+        });
+    };
     //add name and abbr to the name lookup table
     names[unit.name] = unit.name;
     names[unit.abbr] = unit.name;

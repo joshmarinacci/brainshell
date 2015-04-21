@@ -28,6 +28,9 @@ var Literal = {
             hasUnit: function() {
                 return (typeof this._unit !== 'undefined');
             },
+            getUnit: function() {
+                return this._unit;
+            },
             toString: function() {
                 var us = "";
                 if(this._unit) {

@@ -81,7 +81,7 @@ export ometa Parser {
     op = "/" -> Arithmetic.Divide,
 
     expr      =     "this foo does nothing"
-              //|   expr:x       sp "as" unit:u            -> deps.ConvertUnit(x,u)
+                |   expr:x       sp "as" unit:u            -> Expressions.makeFunctionCall(Arithmetic.ConvertUnit,[x,u],{})
               //|   expr:x       sp op:o sp   funcall:s    -> o.call(null,x,s)
               //|   expr:x       sp op:o sp   symbol:s     -> o.call(null,x,s)
                 |   expr:x       sp op:o sp   numlit:y     -> Expressions.makeFunctionCall(o,[x,y],{})
@@ -118,14 +118,14 @@ Parser.isUnit = function(u) {
         console.log("WARNING. INVALID UNIT NAME: ", u);
     }
     return ret;
-}
+};
 Parser.isUnitModifier = function(u) {
     var ret = Units.isValidUnitModifierName(u);
     if(ret == false) {
         console.log("WARNING. INVALID UNIT NAME: ", u);
     }
     return ret;
-}
+};
 
 /*
 (4+5) * 6

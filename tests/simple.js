@@ -80,9 +80,10 @@ function isEq(v,test,unit) {
     if(v.isNumber()) {
         if(typeof test !== 'number') return false;
         if(v.hasUnit()) {
-            if(!Units.equal(v._unit,unit)) return false;
+            if(!Units.equal(v.getUnit(),unit)) return false;
         }
         if(v.getNumber() == test) return true;
+        if(Math.abs(v.getNumber()-test) < 0.001) return true;
     }
     return false;
 }
@@ -111,7 +112,7 @@ ParseEq('4e4',40*1000);
 ParseEq('40%',0.40);
 ParseEq('40 meters',40,Units.Unit('meter',1));
 ParseEq('40 square meters',40,Units.Unit('meter',2));
-
+ParseEq('40 meters as feet',131.233595,Units.Unit('feet',1));
 
 /*
 function testIncrementalDataTable() {
