@@ -68,7 +68,7 @@ var DB = {
 
 module.exports = DB;
 
-//initDB();
-//populateDB();
-//printContents();
+//DB.initDB();
+//DB.populateDB();
+//DB.printContents();
 
