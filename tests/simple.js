@@ -28,7 +28,7 @@ function testExpressionToString() {
     }).done();
     console.log('as code = ',funcall.toCode());
 }
-testExpressionToString();
+//testExpressionToString();
 
 
 function testExpressionUpdate() {
@@ -55,7 +55,7 @@ function testExpressionUpdate() {
 
     console.log(y.toCode());
 }
-testExpressionUpdate();
+//testExpressionUpdate();
 
 function testAssignment1() {
     var x = Symbols.make('x');
@@ -73,10 +73,18 @@ function testAssignment1() {
         console.log("the after value of is",value);
     }).done();
 }
-testAssignment1();
+//testAssignment1();
 
 
 function isEq(v,test,unit) {
+    if(v.isFunctionCall()) {
+        console.log("it's a function call", v.toCode());
+        v.value().then(function(v) {
+            console.log("resolved value = ",v.toString());
+            console.log("equal = ",isEq(v,test));
+        });
+        return true;
+    }
     if(v.isNumber()) {
         if(typeof test !== 'number') return false;
         if(v.hasUnit()) {
@@ -88,6 +96,32 @@ function isEq(v,test,unit) {
     if(v.isString()) {
         if(typeof test !== 'string') return false;
         if(v.getString() == test) return true;
+    }
+    if(v.isList()) {
+        //console.log("checking a list",v.length(),test.length);
+        if(test.length && v.length() != test.length) return false;
+        //console.log("testing");
+        v.forEach(function(value,index){
+            //console.log("value = ", value.toString(), "index = ", index);//,test[index]);
+            if(value.isPair()) {
+                //console.log("this is a pair ", value.getKey());
+                //console.log("has prop",test.hasOwnProperty(value.getKey()));
+                if(!test.hasOwnProperty(value.getKey())) {
+                    console.log("prop names don't match");
+                    return false;
+                }
+                var val = test[value.getKey()];
+                var matches =  isEq(value.getValue(),val);
+                if(!matches) {
+                    console.log("pair value doesnt match!");
+                }
+            } else {
+                if (!isEq(value, test[index])) {
+                    console.log("invalid");
+                }
+            }
+        });
+        return true;
     }
     return false;
 }
@@ -120,6 +154,17 @@ ParseEq('40 meters as feet',131.233595,Units.Unit('feet',1));
 
 //string literals
 ParseEq('"foo"',"foo");
+ParseEq("'foo'","foo");
+
+ParseEq("[1,2,3]",[1,2,3]);
+ParseEq("[4]",[4]);
+ParseEq('[ 4 , 6.7]',[4,6.7]);
+ParseEq('[4+5]',[9]);
+ParseEq('[4+5,6.7]',[9,6.7]);
+
+ParseEq('[foo:5]',{foo:5});
+ParseEq("[x:1,y:2]",{x:1,y:2});
+ParseEq('[foo:4+5]',{foo:9});
 
 /*
 function testIncrementalDataTable() {

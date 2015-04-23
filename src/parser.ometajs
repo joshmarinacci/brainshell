@@ -60,14 +60,13 @@ export ometa Parser {
     numunit   = num:x unit:u             -> Literals.makeNumber(x,u),
     numsolo   = num:x                    -> Literals.makeNumber(x),
     numlit    = numunit | numsolo,
-    //numlit    = numsolo,
 
     strlit    = sp '"'  (~'"'  anything)*:x  '"'  sp -> Literals.makeString(x.join("")),
     strlit    = sp '\'' (~'\'' anything)*:x  '\'' sp -> Literals.makeString(x.join("")),
 
-    keyval    = sp (strlit | word):k sp ':' sp expr:v sp  -> deps.KeyValue(k,v),
+    keyval    = sp (strlit | word):k sp ':' sp expr:v sp  -> Literals.makeKeyValue(k,v),
     listitem  = (sp keyval) | (sp expr),
-    listlit   = sp '[' sp listOf(#listitem, ','):e sp ']' sp -> deps.ListLiteral(e),
+    listlit   = sp '[' sp listOf(#listitem, ','):e sp ']' sp -> Literals.makeList(e),
 
     symbol    = sp letter:l (letter|digit)*:s sp -> deps.Symbol(l+s.join("")),
     newsymbol = sp letter:l (letter|digit)*:s sp -> (l+s.join("")),
@@ -96,19 +95,20 @@ export ometa Parser {
               //|   symbol:s -> s
               |   strlit:x -> x
               |   numlit:x -> x
-              //|   listlit:x -> x
+              |   listlit:x -> x
               ,
 
 
-    arg       =  (sp keyval) | (sp funcall) | (sp expr),
-    funcall   = symbol:s "(" listOf(#arg, ','):as ")" -> deps.Funcall(s,as),
+    //arg       =  (sp keyval) | (sp funcall) | (sp expr),
+    //funcall   = symbol:s "(" listOf(#arg, ','):as ")" -> deps.Funcall(s,as),
     //funcall   = symbol:s '(' arg:e ')' -> deps.Funcall(s,[e]),
     //funcall   = symbol:s '(' symbol:a1 ',' symbol:a2 ')' -> Funcall(s,[a1,a2]),
     //funcall   = symbol:s '(' symbol:a1 ',' strlit:a2 ')' -> Funcall(s,[a1,a2]),
     //assign    = symbol:s sp leftarrow (expr | strlit | funcall):e  -> Assignment(s,e),
-    assign      = newsymbol:s sp leftarrow sp (funcall | expr):e -> deps.Assignment(s,e),
+    //assign      = newsymbol:s sp leftarrow sp (funcall | expr):e -> deps.Assignment(s,e),
     //start     =  assign | strlit | funcall | expr | numlit
-    start       = assign | expr
+    //start       = assign | expr
+    start      = expr
 
 }
 

@@ -5,6 +5,7 @@ var Q = require('q');
 var utils = require('./utils');
 var Expressions = {
     makeFunctionCall: function(fun,arr,nam) {
+        //console.log("Making a function call for",arr,fun);
         return {
             kind:'funcall',
             value: function() {
@@ -14,6 +15,12 @@ var Expressions = {
                     });
                     return Q.spread(args, fun.fun);
                 });
+            },
+            isFunctionCall: function() {
+                return true;
+            },
+            isPair: function() {
+                return false;
             },
             toCode: function() {
                 if(fun.type == 'operation') {
