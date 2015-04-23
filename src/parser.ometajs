@@ -62,8 +62,8 @@ export ometa Parser {
     numlit    = numunit | numsolo,
     //numlit    = numsolo,
 
-    //strlit    = sp '"' (~'"' anything)*:x  '"' sp -> deps.StringLiteral(x.join("")),
-    //strlit    = sp '\'' (~'\'' anything)*:x  '\'' sp -> deps.StringLiteral(x.join("")),
+    strlit    = sp '"'  (~'"'  anything)*:x  '"'  sp -> Literals.makeString(x.join("")),
+    strlit    = sp '\'' (~'\'' anything)*:x  '\'' sp -> Literals.makeString(x.join("")),
 
     keyval    = sp (strlit | word):k sp ':' sp expr:v sp  -> deps.KeyValue(k,v),
     listitem  = (sp keyval) | (sp expr),
@@ -94,7 +94,7 @@ export ometa Parser {
               //|   funcall:s
               //|   funcall:s    sp op:o sp   expr:y       -> o.call(null,s,y)
               //|   symbol:s -> s
-              //|   strlit:x -> x
+              |   strlit:x -> x
               |   numlit:x -> x
               //|   listlit:x -> x
               ,

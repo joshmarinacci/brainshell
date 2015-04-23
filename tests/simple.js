@@ -85,6 +85,10 @@ function isEq(v,test,unit) {
         if(v.getNumber() == test) return true;
         if(Math.abs(v.getNumber()-test) < 0.001) return true;
     }
+    if(v.isString()) {
+        if(typeof test !== 'string') return false;
+        if(v.getString() == test) return true;
+    }
     return false;
 }
 
@@ -113,6 +117,9 @@ ParseEq('40%',0.40);
 ParseEq('40 meters',40,Units.Unit('meter',1));
 ParseEq('40 square meters',40,Units.Unit('meter',2));
 ParseEq('40 meters as feet',131.233595,Units.Unit('feet',1));
+
+//string literals
+ParseEq('"foo"',"foo");
 
 /*
 function testIncrementalDataTable() {

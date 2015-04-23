@@ -39,6 +39,31 @@ var Literal = {
                 return 'LITERAL ' + this._value + us;
             }
         }
+    },
+    makeString: function(jsstr) {
+        return {
+            kind:'literal',
+            type:'string',
+            _value: jsstr,
+            value: function() {
+                var self = this;
+                return Q.fcall(function() {
+                    return self;
+                });
+            },
+            isNumber: function() {
+                return this.type == 'numeric';
+            },
+            isString: function() {
+                return this.type == 'string';
+            },
+            getString: function() {
+                return this._value;
+            },
+            toString: function() {
+                return 'LITERAL ' + this._value;
+            }
+        }
     }
 };
 
