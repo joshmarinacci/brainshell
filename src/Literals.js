@@ -35,7 +35,11 @@ function NumberLiteral(num,unit) {
     this._unit = unit;
     this._value = num;
     this.toCode = function() {
-        return this.toString();
+        var us = "";
+        if(this._unit) {
+            us = ' ' + this._unit.toString();
+        }
+        return this._value + us;
     };
     this.getNumber = function() {
         return this._value;
@@ -67,6 +71,9 @@ function StringLiteral(str) {
     this.toString = function() {
         return 'LITERAL ' + this._value;
     };
+    this.toCode = function() {
+        return "'"+this._value+"'";
+    }
 }
 util.inherits(StringLiteral, LiteralBase);
 
@@ -93,6 +100,9 @@ function ListLiteral(list) {
     this.toString = function() {
         return 'LITERAL LIST [' + this._value + ']';
     }
+    this.toCode = function() {
+        return 'code [' + this._value.map(function(v) { return v.toCode(); }).join(',') + ']';
+    }
 }
 util.inherits(ListLiteral, LiteralBase);
 
@@ -109,6 +119,9 @@ function KeyValuePair(key,value) {
     };
     this.getValue = function() {
         return this._value;
+    },
+    this.toCode = function() {
+        return this._key + ':' + this._value;
     }
 }
 util.inherits(KeyValuePair, LiteralBase);

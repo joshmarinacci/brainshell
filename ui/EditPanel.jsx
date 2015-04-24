@@ -43,6 +43,7 @@ var EditPanel = React.createClass({
         var self = this;
         var expr = ParseExpression(this.state.raw);
         expr.value().then(function(v) {
+            console.log("v = ",v.type);
             self.props.onChange(self.props.expr,self.state.raw);
             self.setState({
                 result: v
@@ -57,6 +58,15 @@ var EditPanel = React.createClass({
         }
     },
     render: function() {
+        var res = "";
+        if(this.state.result) {
+            if(this.state.result.type == 'list') {
+                res = <TableOutput data={this.state.result}/>
+            } else {
+                res = <div>{this.state.result.toCode()}
+                    <br/>{this.state.result.type}<br/> {this.state.result.kind}</div>
+            }
+        }
         return (<div className="vbox panel">
             <header>
                 <button>move</button>
@@ -72,7 +82,7 @@ var EditPanel = React.createClass({
                 onKeyDown={this.keyDown}
                 ></textarea>
             <div className="results">
-                = {this.state.result}
+                {res}
             </div>
         </div>)
     }
@@ -80,3 +90,40 @@ var EditPanel = React.createClass({
 
 
 module.exports = EditPanel;
+
+
+
+var TableOutput = React.createClass({
+    render: function() {
+        //list
+        var rows = this.props.data._value.map(function(row,i) {
+            if(row.type == 'list') {
+                var cols = row._value.map(function(cell,i){
+                    if(cell.type == 'pair') {
+                        return <td>{cell._value.toCode()}</td>
+                    }
+                    return <td>{cell.toCode()}</td>
+                });
+                return <tr><td>{i+1}</td>{cols}</tr>
+            }
+            return <tr><td>{i+1}</td><td>{row.toCode()}</td></tr>
+        });
+
+        var first = this.props.data._value[0];
+        if(first.type == 'list') {
+            var headers = first._value.map(function(item,i){
+                if(item.type == 'pair') {
+                    return <th>{item._key}</th>
+                }
+                return <th>{i+1}</th>
+            });
+        } else {
+            var headers = <th>value</th>
+        }
+
+        return <table className='grow'>
+            <thead><th>#</th>{headers}</thead>
+            <tbody>{rows}</tbody>
+        </table>
+    }
+});
