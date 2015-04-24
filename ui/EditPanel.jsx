@@ -2,6 +2,8 @@ var React = require('react');
 var Literals = require('../src/Literals');
 var Arithmetic = require('../src/Arithmetic');
 var Expressions = require('../src/Expressions');
+var Symbols = require('../src/Symbols');
+var Context = require('../src/Context');
 var ometajs = require('ometa-js');
 var Parser = require('../parser_compiled.js').Parser;
 /*
@@ -29,9 +31,31 @@ var EditPanel = React.createClass({
         }
     },
     componentDidMount: function() {
-        this.setState({
-            raw: this.props.expr.content
-        });
+        this.ctx = Context;
+        try {
+            var makeList = {
+                kind: 'function',
+                type: 'simple',
+                name: 'makeList',
+                fun: function () {
+                    var items = [Literals.makeNumber(1), Literals.makeNumber(2)];
+                    var list = Literals.makeList(items);
+                    setInterval(function () {
+                        items.push(Literals.makeNumber(3));
+                        list.update(items);
+                    }, 500);
+                    return list;
+                }
+            };
+            var makeListSymbol = Symbols.make('makeList');
+            this.ctx.register(makeListSymbol, makeList);
+            console.log("set up makeList function");
+            this.setState({
+                raw: this.props.expr.content
+            });
+        } catch (e) {
+            console.log(e);
+        }
     },
     changed: function() {
         //console.log('chnaged to ', this.refs.text.getDOMNode().value);
@@ -42,13 +66,19 @@ var EditPanel = React.createClass({
     doEval: function() {
         var self = this;
         var expr = ParseExpression(this.state.raw);
-        expr.value().then(function(v) {
-            console.log("v = ",v.type);
+        expr.value(this.ctx).then(function(v) {
+            console.log("evaluated to a = ",v.type);
             self.props.onChange(self.props.expr,self.state.raw);
             self.setState({
                 result: v
-            })
-        })
+            });
+            if(v.type == 'list') {
+                v.onChange(function(vv) {
+                    console.log("list updated",vv);
+                    self.setState({result:vv});
+                });
+            }
+        }).done();
     },
     keyDown: function(e) {
         if(e.ctrlKey && e.key == 'Enter') {
@@ -94,6 +124,9 @@ module.exports = EditPanel;
 
 
 var TableOutput = React.createClass({
+    componentDidMount: function() {
+        console.log("component mounted. data = ", this.props.data);
+    },
     render: function() {
         //list
         var rows = this.props.data._value.map(function(row,i) {
@@ -121,9 +154,9 @@ var TableOutput = React.createClass({
             var headers = <th>value</th>
         }
 
-        return <table className='grow'>
+        return <div className='grow scroll result'><table className='grow'>
             <thead><th>#</th>{headers}</thead>
             <tbody>{rows}</tbody>
-        </table>
+        </table></div>
     }
 });
