@@ -6,6 +6,7 @@ var Q = require('q');
 var Symbol = {
     make: function(name) {
         return {
+            kind:'symbol',
             type:'symbol',
             _name:name,
             name: function() { return this._name; },
@@ -24,7 +25,17 @@ var Symbol = {
                     cb(self);
                 });
             },
-            value: function() {
+            value: function(context) {
+                if(context) {
+                    var val = context.lookup(this);
+                    if(val) {
+                        if(!val.value) {
+                            return Q.fcall(function() {
+                                return val;
+                            })
+                        }
+                    }
+                }
                 if(this._value == null) {
                     return Q.fcall(function() {
                         return null;
@@ -34,6 +45,9 @@ var Symbol = {
             },
             toCode: function() {
                 return name +'<=' + this._value.toCode();
+            },
+            isSymbol: function() {
+                return this.type == 'symbol';
             }
         }
     }

@@ -6,6 +6,7 @@ var Literals = require('../src/Literals');
 var Units = require('../src/Units');
 var ometajs = require('ometa-js');
 var Parser = require('../parser_compiled.js').Parser;
+var Context = require('../src/Context');
 /**
  * Created by josh on 4/20/15.
  */
@@ -78,10 +79,9 @@ function testAssignment1() {
 
 function isEq(v,test,unit) {
     if(v.isFunctionCall()) {
-        console.log("it's a function call", v.toCode());
         v.value().then(function(v) {
-            console.log("resolved value = ",v.toString());
-            console.log("equal = ",isEq(v,test));
+            //console.log("resolved value = ",v.toString());
+            //console.log("equal = ",isEq(v,test));
         });
         return true;
     }
@@ -127,9 +127,9 @@ function isEq(v,test,unit) {
 }
 
 
-function ParseEq(str,value,unit) {
+function ParseEq(str,value,unit, ctx) {
     var out = Parser.matchAll(str,'start');
-    out.value().then(function(v) {
+    out.value(ctx).then(function(v) {
         if(!isEq(v,value,unit)) {
             console.log("==== TEST FAILED " + str + " = " + v + " not " + value);
         } else {
@@ -169,6 +169,31 @@ ParseEq('[foo:4+5]',{foo:9});
 
 ParseEq('[ [0,1,2], [3,4,5], [6,7,8] ]',[[0,1,2],[3,4,5],[6,7,8]]);
 ParseEq('[ [x:1,y:2], [x:3,y:4], [x:5,y:6] ]',[{x:1,y:2},{x:3,y:4},{x:5,y:6}]);
+
+
+var dofun = {
+    kind:'function',
+    type:'simple',
+    name:'dofun',
+    fun: function() {
+        return Literals.makeNumber(6);
+    }
+};
+
+var ctx = Context;
+ctx.register(Symbols.make('dofun'),dofun);
+ParseEq('dofun()',6, null, ctx);
+
+var makelist = {
+    kind:'function',
+    type:'simple',
+    name:'makeList',
+    fun: function() {
+        return Literals.makeList([Literals.makeNumber(1),Literals.makeNumber(2)]);
+    }
+};
+ctx.register(Symbols.make('makeList'),makelist);
+ParseEq('makeList()',[1,2],null, ctx);
 
 /*
 function testIncrementalDataTable() {

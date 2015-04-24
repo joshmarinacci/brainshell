@@ -8,7 +8,15 @@ var Expressions = {
         //console.log("Making a function call for",arr,fun);
         return {
             kind:'funcall',
-            value: function() {
+            value: function(context) {
+                if(fun.type == 'symbol') {
+                    return fun.value(context).then(function(v) {
+                        var args = arr.map(function(arg){
+                            return arg.value();
+                        });
+                        return Q.spread(args, v.fun);
+                    });
+                }
                 return Q.fcall(function() {
                     var args = arr.map(function(arg){
                         return arg.value();

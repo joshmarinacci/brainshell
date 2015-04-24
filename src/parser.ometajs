@@ -2,6 +2,7 @@ var Literals = require('./src/Literals');
 var Arithmetic = require('./src/Arithmetic');
 var Expressions = require('./src/Expressions');
 var Units = require('./src/Units');
+var Symbols = require('./src/Symbols');
 
 function parseExp(n,a,b,s,e) {
     var str = a.join('');
@@ -68,7 +69,7 @@ export ometa Parser {
     listitem  = (sp keyval) | (sp expr),
     listlit   = sp '[' sp listOf(#listitem, ','):e sp ']' sp -> Literals.makeList(e),
 
-    symbol    = sp letter:l (letter|digit)*:s sp -> deps.Symbol(l+s.join("")),
+    symbol    = sp letter:l (letter|digit)*:s sp -> Symbols.make(l+s.join("")),
     newsymbol = sp letter:l (letter|digit)*:s sp -> (l+s.join("")),
     leftarrow = '=' | '\u21d0', //\u21d0 is ⇐
 
@@ -90,7 +91,7 @@ export ometa Parser {
                 |   numlit:x     sp op:o sp '(' expr:y ')' -> Expressions.makeFunctionCall(o,[x,y],{})
               | '(' expr:x ')'                           -> x
               //|   numlit:x     sp op:o sp   numlit:y     -> o.call(null,x,y)
-              //|   funcall:s
+              |   funcall:s
               //|   funcall:s    sp op:o sp   expr:y       -> o.call(null,s,y)
               //|   symbol:s -> s
               |   strlit:x -> x
@@ -99,8 +100,8 @@ export ometa Parser {
               ,
 
 
-    //arg       =  (sp keyval) | (sp funcall) | (sp expr),
-    //funcall   = symbol:s "(" listOf(#arg, ','):as ")" -> deps.Funcall(s,as),
+    arg       =  (sp keyval) | (sp funcall) | (sp expr),
+    funcall   = symbol:s "(" listOf(#arg, ','):as ")" -> Expressions.makeFunctionCall(s,as),
     //funcall   = symbol:s '(' arg:e ')' -> deps.Funcall(s,[e]),
     //funcall   = symbol:s '(' symbol:a1 ',' symbol:a2 ')' -> Funcall(s,[a1,a2]),
     //funcall   = symbol:s '(' symbol:a1 ',' strlit:a2 ')' -> Funcall(s,[a1,a2]),
