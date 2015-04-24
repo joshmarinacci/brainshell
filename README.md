@@ -82,5 +82,35 @@ compiled with browserify
 
 
 
+------------
+
+
+A list is an object with a bunch of values in it that can be accessed. The values can be accessed by numeric or symbolic
+indexes.  If numeric then the list is like an array. If symbolic then the list is like an object map.
+A table is a list containing other lists, thus a two dimensional list, with the primary axis having numeric indexes.
+  
+A list may be rendered as a simple list of boxes, either numeric indexes/value pairs or name/value pairs
+A table may be rendered as an HTML table, with the outer indexes on the left and the inner indexes on the top. 
+
+
+A list or table may have operations applied to it.
+
+Sort('x') to sort by the X column
+Sort('x',direction:ascending) to sort by the X column with the direction ascending
+//Group('x') will return a new table with one row for each column in the original, and the count
+
+column names
+column types
+column formats
+get column as list
+get row as list
+sort by a column
+filter by some criteria, like start and ending dates, or range of value, or particular
+column equals some value.
+
+ 
+ 
+  
+
 
 

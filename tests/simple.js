@@ -166,6 +166,10 @@ ParseEq('[foo:5]',{foo:5});
 ParseEq("[x:1,y:2]",{x:1,y:2});
 ParseEq('[foo:4+5]',{foo:9});
 
+
+ParseEq('[ [0,1,2], [3,4,5], [6,7,8] ]',[[0,1,2],[3,4,5],[6,7,8]]);
+ParseEq('[ [x:1,y:2], [x:3,y:4], [x:5,y:6] ]',[{x:1,y:2},{x:3,y:4},{x:5,y:6}]);
+
 /*
 function testIncrementalDataTable() {
 
