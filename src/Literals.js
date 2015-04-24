@@ -83,6 +83,21 @@ function ListLiteral(list) {
     this.kind = 'literal';
     this.type = 'list';
     this._value = list;
+    this.update = function(list) {
+        this._value = list;
+        this.notify();
+    };
+    this.cbs =[],
+    this.onChange = function(cb) {
+        this.cbs.push(cb);
+    };
+    this.notify = function() {
+        var self = this;
+        this.cbs.forEach(function(cb) {
+            cb(self);
+        });
+    };
+
     this.toString = function() {
         return 'LITERAL LIST' + this._value;
     };
