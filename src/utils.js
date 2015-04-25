@@ -49,3 +49,7 @@ exports.POSTJSON = function(url, data) {
         xml.send(JSON.stringify(data));
     });
 };
+
+exports.makeId = function (prefix) {
+    return prefix + Math.floor(Math.random()*2*1000*1000*1000);
+}

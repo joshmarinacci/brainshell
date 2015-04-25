@@ -45,6 +45,14 @@ app.post('/josh/createdoc', function(req,res) {
     });
 });
 
+app.post('/josh/deletedoc', function(req,res) {
+    console.log("got a post");
+    console.log(req.body);
+    DB.deleteDoc(req.body, function(resp) {
+        res.send({status:'success'});
+    });
+});
+
 
 var server = app.listen(30045,function() {
     console.log("listening on ", server.address().address);

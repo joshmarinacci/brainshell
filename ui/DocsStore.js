@@ -9,16 +9,24 @@ var DocsStore = {
     on:function(type,cb) {
         this.cbs.push(cb);
     },
-    notify: function() {
+    notify: function(type) {
         this.cbs.forEach(function(cb) {
-            cb();
+            cb(type);
         })
     },
     init: function() {
         var self = this;
         utils.GETJSON('http://localhost:30045/josh/docs').then(function(data) {
             self._docs = data;
-            self.notify();
+            self._docs.forEach(function(doc) {
+                doc.expressions.forEach(function(expr) {
+                   if(!expr.id) {
+                       console.log("missing an id");
+                       expr.id = utils.makeId('expression');
+                   }
+                });
+            });
+            self.notify('load');
         });
     },
     getDocs: function() {
@@ -33,8 +41,31 @@ var DocsStore = {
         var self = this;
         return utils.POSTJSON('http://localhost:30045/josh/createdoc',{}).then(function(doc){
             self._docs.push(doc);
+            self.notify('create');
             return doc;
         });
+    },
+    deleteDoc: function(doc) {
+        var self = this;
+        var n = self._docs.indexOf(doc);
+        console.log("found index to delete",n);
+        self._docs.splice(n,1);
+        self.notify('delete');
+        return utils.POSTJSON('http://localhost:30045/josh/deletedoc',doc).then(function(doc) {
+            console.log("delete was successsful");
+        });
+    },
+    insertExpressionAfter: function(doc,expr,index) {
+        console.log("doc = ",doc);
+        console.log("inserting after expression",expr,index);
+        var exp = {
+            type:'code',
+            content:'1+1',
+            id:utils.makeId('expression')
+        };
+        doc.expressions.splice(index+1,0,exp);
+        console.log("inserted at ", index+1);
+        this.notify('update');
     }
 };
 

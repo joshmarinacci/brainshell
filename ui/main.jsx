@@ -29,13 +29,26 @@ var MainView = React.createClass({
     },
     componentDidMount: function() {
         var self = this;
-        DocsStore.on('change',function() {
+        DocsStore.on('load',function(type) {
+            if(type != 'load') return;
             var state = {
                 docs: DocsStore.getDocs(),
                 selectedDoc: null
             };
             if(state.docs.length > 0) state.selectedDoc = state.docs[0];
             self.setState(state);
+        });
+        DocsStore.on('update',function(type) {
+            if(type != 'update') return;
+            self.setState({
+                docs: DocsStore.getDocs()
+            });
+        });
+        DocsStore.on('delete',function(type) {
+            if(type != 'delete') return;
+            self.setState({
+                docs: DocsStore.getDocs()
+            });
         });
     },
     contentChanged: function(expr, content) {
@@ -56,6 +69,10 @@ var MainView = React.createClass({
             });
         }).done();
     },
+    deleteDoc: function() {
+        console.log("deleting the selected doc", this.state.selectedDoc);
+        DocsStore.deleteDoc(this.state.selectedDoc);
+    },
     render: function() {
         var self = this;
         var docs = this.state.docs.map(function(doc) {
@@ -64,8 +81,9 @@ var MainView = React.createClass({
         var self = this;
         console.log("doc id = ", this.state.selectedDoc._id);
         var docid = this.state.selectedDoc._id;
+        var doc = this.state.selectedDoc;
         var panels = this.state.selectedDoc.expressions.map(function(expr,i) {
-            return <EditPanel key={docid+i} expr={expr} onChange={self.contentChanged}/>
+            return <EditPanel key={docid+i} expr={expr} onChange={self.contentChanged} doc={doc} index={i}/>
         });
         return(
             <div className="fill vbox">
@@ -80,10 +98,13 @@ var MainView = React.createClass({
             </div>
             <div className="vbox grow" id="editor-pane">
                 <header>
-                    <button>edit</button>
+                    <button>edit name</button>
                     <span className='grow'>{this.state.selectedDoc.title}</span>
+                    <button onClick={this.deleteDoc}>delete</button>
                 </header>
-                {panels}
+                <div className='grow scroll'>
+                    {panels}
+                </div>
             </div>
             <div className="vbox" id="help-pane">
                 <header>Resources</header>

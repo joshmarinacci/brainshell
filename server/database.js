@@ -64,7 +64,7 @@ var DB = {
     },
 
     saveDoc: function(doc, cb) {
-        db.update({id:doc.id},doc,{},function(err,num){
+        db.update({_id:doc._id},doc,{},function(err,num){
             console.log("updated ",num);
             cb();
         });
@@ -74,6 +74,14 @@ var DB = {
         db.insert({title:'new doc', expressions:[ { type:'code', content:'1+2*3'}]},function(err,doc){
             console.log("the new doc is",doc);
             cb(doc);
+        })
+    },
+
+    deleteDoc: function(doc, cb) {
+        console.log("deleting",doc._id);
+        db.remove({_id:doc._id}, {},function(err,num) {
+            console.log('deleted',err,num);
+            cb();
         })
     }
 };

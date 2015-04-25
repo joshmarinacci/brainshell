@@ -6,6 +6,8 @@ var Symbols = require('../src/Symbols');
 var Context = require('../src/Context');
 var ometajs = require('ometa-js');
 var Parser = require('../parser_compiled.js').Parser;
+var DocsStore = require('./DocsStore');
+
 /*
 var funcall1 = Expressions.makeFunctionCall(Arithmetic.Add,
     [Literals.makeNumber(5), Literals.makeNumber(5)],
@@ -80,6 +82,9 @@ var EditPanel = React.createClass({
             }
         }).done();
     },
+    doAppend: function() {
+        DocsStore.insertExpressionAfter(this.props.doc, this.props.expr, this.props.index);
+    },
     keyDown: function(e) {
         if(e.ctrlKey && e.key == 'Enter') {
             this.doEval();
@@ -97,12 +102,12 @@ var EditPanel = React.createClass({
                     <br/>{this.state.result.type}<br/> {this.state.result.kind}</div>
             }
         }
-        return (<div className="vbox panel">
+        return (<div className="vbox edit-panel">
             <header>
                 <button>move</button>
                 <button onClick={this.doEval}>eval</button>
                 <button>delete</button>
-                <button>append</button>
+                <button onClick={this.doAppend}>append</button>
             </header>
             <textarea
                 ref='text'
