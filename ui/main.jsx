@@ -50,7 +50,6 @@ var MainView = React.createClass({
     createNewDoc: function(doc) {
         var self = this;
         DocsStore.createDoc().then(function(doc) {
-            console.log("the new doc is ",doc);
             self.setState({
                 docs: DocsStore.getDocs(),
                 selectedDoc: doc

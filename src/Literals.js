@@ -77,8 +77,24 @@ function StringLiteral(str) {
 }
 util.inherits(StringLiteral, LiteralBase);
 
+
+
+
+function ArrayIterator(data) {
+    this.index = 0;
+    this.hasNext = function() {
+        return (this.index < data.length);
+    };
+    this.next = function() {
+        var row = data[this.index];
+        this.index++;
+        return row;
+    }
+}
+
+
+
 function ListLiteral(list) {
-    //console.log("making list literal",list);
     LiteralBase.call(this);
     this.kind = 'literal';
     this.type = 'list';
@@ -87,7 +103,7 @@ function ListLiteral(list) {
         this._value = list;
         this.notify();
     };
-    this.cbs =[],
+    this.cbs =[];
     this.onChange = function(cb) {
         this.cbs.push(cb);
     };
@@ -112,11 +128,56 @@ function ListLiteral(list) {
         return this._value[index];
     };
 
+    this.itemByKey = function(key) {
+        for(var i=0; i<this._value.length; i++) {
+            var pair = this._value[i];
+            if(pair.getKey() == key) return pair.getValue();
+        }
+        return this._value[0]._value;
+    };
+
     this.toString = function() {
         return 'LITERAL LIST [' + this._value + ']';
-    }
+    };
+
     this.toCode = function() {
         return 'code [' + this._value.map(function(v) { return v.toCode(); }).join(',') + ']';
+    };
+
+    //get iterator
+    this.getIterator = function() {
+        return new ArrayIterator(this._value);
+    },
+    //get column info
+    this.getColumnInfos = function() {
+        if(this._value.length <= 0) return [];
+        var infos = [];
+        var first = this._value[0];
+        if(first.isNumber()) {
+            return [{
+                id:function() { return 0; },
+                title: function() { return this.id()+""; },
+                type: function() { return 'number'; },
+                getValue: function(row) { return row; },
+                print: function(row) { return this.getValue(row).toCode(); }
+            }];
+        }
+        if(first.isList()) {
+            first._value.map(function(datum) {
+                if(datum.type == 'pair') {
+                    var key = datum._key;
+                    var value = datum._value;
+                    infos.push({
+                        id: function() { return key; },
+                        title: function() { return this.id(); },
+                        type: function() { return value.type; },
+                        getValue: function(row) { return row.itemByKey(key); },
+                        print: function(row) { return this.getValue(row).toCode(); }
+                    });
+                }
+            })
+        }
+        return infos;
     }
 }
 util.inherits(ListLiteral, LiteralBase);

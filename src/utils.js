@@ -35,9 +35,8 @@ exports.GETJSON = function(url) {
 exports.POSTJSON = function(url, data) {
     return Q.promise(function(resolve, reject, notify) {
         var xml = new XMLHttpRequest();
-        console.log("POSTINGting url",url);
+        //console.log("POSTINGting url",url);
         xml.onload = function() {
-            console.log("loaded");
             if(xml.status == 200) {
                 var payload = JSON.parse(xml.responseText);
                 resolve(payload);

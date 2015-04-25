@@ -124,38 +124,30 @@ module.exports = EditPanel;
 
 
 var TableOutput = React.createClass({
-    componentDidMount: function() {
-        console.log("component mounted. data = ", this.props.data);
+    componentDidMount: function() { },
+    renderRow: function(row, infos, count) {
+        var cols = infos.map(function(info,i){
+            return <td key={'cell_'+count+'_'+i}>{info.print(row)}</td>
+        });
+        return <tr key={'rowx_'+count}><td className='row-header' key={'cell_head'}>{count+1}</td>{cols}</tr>;
     },
     render: function() {
         //list
-        var rows = this.props.data._value.map(function(row,i) {
-            if(row.type == 'list') {
-                var cols = row._value.map(function(cell,i){
-                    if(cell.type == 'pair') {
-                        return <td>{cell._value.toCode()}</td>
-                    }
-                    return <td>{cell.toCode()}</td>
-                });
-                return <tr><td>{i+1}</td>{cols}</tr>
-            }
-            return <tr><td>{i+1}</td><td>{row.toCode()}</td></tr>
-        });
-
-        var first = this.props.data._value[0];
-        if(first.type == 'list') {
-            var headers = first._value.map(function(item,i){
-                if(item.type == 'pair') {
-                    return <th>{item._key}</th>
-                }
-                return <th>{i+1}</th>
-            });
-        } else {
-            var headers = <th>value</th>
+        var infos = this.props.data.getColumnInfos();
+        var itr = this.props.data.getIterator();
+        var rows = [];
+        var count = 0;
+        while(itr.hasNext()) {
+            rows.push(this.renderRow(itr.next(),infos,count));
+            count++;
         }
 
+        var headers = infos.map(function(info) {
+            return <th>{info.title()}</th>;
+        });
+
         return <div className='grow scroll result'><table className='grow'>
-            <thead><th>#</th>{headers}</thead>
+            <thead><th className='row-header'>#</th>{headers}</thead>
             <tbody>{rows}</tbody>
         </table></div>
     }
