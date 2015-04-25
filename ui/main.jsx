@@ -5,30 +5,7 @@ var Arithmetic = require('../src/Arithmetic');
 var Expressions = require('../src/Expressions');
 var utils = require('../src/utils');
 var EditPanel = require('./EditPanel.jsx');
-
-
-var DocsStore = {
-    cbs:[],
-    _docs:[],
-    on:function(type,cb) {
-        this.cbs.push(cb);
-    },
-    notify: function() {
-        this.cbs.forEach(function(cb) {
-            cb();
-        })
-    },
-    init: function() {
-        var self = this;
-        utils.GETJSON('http://localhost:30045/josh/docs').then(function(data) {
-            self._docs = data;
-            self.notify();
-        });
-    },
-    getDocs: function() {
-        return this._docs;
-    }
-};
+var DocsStore = require('./DocsStore');
 
 var ListItem = React.createClass({
     clicked: function() {
@@ -63,20 +40,33 @@ var MainView = React.createClass({
     },
     contentChanged: function(expr, content) {
         expr.content = content;
+        DocsStore.saveDoc(this.state.selectedDoc);
     },
     docSelected: function(doc) {
         this.setState({
             selectedDoc:doc
         })
     },
+    createNewDoc: function(doc) {
+        var self = this;
+        DocsStore.createDoc().then(function(doc) {
+            console.log("the new doc is ",doc);
+            self.setState({
+                docs: DocsStore.getDocs(),
+                selectedDoc: doc
+            });
+        }).done();
+    },
     render: function() {
         var self = this;
         var docs = this.state.docs.map(function(doc) {
-            return <ListItem key={doc.id} item={doc} onSelect={self.docSelected} selectedItem={self.state.selectedDoc}>{doc.title}</ListItem>;
+            return <ListItem key={doc._id} item={doc} onSelect={self.docSelected} selectedItem={self.state.selectedDoc}>{doc.title}</ListItem>;
         });
         var self = this;
+        console.log("doc id = ", this.state.selectedDoc._id);
+        var docid = this.state.selectedDoc._id;
         var panels = this.state.selectedDoc.expressions.map(function(expr,i) {
-            return <EditPanel key={i} expr={expr} onChange={self.contentChanged}/>
+            return <EditPanel key={docid+i} expr={expr} onChange={self.contentChanged}/>
         });
         return(
             <div className="fill vbox">
@@ -86,11 +76,14 @@ var MainView = React.createClass({
                 <header>Documents</header>
                 <ul className="list grow">{docs}</ul>
                 <footer>
-                    <button>add</button>
+                    <button onClick={this.createNewDoc}>add</button>
                 </footer>
             </div>
             <div className="vbox grow" id="editor-pane">
-                <header>{this.state.selectedDoc.title}</header>
+                <header>
+                    <button>edit</button>
+                    <span className='grow'>{this.state.selectedDoc.title}</span>
+                </header>
                 {panels}
             </div>
             <div className="vbox" id="help-pane">

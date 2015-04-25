@@ -21,7 +21,6 @@ var DB = {
         var docs = [
             {
                 title:'foo 1',
-                id: 'docid_1',
                 expressions: [
                     {
                         type:'code',
@@ -36,7 +35,6 @@ var DB = {
             },
             {
                 title:'foo 2',
-                id: 'docid_2',
                 expressions: [
                     {
                         type:'code',
@@ -60,8 +58,23 @@ var DB = {
     getAllDocs: function(cb) {
         db.find({}).exec(function(err,docs){
             if(err) throw err;
+            console.log(docs);
             cb(docs);
         });
+    },
+
+    saveDoc: function(doc, cb) {
+        db.update({id:doc.id},doc,{},function(err,num){
+            console.log("updated ",num);
+            cb();
+        });
+    },
+
+    newDoc: function(body, cb) {
+        db.insert({title:'new doc', expressions:[ { type:'code', content:'1+2*3'}]},function(err,doc){
+            console.log("the new doc is",doc);
+            cb(doc);
+        })
     }
 };
 

@@ -24,6 +24,7 @@
   "homepage": "https://github.com/joshmarinacci/brainshell",
   "dependencies": {
     "appy-style": "0.0.0",
+    "body-parser": "^1.12.3",
     "express": "^4.12.3",
     "font-awesome": "^4.3.0",
     "nedb": "^1.1.2",
