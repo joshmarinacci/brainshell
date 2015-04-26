@@ -10,6 +10,7 @@ var moment = require('moment');
 
 var Context = require('../src/Context');
 var Symbols = require('../src/Symbols');
+var EditableLabel = require('./EditableLabel.jsx');
 
 var ctx = Context.global();
 
@@ -108,6 +109,7 @@ var ListItem = React.createClass({
     }
 });
 
+
 var MainView = React.createClass({
     getInitialState: function() {
         return {
@@ -161,6 +163,14 @@ var MainView = React.createClass({
         console.log("deleting the selected doc", this.state.selectedDoc);
         DocsStore.deleteDoc(this.state.selectedDoc);
     },
+    titleChanged: function(txt) {
+        console.log("the title changed to ",txt);
+        this.state.selectedDoc.title = txt;
+        this.setState({
+            selectedDoc: this.state.selectedDoc
+        });
+        DocsStore.saveDoc(this.state.selectedDoc);
+    },
     render: function() {
         var self = this;
         var docs = this.state.docs.map(function(doc) {
@@ -185,8 +195,9 @@ var MainView = React.createClass({
             </div>
             <div className="vbox grow" id="editor-pane">
                 <header>
-                    <button>edit name</button>
-                    <span className='grow'>{this.state.selectedDoc.title}</span>
+                    <EditableLabel className='grow'
+                                   value={this.state.selectedDoc.title}
+                                   onChange={this.titleChanged}/>
                     <button onClick={this.deleteDoc}>delete</button>
                 </header>
                 <div className='grow scroll'>
