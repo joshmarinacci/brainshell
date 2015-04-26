@@ -195,6 +195,17 @@ var makelist = {
 ctx.register(Symbols.make('makeList'),makelist);
 ParseEq('makeList()',[1,2],null, ctx);
 
+
+function testAssignment() {
+    var out = Parser.matchAll('x=5','start');
+    out.value(ctx).then(function(v) {
+        console.log("the final value is ",v.toCode());
+        ctx.dump();
+    }).done();
+
+}
+testAssignment();
+
 /*
 function testIncrementalDataTable() {
 

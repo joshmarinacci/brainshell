@@ -37,6 +37,21 @@ var Expressions = {
                 return fun.name+'('+arr.map(utils.asCode).join(',')+')';
             }
         }
+    },
+
+    makeAssignment: function(symbol, expr) {
+        //console.log("making an assignment to ", symbol.kind, 'from',expr.kind);
+        return {
+            kind:'assignment',
+            value: function(context) {
+                symbol.update(expr);
+                context.register(symbol,expr);
+                return symbol.value();
+            },
+            toCode: function() {
+                return symbol.name() + ' <= ' + expr.toCode();
+            }
+        }
     }
 };
 

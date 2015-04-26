@@ -9,6 +9,11 @@ function Context() {
     };
     this.lookup = function(symbol) {
         return registry[symbol.name()];
+    };
+    this.dump = function() {
+        for(var key in registry) {
+            console.log(key,registry[key]);
+        }
     }
 }
 

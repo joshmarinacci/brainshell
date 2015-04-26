@@ -70,7 +70,7 @@ export ometa Parser {
     listlit   = sp '[' sp listOf(#listitem, ','):e sp ']' sp -> Literals.makeList(e),
 
     symbol    = sp letter:l (letter|digit)*:s sp -> Symbols.make(l+s.join("")),
-    newsymbol = sp letter:l (letter|digit)*:s sp -> (l+s.join("")),
+    //newsymbol = sp letter:l (letter|digit)*:s sp -> (l+s.join("")),
     leftarrow = '=' | '\u21d0', //\u21d0 is ⇐
 
     //op = "=>" -> deps.Pipeline,
@@ -105,11 +105,10 @@ export ometa Parser {
     //funcall   = symbol:s '(' arg:e ')' -> deps.Funcall(s,[e]),
     //funcall   = symbol:s '(' symbol:a1 ',' symbol:a2 ')' -> Funcall(s,[a1,a2]),
     //funcall   = symbol:s '(' symbol:a1 ',' strlit:a2 ')' -> Funcall(s,[a1,a2]),
-    //assign    = symbol:s sp leftarrow (expr | strlit | funcall):e  -> Assignment(s,e),
+    assign    = symbol:s sp leftarrow (expr | strlit | funcall):e  -> Expressions.makeAssignment(s,e),
     //assign      = newsymbol:s sp leftarrow sp (funcall | expr):e -> deps.Assignment(s,e),
     //start     =  assign | strlit | funcall | expr | numlit
-    //start       = assign | expr
-    start      = expr
+    start       = assign | expr
 
 }
 
