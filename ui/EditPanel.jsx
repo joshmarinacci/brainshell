@@ -8,14 +8,6 @@ var ometajs = require('ometa-js');
 var Parser = require('../parser_compiled.js').Parser;
 var DocsStore = require('./DocsStore');
 
-/*
-var funcall1 = Expressions.makeFunctionCall(Arithmetic.Add,
-    [Literals.makeNumber(5), Literals.makeNumber(5)],
-    {});
-var funcall2 = Expressions.makeFunctionCall(Arithmetic.Add,
-    [Literals.makeNumber(10),Literals.makeNumber(11)],
-    {});
-*/
 function ParseExpression(str) {
     console.log("parsing expression",str);
     var out = Parser.matchAll(str,'start');
@@ -33,6 +25,7 @@ var EditPanel = React.createClass({
         }
     },
     componentDidMount: function() {
+        /*
         this.ctx = Context;
         try {
             var makeList = {
@@ -52,12 +45,12 @@ var EditPanel = React.createClass({
             var makeListSymbol = Symbols.make('makeList');
             this.ctx.register(makeListSymbol, makeList);
             console.log("set up makeList function");
-            this.setState({
-                raw: this.props.expr.content
-            });
         } catch (e) {
             console.log(e);
-        }
+        }*/
+        this.setState({
+            raw: this.props.expr.content
+        });
     },
     changed: function() {
         //console.log('chnaged to ', this.refs.text.getDOMNode().value);
@@ -68,7 +61,7 @@ var EditPanel = React.createClass({
     doEval: function() {
         var self = this;
         var expr = ParseExpression(this.state.raw);
-        expr.value(this.ctx).then(function(v) {
+        expr.value(Context.global()).then(function(v) {
             console.log("evaluated to a = ",v.type);
             self.props.onChange(self.props.expr,self.state.raw);
             self.setState({
@@ -92,16 +85,19 @@ var EditPanel = React.createClass({
             e.stopPropagation();
         }
     },
-    render: function() {
-        var res = "";
-        if(this.state.result) {
-            if(this.state.result.type == 'list') {
-                res = <TableOutput data={this.state.result}/>
-            } else {
-                res = <div>{this.state.result.toCode()}
-                    <br/>{this.state.result.type}<br/> {this.state.result.kind}</div>
-            }
+    renderResult: function(res) {
+        if(!res) return "";
+        if(res.type == 'list') {
+            return <TableOutput data={res}/>
         }
+        if(res.type == 'list-wrapper') {
+            return <TableOutput data={res}/>
+        }
+        return  <div>{res.toCode()}<br/>{res.type}<br/> {res.kind}</div>
+    },
+    render: function() {
+        var res = this.renderResult(this.state.result);
+
         return (<div className="vbox edit-panel">
             <header>
                 <button>move</button>

@@ -6,6 +6,94 @@ var Expressions = require('../src/Expressions');
 var utils = require('../src/utils');
 var EditPanel = require('./EditPanel.jsx');
 var DocsStore = require('./DocsStore');
+var moment = require('moment');
+
+var Context = require('../src/Context');
+var Symbols = require('../src/Symbols');
+
+var ctx = Context.global();
+
+function makeDefaultFunctions() {
+    var fundef = {
+        kind: 'function',
+        type: 'simple',
+        name: 'makeList',
+        fun: function () {
+            return Literals.makeList([Literals.makeNumber(1), Literals.makeNumber(2)]);
+        }
+    };
+    Context.global().register(Symbols.make(fundef.name), fundef);
+
+    var setColumnFormat = {
+        kind:'function',
+        type:'simple',
+        name:'setColumnFormat',
+        fun: function(data) {
+            console.log('data',data);
+            function StdColumnInfo(id,type) {
+                this.id = function() {
+                    return id;
+                };
+                this.title = function() {
+                    return this.id();
+                };
+                this.type = function() {
+                    return type;
+                };
+
+                this.getValue = function(row) {
+                    return row[this.id()];
+                };
+
+                this.print = function(row) {
+                    return ""+this.getValue(row);
+                };
+            }
+
+            function setColumnFormat(list, key, options) {
+                this.type = 'list-wrapper';
+                this.getIterator = function() {
+                    return list.getIterator();
+                };
+                this.getColumnInfos = function() {
+                    var infos = list.getColumnInfos();
+                    var index = 0;
+                    for(var i=0; i<infos.length; i++) {
+                        if(infos[i].id() == key) {
+                            index = i;
+                            break;
+                        }
+                    }
+                    var newInfo = new StdColumnInfo(key,options.type);
+                    if(options.type == 'number') {
+                        newInfo.getValue = function (row) {
+                            return parseFloat(row[this.id()]);
+                        };
+                    }
+                    if(options.type == 'date') {
+                        newInfo.getValue = function(row) {
+                            return  moment(row.itemByKey(this.id()), options.parsePattern);
+                        };
+                        newInfo.print = function(row) {
+                            return this.getValue(row).format(options.printPattern);
+                        };
+                    }
+                    if(options.unit) {
+                        newInfo.print = function (row) {
+                            return this.getValue(row) + ' ' + options.unit;
+                        };
+                    }
+                    infos[index] = newInfo;
+                    return infos;
+                }
+            }
+            return new setColumnFormat(data,'birthdate',{type:'date', parsePattern:'MM-DD-YY', printPattern: 'MMMM DD, YYYY'});
+        }
+    };
+
+    Context.global().register(Symbols.make(setColumnFormat.name), setColumnFormat);
+}
+makeDefaultFunctions();
 
 var ListItem = React.createClass({
     clicked: function() {
@@ -79,7 +167,6 @@ var MainView = React.createClass({
             return <ListItem key={doc._id} item={doc} onSelect={self.docSelected} selectedItem={self.state.selectedDoc}>{doc.title}</ListItem>;
         });
         var self = this;
-        console.log("doc id = ", this.state.selectedDoc._id);
         var docid = this.state.selectedDoc._id;
         var doc = this.state.selectedDoc;
         var panels = this.state.selectedDoc.expressions.map(function(expr,i) {

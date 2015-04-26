@@ -180,7 +180,7 @@ var dofun = {
     }
 };
 
-var ctx = Context;
+var ctx = Context.global();
 ctx.register(Symbols.make('dofun'),dofun);
 ParseEq('dofun()',6, null, ctx);
 
