@@ -162,6 +162,9 @@ var MainView = React.createClass({
     deleteDoc: function() {
         console.log("deleting the selected doc", this.state.selectedDoc);
         DocsStore.deleteDoc(this.state.selectedDoc);
+        this.setState({
+            selectedDoc:null
+        });
     },
     titleChanged: function(txt) {
         console.log("the title changed to ",txt);
@@ -177,11 +180,17 @@ var MainView = React.createClass({
             return <ListItem key={doc._id} item={doc} onSelect={self.docSelected} selectedItem={self.state.selectedDoc}>{doc.title}</ListItem>;
         });
         var self = this;
-        var docid = this.state.selectedDoc._id;
         var doc = this.state.selectedDoc;
-        var panels = this.state.selectedDoc.expressions.map(function(expr,i) {
-            return <EditPanel key={docid+i} expr={expr} onChange={self.contentChanged} doc={doc} index={i}/>
-        });
+        if(doc == null) {
+            var panels = [];
+            var title = "";
+        } else {
+            var docid = this.state.selectedDoc._id;
+            var title = doc.title;
+            var panels = doc.expressions.map(function (expr, i) {
+                return <EditPanel key={docid+i} expr={expr} onChange={self.contentChanged} doc={doc} index={i}/>
+            });
+        }
         return(
             <div className="fill vbox">
             <header>BrainShell</header>
@@ -195,9 +204,7 @@ var MainView = React.createClass({
             </div>
             <div className="vbox grow" id="editor-pane">
                 <header>
-                    <EditableLabel className='grow'
-                                   value={this.state.selectedDoc.title}
-                                   onChange={this.titleChanged}/>
+                    <EditableLabel value={title} onChange={this.titleChanged}/>
                     <button onClick={this.deleteDoc}>delete</button>
                 </header>
                 <div className='grow scroll'>
