@@ -61,19 +61,20 @@ var EditPanel = React.createClass({
     doEval: function() {
         var self = this;
         var expr = ParseExpression(this.state.raw);
+        if(expr.onChange) expr.onChange(function() {
+            expr.value(Context.global()).then(function(v) {
+                self.setResult(v);
+            }).done();
+        });
         expr.value(Context.global()).then(function(v) {
-            console.log("evaluated to a = ",v.type);
-            self.props.onChange(self.props.expr,self.state.raw);
-            self.setState({
-                result: v
-            });
-            if(v.type == 'list') {
-                v.onChange(function(vv) {
-                    console.log("list updated",vv);
-                    self.setState({result:vv});
-                });
-            }
+            self.setResult(v);
         }).done();
+    },
+    setResult: function(v) {
+        this.props.onChange(this.props.expr,this.state.raw);
+        this.setState({
+            result: v
+        });
     },
     doAppend: function() {
         DocsStore.insertExpressionAfter(this.props.doc, this.props.expr, this.props.index);
