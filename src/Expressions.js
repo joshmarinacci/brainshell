@@ -22,6 +22,7 @@ var Expressions = {
                     if(!arg.onChange) return;
                     arg.onChange(cb);
                 });
+                if(fun.onChange) fun.onChange(cb);
             },
             dependentUpdated: function() {
                 this.notify();
@@ -44,14 +45,14 @@ var Expressions = {
                         var args = arr.map(function(arg){
                             return arg.value();
                         });
-                        return Q.spread(args, v.fun);
+                        return Q.spread(args, v.fun.bind(v));
                     });
                 }
                 return Q.fcall(function() {
                     var args = arr.map(function(arg){
                         return arg.value();
                     });
-                    return Q.spread(args, fun.fun);
+                    return Q.spread(args, fun.fun.bind(fun));
                 });
             },
             isFunctionCall: function() {

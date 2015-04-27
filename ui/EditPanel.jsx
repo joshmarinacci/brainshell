@@ -26,8 +26,6 @@ var EditPanel = React.createClass({
     },
     componentDidMount: function() {
         /*
-        this.ctx = Context;
-        try {
             var makeList = {
                 kind: 'function',
                 type: 'simple',
@@ -42,18 +40,13 @@ var EditPanel = React.createClass({
                     return list;
                 }
             };
-            var makeListSymbol = Symbols.make('makeList');
-            this.ctx.register(makeListSymbol, makeList);
-            console.log("set up makeList function");
-        } catch (e) {
-            console.log(e);
+
         }*/
         this.setState({
             raw: this.props.expr.content
         });
     },
     changed: function() {
-        //console.log('chnaged to ', this.refs.text.getDOMNode().value);
         this.setState({
             raw: this.refs.text.getDOMNode().value
         });
@@ -61,11 +54,13 @@ var EditPanel = React.createClass({
     doEval: function() {
         var self = this;
         var expr = ParseExpression(this.state.raw);
-        if(expr.onChange) expr.onChange(function() {
-            expr.value(Context.global()).then(function(v) {
-                self.setResult(v);
-            }).done();
-        });
+        if(expr.onChange) {
+            expr.onChange(function() {
+                expr.value(Context.global()).then(function(v) {
+                    self.setResult(v);
+                }).done();
+            });
+        }
         expr.value(Context.global()).then(function(v) {
             self.setResult(v);
         }).done();

@@ -29,19 +29,15 @@ var Symbol = {
                 });
             },
             value: function(context) {
-                if(context) {
-                    var val = context.lookup(this);
-                    if(val) {
-                        if(!val.value) {
-                            return Q.fcall(function() {
-                                return val;
-                            })
-                        }
-                    }
-                }
                 if(this._value == null) {
                     return Q.fcall(function() {
                         return null;
+                    });
+                }
+                if(this._value && this._value.kind == 'function') {
+                    var fn = this._value;
+                    return Q.fcall(function() {
+                        return fn;
                     });
                 }
                 return this._value.value();

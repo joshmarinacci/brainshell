@@ -1,5 +1,15 @@
 var Literals = require('../src/Literals');
 var Symbols = require('../src/Symbols');
+var Context = require('../src/Context');
+
+function regSimple(ctx,fun) {
+    fun.kind = "function";
+    fun.type = "simple";
+    var sym = Symbols.make(fun.name);
+    sym.update(fun);
+    if(fun.init) fun.init();
+    ctx.register(sym);
+}
 
 exports.makeDefaultFunctions = function(ctx) {
     var makeList = {
@@ -10,7 +20,9 @@ exports.makeDefaultFunctions = function(ctx) {
             return Literals.makeList([Literals.makeNumber(1), Literals.makeNumber(2)]);
         }
     };
-    ctx.register(Symbols.make(makeList.name), makeList);
+    var mklistsym = Symbols.make(makeList.name);
+    mklistsym.update(makeList);
+    ctx.register(mklistsym);
 
     var setColumnFormat = {
         kind:'function',
@@ -80,4 +92,32 @@ exports.makeDefaultFunctions = function(ctx) {
     };
 
     ctx.register(Symbols.make(setColumnFormat.name), setColumnFormat);
+    regSimple(ctx,{
+        name:'makeGrowTable',
+        cbs:[],
+        onChange:function(cb) {
+            this.cbs.push(cb);
+        },
+        notify: function() {
+            var self = this;
+            this.cbs.forEach(function(cb) {
+                cb(self);
+            });
+        },
+        init: function() {
+            var items = [Literals.makeNumber(1), Literals.makeNumber(2)];
+            this.list = Literals.makeList(items);
+            var i = 3;
+            var self = this;
+            setInterval(function () {
+                items.push(Literals.makeNumber(i));
+                self.list.update(items);
+                Context.global().lookup('makeGrowTable').notify();
+                i++;
+            }, 2500);
+        },
+        fun: function() {
+            return this.list;
+        }
+    });
 }
