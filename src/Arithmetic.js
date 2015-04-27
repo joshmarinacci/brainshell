@@ -35,7 +35,8 @@ var Arithmetic = {
         type:'operation',
         name:'^',
         fun: function(a,b) {
-            return Literals.makeNumber(a._value/b._value);
+            var v = Math.pow(a._value,b._value);
+            return Literals.makeNumber(v);
         }
     },
     ConvertUnit:{

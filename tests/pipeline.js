@@ -23,7 +23,6 @@ var makeList = {
         });
     },
     fun: function() {
-        console.log("running make list");
         var arr = [1,2,3,4];
         return Literals.makeList(arr.map(function(n) {
             return Literals.makeNumber(n);
@@ -45,12 +44,10 @@ var sum = {
         });
     },
     fun: function(data) {
-        console.log("going to make a sum with the data",data);
         var it = data.getIterator();
         var total = 0;
         while(it.hasNext()) {
             var v = it.next();
-            console.log("v",v._value);
             total += v._value;
         }
         return Literals.makeNumber(total);
