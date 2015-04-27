@@ -7,13 +7,33 @@ var Literals = require('./Literals');
 var Expressions = {
     makeFunctionCall: function(fun,arr,nam) {
         //console.log("Making a function call for",arr,fun);
-        return {
+        var fcall = {
             kind:'funcall',
             type:'funcall',
             name:'invoke_',
             arguments: {
                 indexed:arr,
                 named:nam
+            },
+            cbs:[],
+            init: function() {
+                var cb = this.dependentUpdated.bind(this);
+                arr.forEach(function(arg) {
+                    if(!arg.onChange) return;
+                    arg.onChange(cb);
+                });
+            },
+            dependentUpdated: function() {
+                this.notify();
+            },
+            onChange: function(cb) {
+                this.cbs.push(cb);
+            },
+            notify: function() {
+                var self = this;
+                this.cbs.forEach(function(cb) {
+                    cb(self);
+                });
             },
             value: function(context) {
                 if(fun.type == 'pipeline') {
@@ -47,6 +67,8 @@ var Expressions = {
                 return fun.name+'('+arr.map(utils.asCode).join(',')+')';
             }
         }
+        fcall.init();
+        return fcall;
     },
 
     makeAssignment: function(symbol, expr) {
