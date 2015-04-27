@@ -31,6 +31,13 @@ var Arithmetic = {
             return Literals.makeNumber(a._value/b._value);
         }
     },
+    Exponent: {
+        type:'operation',
+        name:'^',
+        fun: function(a,b) {
+            return Literals.makeNumber(a._value/b._value);
+        }
+    },
     ConvertUnit:{
         type:'operation',
         name:'as',

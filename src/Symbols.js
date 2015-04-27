@@ -2,9 +2,12 @@ var Q = require('q');
 /**
  * Created by josh on 4/20/15.
  */
+var Context = require('../src/Context');
 
 var Symbol = {
     make: function(name) {
+        var old = Context.global().lookup(name);
+        if(typeof old !== 'undefined') return old;
         return {
             kind:'symbol',
             type:'symbol',

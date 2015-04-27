@@ -3,12 +3,12 @@ var _global = new Context();
 
 function Context() {
     var registry = {}
-    this.register = function(symbol, value) {
-        registry[symbol.name()] = value;
+    this.register = function(symbol) {
+        registry[symbol.name()] = symbol;
         console.log("registered",symbol.name());
     };
-    this.lookup = function(symbol) {
-        return registry[symbol.name()];
+    this.lookup = function(name) {
+        return registry[name];
     };
     this.dump = function() {
         for(var key in registry) {

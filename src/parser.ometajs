@@ -73,16 +73,16 @@ export ometa Parser {
     //newsymbol = sp letter:l (letter|digit)*:s sp -> (l+s.join("")),
     leftarrow = '=' | '\u21d0', //\u21d0 is ⇐
 
-    //op = "=>" -> deps.Pipeline,
-    //op = "^" -> deps.Exponent,
-    op = "+" -> Arithmetic.Add,
-    op = "-" -> Arithmetic.Subtract,
-    op = "*" -> Arithmetic.Multiply,
-    op = "/" -> Arithmetic.Divide,
+    op = "=>" -> Expressions.Pipeline,
+    op = "^"  -> Arithmetic.Exponent,
+    op = "+"  -> Arithmetic.Add,
+    op = "-"  -> Arithmetic.Subtract,
+    op = "*"  -> Arithmetic.Multiply,
+    op = "/"  -> Arithmetic.Divide,
 
     expr      =     "this foo does nothing"
                 |   expr:x       sp "as" unit:u            -> Expressions.makeFunctionCall(Arithmetic.ConvertUnit,[x,u],{})
-              //|   expr:x       sp op:o sp   funcall:s    -> o.call(null,x,s)
+                |   expr:x       sp op:o sp   funcall:s    -> Expressions.makeFunctionCall(o,[x,s],{})
               //|   expr:x       sp op:o sp   symbol:s     -> o.call(null,x,s)
                 |   expr:x       sp op:o sp   numlit:y     -> Expressions.makeFunctionCall(o,[x,y],{})
 
