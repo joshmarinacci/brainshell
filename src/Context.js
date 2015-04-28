@@ -5,7 +5,6 @@ function Context() {
     var registry = {}
     this.register = function(symbol) {
         registry[symbol.name()] = symbol;
-        console.log("registered",symbol.name());
     };
     this.lookup = function(name) {
         return registry[name];
