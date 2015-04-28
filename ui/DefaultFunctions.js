@@ -1,6 +1,7 @@
 var Literals = require('../src/Literals');
 var Symbols = require('../src/Symbols');
 var Context = require('../src/Context');
+var moment = require('moment');
 
 function regSimple(ctx,fun) {
     fun.kind = "function";
@@ -12,24 +13,20 @@ function regSimple(ctx,fun) {
 }
 
 exports.makeDefaultFunctions = function(ctx) {
-    var makeList = {
-        kind: 'function',
-        type: 'simple',
-        name: 'makeList',
-        fun: function () {
-            return Literals.makeList([Literals.makeNumber(1), Literals.makeNumber(2)]);
-        }
-    };
-    var mklistsym = Symbols.make(makeList.name);
-    mklistsym.update(makeList);
-    ctx.register(mklistsym);
 
-    var setColumnFormat = {
-        kind:'function',
-        type:'simple',
+    regSimple(ctx,{
         name:'setColumnFormat',
-        fun: function(data) {
-            console.log('data',data);
+        fun: function(data, columnArg, typeArg, parseArg, patternArg) {
+            var column = columnArg._value;
+            //console.log('column is',column);
+            var type = typeArg._value._value;
+            //console.log('type is ',type);
+            if(parseArg._key !== 'parsePattern') {
+                throw new Error("parse pattern is missing");
+            }
+            var parsePattern = parseArg._value._value;
+            //console.log(parsePattern);
+
             function StdColumnInfo(id,type) {
                 this.id = function() {
                     return id;
@@ -87,11 +84,16 @@ exports.makeDefaultFunctions = function(ctx) {
                     return infos;
                 }
             }
-            return new setColumnFormat(data,'birthdate',{type:'date', parsePattern:'MM-DD-YY', printPattern: 'MMMM DD, YYYY'});
+            return new setColumnFormat(data, column,
+                {
+                    type:type,
+                    parsePattern:parsePattern,
+                    printPattern: 'MMMM DD, YYYY'
+                });
         }
-    };
+    });
 
-    ctx.register(Symbols.make(setColumnFormat.name), setColumnFormat);
+    /*
     regSimple(ctx,{
         name:'makeGrowTable',
         cbs:[],
@@ -119,7 +121,7 @@ exports.makeDefaultFunctions = function(ctx) {
         fun: function() {
             return this.list;
         }
-    });
+    });*/
 
     regSimple(ctx, {
         name: 'sum',

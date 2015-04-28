@@ -44,7 +44,7 @@ var Expressions = {
                 if(fun.type == 'symbol') {
                     return fun.value(context).then(function(v) {
                         if(v==null) {
-                            console.log("WARNING. SYMBOL resolved to null");
+                            console.log("WARNING. SYMBOL resolved to null", fun.name());
                             return null;
                         }
                         if(v.type == 'complex') {
