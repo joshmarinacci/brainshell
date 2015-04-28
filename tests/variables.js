@@ -86,3 +86,19 @@ test("variable expression update", function(t){
 
 });
 
+
+test("variable 5+zz+5 parsing", function(t){
+    var asym = Symbols.make('foo');
+    asym.update(Literals.makeNumber(1));
+    ctx.register(asym);
+    t.plan(2);
+
+    var expr = Parser.matchAll('5+foo+5','start');
+    t.notEqual(expr,null);
+    expr.onChange(function(sym) {
+        sym.value(ctx).then(function(v) {
+            t.equal(v._value,13);
+        });
+    });
+    asym.update(Literals.makeNumber(3));
+});
