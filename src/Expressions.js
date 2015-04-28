@@ -74,8 +74,29 @@ var Expressions = {
 
     makeAssignment: function(symbol, expr) {
         //console.log("making an assignment to ", symbol.kind, 'from',expr.kind);
-        return {
+        var fcall = {
             kind:'assignment',
+            init: function() {
+                var cb = this.dependentUpdated.bind(this);
+                //arr.forEach(function(arg) {
+                //    if(!arg.onChange) return;
+                //    arg.onChange(cb);
+                //});
+                if(expr.onChange) expr.onChange(cb);
+            },
+            cbs:[],
+            onChange: function(cb) {
+                this.cbs.push(cb);
+            },
+            notify: function() {
+                var self = this;
+                this.cbs.forEach(function(cb) {
+                    cb(self);
+                });
+            },
+            dependentUpdated: function() {
+                this.notify();
+            },
             value: function(context) {
                 symbol.update(expr);
                 context.register(symbol,expr);
@@ -84,7 +105,9 @@ var Expressions = {
             toCode: function() {
                 return symbol.name() + ' <= ' + expr.toCode();
             }
-        }
+        };
+        fcall.init();
+        return fcall;
     },
 
     //pipeline works by evaluating the first arg,
@@ -99,7 +122,7 @@ var Expressions = {
                     return val2;
                 });
             });
-        },
+        }
     }
 
 };

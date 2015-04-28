@@ -120,4 +120,27 @@ exports.makeDefaultFunctions = function(ctx) {
             return this.list;
         }
     });
-}
+
+    regSimple(ctx, {
+        name: 'sum',
+        cbs: [],
+        onChange: function (cb) {
+            this.cbs.push(cb);
+        },
+        notify: function () {
+            var self = this;
+            this.cbs.forEach(function (cb) {
+                cb(self);
+            });
+        },
+        fun: function (data) {
+            var it = data.getIterator();
+            var total = 0;
+            while (it.hasNext()) {
+                var v = it.next();
+                total += v._value;
+            }
+            return Literals.makeNumber(total);
+        }
+    });
+};
