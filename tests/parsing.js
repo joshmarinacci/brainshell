@@ -76,14 +76,13 @@ test("precedence",function(t) {
 });
 
 test("weight units", function(t) {
-    //weight
-    //compareUnit(t,"50g",50,'gram');
-    //compareUnit("50kg",  { value:50, unit:'kilograms'});
-    //testEval("50lbs", { value:50, unit:'pounds'});
-    //testEval('50oz',  { value:50, unit:'ounces'});
-    //testEval('50lbs in grams', { value:22679.6,  unit:'grams'});
-    //testEval('50oz in grams',  { value:1417.475, unit:'grams'});
-    //testEval('1oz + 1lbs', { value:481.94149999999996, units:'grams'});
+    compareUnit(t,"50g",50,'gram');
+    compareUnit(t,"50kg", 50, 'kilograms');
+    //compareUnit(t,'50lbs',50,'pounds');
+    //compareUnit(t,'50oz',50,'ounces');
+    //compareUnit(t,'50lbs as grams',22679.6,'grams');
+    //compareUnit(t,'50oz as grams',1417.475, 'grams');
+    //compareUnit(t,'1oz + 1lbs',481.94149999999996,'grams');
     t.end();
 });
 
