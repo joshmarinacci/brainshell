@@ -17,9 +17,17 @@ var names = {
     'acres': 'acre',
 
     'pounds':'pound',
-    'ounces':'ounce'
+    'ounces':'ounce',
 
-}
+    'sec':'second',
+    'seconds':'second',
+    'minutes':'minute',
+    'hr':'hour',
+    'hours':'hour',
+    'days':'day',
+    'd':'day'
+
+};
 
 names['cubicfoot'] = 'cubicfoot';
 names['cuft'] = 'cubicfoot';
@@ -90,7 +98,7 @@ var units = [
         type: 'volume',
         base: 'gallon',
         scale: 1 / 4,
-        dim: 1,
+        dim: 1
     },
     {
         name: 'pint',
@@ -98,7 +106,7 @@ var units = [
         type: 'volume',
         base: 'gallon',
         scale: 1 / 8,
-        dim: 1,
+        dim: 1
     },
     {
         name: 'cup',
@@ -106,7 +114,7 @@ var units = [
         type: 'volume',
         base: 'gallon',
         scale: 1 / 16,
-        dim: 1,
+        dim: 1
     },
     {
         name: 'gill',
@@ -123,7 +131,7 @@ var units = [
         type: 'volume',
         base: 'cup',
         scale: 1 / 48,
-        dim: 1,
+        dim: 1
     },
     {
         name: 'tablespoon',
@@ -181,6 +189,67 @@ var units = [
     },
 
 
+
+    //temperature
+    {
+        name:'celsius',
+        abbr:'C',
+        type:'temperature',
+        base:'celsius',
+        scale:1,
+        dim:1
+    },
+    {
+        name:'kelvin',
+        abbr:'K',
+        type:'temperature',
+        base:'celsius',
+        scale:1,
+        dim:1
+    },
+    {
+        name:'fahrenheit',
+        abbr:'F',
+        type:'temperature',
+        base:'celsius',
+        scale:1,
+        dim:1
+    },
+
+
+    //time durations
+    {
+        name:'second',
+        abbr:'s',
+        type:'duration',
+        base:'second',
+        scale:1,
+        dim:1
+    },
+    {
+        name:'minute',
+        abbr:'min',
+        type:'duration',
+        base:'second',
+        scale:60,
+        dim:1
+    },
+    {
+        name:'hour',
+        abbr:'h',
+        type:'duration',
+        base:'second',
+        scale:60*60,
+        dim:1
+    },
+    {
+        name:'day',
+        abbr:'d',
+        type:'duration',
+        base:'second',
+        scale:60*60*24,
+        dim:1
+    },
 ];
 
 
@@ -271,7 +340,7 @@ names['milliliter'] = 'millilitre';
 names['milliliters'] = 'millilitre';
 
 function UnitToString() {
-    if (this.dim == 0) return "";
+    if (this.dim == 0) return " " + this.name;
     return " " + this.name + "^" + this.dim;
 }
 
@@ -299,7 +368,7 @@ map['cubicfoot'] = {
     abbr: 'ft',
     scale: 0.3048,
     dim: 3,
-    toString: UnitToString,
+    toString: UnitToString
 };
 map['squarefoot'] = {
     name: 'foot',
@@ -308,7 +377,7 @@ map['squarefoot'] = {
     abbr: 'ft',
     scale: 0.3048,
     dim: 2,
-    toString: UnitToString,
+    toString: UnitToString
 };
 
 
@@ -321,6 +390,7 @@ var unit_modifiers = {
 };
 
 exports.Unit = function (name, dim) {
+    //console.log("making unit",name,dim);
     if (names[name] && map[names[name]]) {
         var unit = map[names[name]];
         var outunit = Object.create(unit);

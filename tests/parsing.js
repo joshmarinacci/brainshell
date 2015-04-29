@@ -9,7 +9,6 @@ var Units = require('../src/Units')
 var Context = require('../src/Context');
 var test = require('tape');
 var ctx = Context.global();
-
 /*
 test("multiple blocks", function(t) {
     t.plan(2);
@@ -135,7 +134,7 @@ test("volume units", function(t) {
     compareUnit(t,'3ml as liters',0.003,'liters');
     compareUnit(t,'3tsp as tablespoons',1.0,'tablespoons');
     compareUnit(t,'3tbsp as teaspoons',9,'teaspoons');
-    //compareUnit(t,'21cuft',21,'cubicfoot');
+    compareUnit(t,'21 cu ft',21,'cubicfoot');
     //compareUnit(t,'3cc',3,'centimetercubed');
     //compareUnit(t,'3cc',3,'milliliter');
     //compareUnit(t,'3ft * 3ft * 3ft',21,'footcubed');
@@ -152,27 +151,26 @@ test("angle units", function(t) {
 });
 
 test("temperature units", function(t) {
-    //temperature
-    //    tu('24C', 24,'celsius','temperature');
-    //    tu('24F', 24,'fahrenheit','temperature');
-    //tu("temperature(24,unit:'celsius')",24,'celsius','temperature');
-    //    tu("24C in fahrenheit",75.2,'fahrenheit','temperature');
-    //    tu("400K in celsius",126.85,'celsius','temperature');
-
+    compareUnit(t,'24C', 24,'celsius');
+    compareUnit(t,'24K', 24,'kelvin');
+    compareUnit(t,'24F', 24,'fahrenheit');
+    compareUnit(t,"40 C",40,'celsius');
+    //compareUnit("40 C as Kelvin",40,'kelvin');
+    //compareUnit(t,"24C as fahrenheit",75.2,'fahrenheit');
+    //compareUnit(t,"400K as celsius",126.85,'celsius');
     t.end();
 });
 
 test("duration units", function(t) {
-//duration
-//    tu('3hr',3,'hours','duration');
-//    tu('30min',30,'minutes','duration');
-//    tu('3.8hr in seconds',3.8*60*60,'seconds','duration');
-//    tu('100000s in days',100000/(60*60*24),'days','duration');
-//    tu('3hr + 30min',3.5*60*60,'seconds','duration');
-//    tu('3hr + 30min in minutes',3*60+30,'minutes','duration');
-//    tu("date('august 31st, 1975')", moment([1975,8-1,31]),'date','date');
-//    tu("date(year:1975)",moment('1975','YYYY'),'date','date');
-//    tu("date('1975-08-31',format:'YYYY MM DD')",moment([1975,8-1,31]),'date','date');
+    compareUnit(t,'3hr',3,'hours');
+    compareUnit(t,'30min',30,'minutes');
+    compareUnit(t,'3.8hr as seconds',3.8*60*60,'seconds');
+    compareUnit(t,'100000s as days',100000/(60*60*24),'days');
+    //compareUnit(t,'3hr + 30min',3.5*60*60,'seconds');
+    //compareUnit(t,'3hr + 30min in minutes',3*60+30,'minutes');
+    //compareUnit(t,"date('august 31st, 1975')", moment([1975,8-1,31]),'date','date');
+    //compareUnit(t,"date(year:1975)",moment('1975','YYYY'),'date','date');
+    //compareUnit(t,"date('1975-08-31',format:'YYYY MM DD')",moment([1975,8-1,31]),'date','date');
     t.end();
 });
 
@@ -193,18 +191,13 @@ test("time units", function(t) {
 
 test("length units", function(t) {
     compareUnit(t,'40m',40,'meter');
-    //compareUnit(t,"40m as feet",131.234,'foot');
-    //compareUnit(t,'8^2',64,'none');
-    //compareUnit(t,'8ft^2',64,'meter',3);
+    compareUnit(t,"40m as feet",131.234,'foot');
+    //compareUnit(t,'8ft^2',64,'meter',3,true);
     //testval2('1ft^3',1,Unit('foot',3));
-    //compareUnit(t,"40 C",40,'celsius');
-    //compareUnit("40 C as Kelvin",40,'kelvin');
-    //compareUnit("42 square miles",42,'mile',2);
-    //compareUnit("42 sqmi",42,'mile',2);
+    compareUnit(t,"42 square miles",42,'mile',2);
+    compareUnit(t,"42 sq mi",42,'mile',2);
     //compareUnit("42 mi^2",42,'mile',2);
     //compareUnit("42 mi/hr",42,'mile per hour');
-
-//length
     compareUnit(t,"50mm", 50,'millimeters',1);
     compareUnit(t,"50in", 50, 'inches');
     //compareUnit(t,"50in * 5", 50*5,'inches');
@@ -214,7 +207,7 @@ test("length units", function(t) {
 });
 
 test("format parsing",function(t) {
-    //compareUnit("42",42,"decimal");
+    //compareFormat("42",42,"decimal");
     //compareFormat("0xFFCC88",0xFFCC88,'hex');
     //compareFormat("42 as hex",42,"hex");
     //compareFormat("42 as octal",42,"octal");
@@ -493,10 +486,19 @@ function compareNumber(t,str,val) {
         }
     });
 }
-function compareUnit(t,str,val,unit,dim) {
+function compareUnit(t,str,val,unit,dim, DEBUG) {
     if(!dim) dim = 1;
+    if(unit == 'cubicfoot') {
+        dim = undefined;
+    }
+    if(DEBUG) {
+        console.log("parsing",str);
+    }
     var epsilon = 0.01;
     parse(str).value().then(function(v){
+        if(DEBUG) {
+            console.log(v);
+        }
         if(Math.abs(val-v._value) > epsilon) {
             t.fail("not equal " + val + " " +v._value);
         }
