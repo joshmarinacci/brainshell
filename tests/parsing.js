@@ -88,6 +88,7 @@ test("weight units", function(t) {
 
 test("area units", function(t) {
     //area
+    //compareUnit(t,'10')
     //tu('10sqm',10,'meterssquared','area');
     //tu('25sqmi',25,'milessquared','area');
     //tu('9sqft',9,'feetsquared','area');
@@ -124,22 +125,21 @@ test("acceleration units", function(t) {
 });
 
 test("volume units", function(t) {
-    //volume
-    //    tu('5gal',5,'gallons','volume');
-    //    tu('5cups',5,'cups','volume');
-    //    tu('5gal in cups',5*16,'cups','volume');
-    //    tu('3tbsp',3,'tablespoons','volume');
-    //    tu('3tsp',3,'teaspoons','volume');
-    //    tu('3l',3,'liters','volume');
-    //    tu('3ml',3,'milliliters','volume');
-    //    tu('3ml in liters',0.003,'liters','volume');
-    //    tu('3tsp in tablespoons',1.0,'tablespoons','volume');
-    //    tu('3tbsp in teaspoons',9,'teaspoons','volume');
-    //    tu('21cuft',21,'cubicfoot','volume');
-    //tu('3cc',3,'centimetercubed','volume');
-    //tu('3cc',3,'milliliter','volume');
-    //tu('3ft * 3ft * 3ft',21,'footcubed','volume');
-    //tu('(3ft * 3ft * 3ft) in gallon',21,'gallon','volume');
+    compareUnit(t,'5gal',5,'gallons');
+    compareUnit(t,'5cups',5,'cups');
+    compareUnit(t,'5gal as cups',5*16,'cups');
+    compareUnit(t,'3tbsp',3,'tablespoons');
+    compareUnit(t,'3tsp',3,'teaspoons');
+    compareUnit(t,'3l',3,'liters');
+    compareUnit(t,'3ml',3,'milliliters');
+    compareUnit(t,'3ml as liters',0.003,'liters');
+    compareUnit(t,'3tsp as tablespoons',1.0,'tablespoons');
+    compareUnit(t,'3tbsp as teaspoons',9,'teaspoons');
+    //compareUnit(t,'21cuft',21,'cubicfoot');
+    //compareUnit(t,'3cc',3,'centimetercubed');
+    //compareUnit(t,'3cc',3,'milliliter');
+    //compareUnit(t,'3ft * 3ft * 3ft',21,'footcubed');
+    //compareUnit(t,'(3ft * 3ft * 3ft) as gallon',21,'gallon');
     t.end();
 });
 

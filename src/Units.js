@@ -8,7 +8,7 @@ var names = {
     'miles': 'mile',
 
     'teaspoons': 'teaspoon',
-    'tablespooons': 'tablespoon',
+    'tablespoons': 'tablespoon',
     'cups': 'cup',
     'pints': 'pint',
     'quarts': 'quart',
@@ -266,7 +266,9 @@ genMetricMass('microgram',  'ug',0.000001);
 
 //add in US spellings
 names['liter'] = 'litre';
+names['liters'] = 'litre';
 names['milliliter'] = 'millilitre';
+names['milliliters'] = 'millilitre';
 
 function UnitToString() {
     if (this.dim == 0) return "";

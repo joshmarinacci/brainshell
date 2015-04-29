@@ -44,7 +44,7 @@ var Arithmetic = {
         type:'operation',
         name:'as',
         fun:function(a,u) {
-            //console.log('converting',a._value,'from',a.getUnit().toString(),'to',u.toString());
+            ///console.log('converting',a._value,'from',a.getUnit().toString(),'to',u.toString());
             var au = a.getUnit();
             var startu = u;
             if(au.type == u.type) {
