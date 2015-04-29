@@ -200,3 +200,8 @@ test("indexed and named args w/ updates", function(t){
         sym.update(Literals.makeNumber(3));
     }).done();
 });
+
+
+function parse(str) {
+    return Parser.matchAll(str,'start');
+}

@@ -25,23 +25,6 @@ var EditPanel = React.createClass({
         }
     },
     componentDidMount: function() {
-        /*
-            var makeList = {
-                kind: 'function',
-                type: 'simple',
-                name: 'makeList',
-                fun: function () {
-                    var items = [Literals.makeNumber(1), Literals.makeNumber(2)];
-                    var list = Literals.makeList(items);
-                    setInterval(function () {
-                        items.push(Literals.makeNumber(3));
-                        list.update(items);
-                    }, 500);
-                    return list;
-                }
-            };
-
-        }*/
         this.setState({
             raw: this.props.expr.content
         });

@@ -46,3 +46,11 @@ test("setColumnFormat", function(t) {
     }).done();
 });
 
+
+//generate lists
+test("RangeList", function(t) {
+    t.plan(3);
+    parse("RangeList(10)").value().then(function(v) { t.equal(v.length(),10);  }).done();
+    parse("RangeList(5,10)").value().then(function(v) { t.equal(v.length(),5);  }).done();
+    parse("RangeList(5,10,2)").value().then(function(v) { t.equal(v.length(),3);  }).done();
+});
