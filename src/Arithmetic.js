@@ -1,4 +1,5 @@
 var Literals = require('./Literals');
+var Units = require('./Units');
 /**
  * Created by josh on 4/20/15.
  */
@@ -43,7 +44,7 @@ var Arithmetic = {
         type:'operation',
         name:'as',
         fun:function(a,u) {
-            //console.log('converting',a,'from',a.getUnit().toString(),'to',u.toString());
+            //console.log('converting',a._value,'from',a.getUnit().toString(),'to',u.toString());
             var au = a.getUnit();
             var startu = u;
             if(au.type == u.type) {
@@ -53,16 +54,16 @@ var Arithmetic = {
                 if(au.base == u.name) return Literals.makeNumber(av, u);
                 if(au.base == u.base) return Literals.makeNumber(av / Math.pow(u.scale,u.dim),u);
 
-                au = Unit(au.base,au.dim);
-                if(au.base == u.name) return Num(av * au.scale,u);
+                au = Units.Unit(au.base,au.dim);
+                if(au.base == u.name) return Literals.makeNumber(av * au.scale,u);
                 if(au.base == u.base) return Num(av / u.scale,u);
                 av = av * au.scale;
 
-                au = Unit(au.base,au.dim);
+                au = Units.Unit(au.base,au.dim);
                 if(au.base == u.name) return Num(av * au.scale,u);
 
                 av = av * au.scale;
-                au = Unit(au.base,au.dim);
+                au = Units.Unit(au.base,au.dim);
                 if(au.base == u.name) return Num(av * au.scale,u);
 
                 var us = u.scale;
@@ -70,17 +71,16 @@ var Arithmetic = {
                     return Num(av * au.scale/us,u);
                 }
 
-                u = Unit(u.base,u.dim);
+                u = Units.Unit(u.base,u.dim);
                 us *= u.scale;
-                u = Unit(u.base,u.dim);
+                u = Units.Unit(u.base,u.dim);
                 us *= u.scale;
-                u = Unit(u.base,u.dim);
+                u = Units.Unit(u.base,u.dim);
                 us *= u.scale;
                 if(au.name == u.name) {
-                    return Num(av*au.scale/us, startu);
+                    return Literals.makeNumber(av*au.scale/us, startu);
                 }
-
-                return Num(av * au.scale / (us*u.scale), u);
+                return Literals.makeNumber(av * au.scale / (us*u.scale), u);
             }
 
 

@@ -14,7 +14,10 @@ var names = {
     'quarts': 'quart',
     'gallons': 'gallon',
 
-    'acres': 'acre'
+    'acres': 'acre',
+
+    'pounds':'pound',
+    'ounces':'ounce'
 
 }
 
@@ -36,6 +39,7 @@ var units = [
     },
 
 
+    //length
     {
         name: 'foot',
         type: 'length',
@@ -127,17 +131,53 @@ var units = [
         type: 'volume',
         base: 'cup',
         scale: 1 / 16,
-        dim: 1,
+        dim: 1
     },
 
 
+    //mass
+    {
+        name:'pound',
+        abbr:'lb',
+        type:'mass',
+        base:'gram',
+        scale: 453.592,
+        dim:1
+    },
+    {
+        name:'grain',
+        abbr:'gr',
+        type:'mass',
+        base:'pound',
+        scale: 1/7000,
+        dim: 1
+    },
+    {
+        name:'ounce',
+        abbr:'oz',
+        type:'mass',
+        base:'pound',
+        scale: 1/16,
+        dim: 1
+    },
+    {
+        name:'ton',
+        type:'mass',
+        base:'pound',
+        scale: 2000,
+        dim:1
+    },
+
+
+
+    //area
     {
         name: 'acre',
         abbr: 'acre',
         type: 'area',
         base: 'acre',
         scale: 1,
-        dim: 1,
+        dim: 1
     },
 
 
