@@ -201,6 +201,25 @@ test("indexed and named args w/ updates", function(t){
     }).done();
 });
 
+test("symbol with spaces", function(t) {
+    //var sym = Symbols.make('ffz');
+    //sym.update(Literals.makeNumber(1));
+    //ctx.register(sym);
+    parse("cats=9").value(ctx).then(function(v) {
+        t.equal(v._value,9);
+    }).done();
+    parse("cats =9").value(ctx).then(function(v) {
+        t.equal(v._value,9);
+    }).done();
+    parse("cats= 9").value(ctx).then(function(v) {
+        t.equal(v._value,9);
+    }).done();
+    parse("cats = 9").value(ctx).then(function(v) {
+        t.equal(v._value,9);
+    }).done();
+    t.end();
+})
+
 
 function parse(str) {
     return Parser.matchAll(str,'start');
