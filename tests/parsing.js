@@ -19,6 +19,7 @@ test("multiple blocks", function(t) {
     }).done();
 });
 */
+
 test("notation parsing", function(t) {
     compareNumber(t, "8^2", 64);
     compareNumber(t, "5^3", 125);
@@ -38,6 +39,7 @@ test("notation parsing", function(t) {
     compareNumber(t,'1.2/3.4',1.2/3.4);
     compareNumber(t,'4+5+6',15);
     compareNumber(t,'(4+5+6)',15);
+    compareNumber(t,'4*5',20);
     t.end();
 });
 
@@ -82,6 +84,8 @@ test("weight units", function(t) {
     compareUnit(t,'50oz + 60oz',110, 'oz');
     compareUnit(t,'1oz + 1lb',17*1/16.0,'pounds');
     compareUnit(t,'(1oz + 1lb) as grams',481.942,'gram');
+    compareUnit(t,'50g * 2',100,'grams');
+    compareUnit(t,'50 * 2g',100,'grams');
     t.end();
 });
 
@@ -136,8 +140,8 @@ test("volume units", function(t) {
     compareUnit(t,'21 cu ft',21,'cubicfoot');
     //compareUnit(t,'3cc',3,'centimetercubed');
     //compareUnit(t,'3cc',3,'milliliter');
-    //compareUnit(t,'3ft * 3ft * 3ft',21,'footcubed');
-    //compareUnit(t,'(3ft * 3ft * 3ft) as gallon',21,'gallon');
+    compareUnit(t,'3ft * 3ft * 3ft',27,'cubicfoot');
+    compareUnit(t,'(3ft * 3ft * 3ft) as gallon',201.974,'gallon');
     t.end();
 });
 

@@ -9,21 +9,12 @@ var Arithmetic = {
         name:'+',
         fun: function(A,B) {
             if(Units.equal(A.getUnit(),B.getUnit())) {
-                //console.log("equal units");
                 return Literals.makeNumber(A._value+B._value,A.getUnit());
             }
-            //console.log("going more");
             if(Units.sameType(A.getUnit(),B.getUnit())) {
-                //console.log("same type")
-                var av = A._value;
-                //console.log("av = ", av,A.getUnit().toString());
                 var bv = B._value;
-                //console.log("bv = ", bv,B.getUnit().toString());
                 var av2 = Arithmetic.ConvertUnit.fun(A,B.getUnit());
-                //console.log("av2 = ", av2._value);
-                var fin = Literals.makeNumber(av2._value+bv,B.getUnit());
-                //console.log("fin",fin);
-                return fin;
+                return Literals.makeNumber(av2._value+bv,B.getUnit());
             }
             console.log("throwing");
             throw new UnitConversionError("cannot convert between units",A.unit,B.unit);
@@ -32,8 +23,24 @@ var Arithmetic = {
     Multiply: {
         type:'operation',
         name:'*',
-        fun: function(a,b) {
-            return Literals.makeNumber(a._value*b._value);
+        fun: function(A,B) {
+            //console.log("multiplying",A.toString(),B.toString());
+            //if no units
+            if(!A.hasUnit() && !B.hasUnit()) return Literals.makeNumber(A._value*B._value);
+            //if just A has a unit
+            if(A.hasUnit() && !B.hasUnit())  return Literals.makeNumber(A._value*B._value,A.getUnit());
+            //if just B has a unit
+            if(!A.hasUnit() && B.hasUnit())  return Literals.makeNumber(A._value*B._value,B.getUnit());
+
+            if(Units.sameName(A.getUnit(),B.getUnit())) {
+                var dim = A.getUnit().dim+B.getUnit().dim;
+                var name = A.getUnit().name;
+                var nu = Units.Unit(name,dim);
+                return Literals.makeNumber(A._value*B._value,nu);
+            }
+
+
+            return Literals.makeNumber(A._value*B._value);
         }
     },
     Subtract: {
@@ -62,7 +69,7 @@ var Arithmetic = {
         type:'operation',
         name:'as',
         fun:function(a,u) {
-            ///console.log('converting',a._value,'from',a.getUnit().toString(),'to',u.toString());
+            //console.log('converting',a._value,'from',a.getUnit().toString(),'to',u.toString());
             var au = a.getUnit();
             var startu = u;
             if(au.type == u.type) {
@@ -101,8 +108,7 @@ var Arithmetic = {
                 return Literals.makeNumber(av * au.scale / (us*u.scale), u);
             }
 
-
-            if(a.unit.type == 'length' && a.unit.dim == 3 && u.type == 'volume') {
+            if(au.type == 'length' && au.dim == 3 && u.type == 'volume') {
                 return CrossConvert(a,u);
             }
             if(a.unit.type == 'length' && a.unit.dim == 2 && u.type == 'area') {
@@ -114,3 +120,29 @@ var Arithmetic = {
 };
 
 module.exports = Arithmetic;
+
+
+function CrossConvert(a,u) {
+    //console.log("cross converting " + a.getNumber() +  " " + a.getUnit().toString() + " " + u);
+    var startu = u;
+    //convert A to it's base unit
+    var au = a.getUnit();
+    var av = a.getNumber() * Math.pow(au.scale,au.dim);
+    au = Units.Unit(au.base,au.dim);
+
+    var us = 1;
+    if(u.name != u.base) {
+        us /= u.scale;
+        u = Units.Unit(u.base,u.dim);
+    }
+    if(au.name == 'meter' && au.dim == 3 && u.name == 'litre') {
+        av = av*1000.0/1.0 * us;
+        return Literals.makeNumber(av,startu);
+    }
+    if(au.name == 'meter' && au.dim == 2 && u.name == 'acre') {
+        av = av/4046.8564224 * us;
+        return Literals.makeNumber(av,startu);
+    }
+
+    console.log("ERROR! CAN'T CROSS CONVERT " + au + " to " + u);
+}
