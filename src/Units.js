@@ -6,6 +6,7 @@ var names = {
     'feet': 'foot',
     'yards': 'yard',
     'miles': 'mile',
+    'leagues':'league',
 
     'teaspoons': 'teaspoon',
     'tablespoons': 'tablespoon',
@@ -78,6 +79,14 @@ var units = [
         base: 'meter',
         abbr: 'mi',
         scale: 1609.34,
+        dim: 1
+    },
+    {
+        name: 'league',
+        type: 'length',
+        base: 'mile',
+
+        scale: 3,
         dim: 1
     },
 

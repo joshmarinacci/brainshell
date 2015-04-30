@@ -203,9 +203,13 @@ test("length units", function(t) {
     //compareUnit("42 mi/hr",42,'mile per hour');
     compareUnit(t,"50mm", 50,'millimeters',1);
     compareUnit(t,"50in", 50, 'inches');
-    //compareUnit(t,"50in * 5", 50*5,'inches');
-    //compareUnit(t,"50 * 5in", 50*5,'inches');
-    //compareUnit(t,"500m + 1km", 1500,'meters');
+    compareUnit(t,"50in * 5", 50*5,'inches');
+    compareUnit(t,"50 * 5in", 50*5,'inches');
+    compareUnit(t,"1km+500m", 1500,'meters');
+    compareUnit(t,'3ft + 6ft as meters',2.7432,'meters');
+    compareUnit(t,'(3ft + 6ft) as feet',9,'feet');
+    compareUnit(t,'20000 leagues',20*1000,'league');
+    compareUnit(t,'20000 leagues as miles',60*1000,'miles');
     t.end();
 });
 
@@ -300,10 +304,6 @@ test("conversions", function(t) {
     testEval("cans = 3",3);
     testEval("cans /cats",3/2);
 
-
-
-
-
 //multi-column data
     testEval("x = 5",5);
     testEval("x = [5,6,7,8]",[5,6,7,8]);
@@ -336,9 +336,6 @@ test("conversions", function(t) {
     testEval("image.getPixel(0,0, image.rescale(img, r:0, g:0, b:1))",{r:0,g:0,b:1});
 
     //length
-    tu('3ft + 6ft',2.7432,'meters','length');
-    tu('(3ft + 6ft) in feet',9,'feet','length');
-    tu('20000leagues in miles',60*1000,'miles','length');
 
      */
 //});
