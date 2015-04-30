@@ -18,6 +18,7 @@ var names = {
     'acres': 'acre',
 
     'pounds':'pound',
+    'lbs':'pound',
     'ounces':'ounce',
 
     'sec':'second',
@@ -416,6 +417,7 @@ exports.Unit = function (name, dim) {
 };
 
 exports.equal = function (a, b) {
+    if(typeof a == 'undefined' && typeof b == 'undefined') return true;
     //all dimensionless units are equal
     if (a.dim == 0 && b.dim == 0) return true;
 

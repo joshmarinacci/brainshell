@@ -40,6 +40,18 @@ test("notation parsing", function(t) {
     compareNumber(t,'4+5+6',15);
     compareNumber(t,'(4+5+6)',15);
     compareNumber(t,'4*5',20);
+    compareNumber(t,'4 + 5',9);
+    compareNumber(t,'4+5',9);
+    compareNumber(t,'4.8 + 5',9.8);
+    compareUnit(t,'4ft+5ft',9,'ft');
+    compareUnit(t,'4ft*5ft',20,'ft',2);
+    compareUnit(t,'4ft * 5',20,'ft',1);
+    compareUnit(t,'4ft * 5ft as square meters', 1.85806,'meter',2);
+    compareUnit(t,'4ft * 5ft * 6ft', 4*5*6,'foot',3);
+    //compareUnit(t,'4ft - 5ft',4-5,'ft');
+    compareUnit(t,'4ft * 5ft * 6ft as gal',897.662,'gallon',1);
+    compareUnit(t,'4ft as in',4*12,'inch');
+    compareUnit(t,'4.5 ft as in',4.5*12,'inch');
     t.end();
 });
 
@@ -74,7 +86,59 @@ test("precedence",function(t) {
     t.end();
 });
 
-test("weight units", function(t) {
+test("length units", function(t) {
+    compareUnit(t,'40m',40,'meter');
+    compareUnit(t,"40m as feet",131.234,'foot');
+    compareUnit(t,"42 square miles",42,'mile',2);
+    compareUnit(t,"42 sq mi",42,'mile',2);
+    compareUnit(t,"50mm", 50,'millimeters',1);
+    compareUnit(t,"50in", 50, 'inches');
+    compareUnit(t,"50in * 5", 50*5,'inches');
+    compareUnit(t,"50 * 5in", 50*5,'inches');
+    compareUnit(t,"1km+500m", 1500,'meters');
+    compareUnit(t,'3ft + 6ft as meters',2.7432,'meters');
+    compareUnit(t,'(3ft + 6ft) as feet',9,'feet');
+    compareUnit(t,'20000 leagues',20*1000,'league');
+    compareUnit(t,'20000 leagues as miles',60*1000,'miles');
+    compareUnit(t,'3 mi',3,"mile");
+    compareUnit(t,'3 miles',3,"mile");
+    compareUnit(t,'3 mi as km',4.82803,'kilometers');
+    //compareUnit(t,'2ft/2',1,"feet");
+    //compareUnit(t,'2/2ft',1,"feet");
+    compareUnit(t,'2ft*2',4,"feet");
+    compareUnit(t,'2*2ft',4,"feet");
+    compareUnit(t,'1 + 2 + 3 + 4', 10, 'none');
+    compareUnit(t,'1 + 2 * 3 + 4', 13,'none');
+    //compareUnit(t,'4ft - 5ft', -1,'feet');
+    compareUnit(t,'4ft * 5ft', 20,'feet',2);
+    compareUnit(t,'4ft / 2ft',  2,'none');
+    compareUnit(t,'4 + 5 + 6', 15,'none');
+    compareUnit(t,'4 + 5 * 6', 54,'none');
+    compareUnit(t,'(4+5) * 6', 54,'none');
+    compareUnit(t,'4 + (5*6)', 34,'none');
+    //compareUnit(t,'(1+2)*(3+4)', 21,'none');
+    compareUnit(t,'1ft * 2ft * 3ft', 6,'feet',3);
+    compareUnit(t,'4ft as meter',1.2192,'meter');
+    compareUnit(t,'4ft as m',1.2192,'meter');
+    compareUnit(t,'4ft as meters',1.2192,'meter');
+    compareUnit(t,'4ft as inch',4*12,'inch');
+    compareUnit(t,'4ft', 4,'ft');
+    //compareUnit(t,'4ft/2',2,'feet');
+    //compareUnit(t,'4ft/2ft',2,'none');
+    //compareUnit(t,'4ft/2m',0.6096,'none');
+    //compareUnit(t,'4ft/2gal',2,'none');//should error
+    compareUnit(t,'(4+5)*6',(4+5)*6,'none');
+    compareUnit(t,'4+5*6',(4+5)*6,'none');
+    compareUnit(t,'4+(5*6)',4+(5*6),'none');
+    //compareUnit(t,'4ft - 2gal');//should error
+    compareUnit(t,'4ft * 2sqft',8,'feet',3);
+    //compareUnit(t,'4m + 12ft',4 + 3.6576,'m');
+    //compareUnit(t,'4mm + 12ft',4 + (3.6576/0.001),'mm');
+    compareUnit(t,'40mm + 40cm + 4m',4.440,'m');
+    t.end();
+});
+
+test("mass units", function(t) {
     compareUnit(t,"50g",50,'gram');
     compareUnit(t,"50kg", 50,'kilograms');
     compareUnit(t,'50lb', 50,'pounds');
@@ -86,28 +150,43 @@ test("weight units", function(t) {
     compareUnit(t,'(1oz + 1lb) as grams',481.942,'gram');
     compareUnit(t,'50g * 2',100,'grams');
     compareUnit(t,'50 * 2g',100,'grams');
+    compareUnit(t,"5lbs + 4oz",84,"ounces");
+    compareUnit(t,"(5lbs + 4g) as kilograms",2.26796,"kilograms");
     t.end();
 });
 
 test("area units", function(t) {
-    //area
-    //compareUnit(t,'10')
-    //tu('10sqm',10,'meterssquared','area');
-    //tu('25sqmi',25,'milessquared','area');
-    //tu('9sqft',9,'feetsquared','area');
-    //tu('9ft * 8m',21.9456,'meterssquared','area');
-    //tu('8m * 9ft',21.9456,'meterssquared','area');
-    //tu('3ft * 6ft',18,'feetsquared','area');
-    //tu('(3ft * 6ft) in sqmi',0,'milessquared','area');
-    //tu('1000ac',1000,'acres','area');
-    //tu('1000ac in sqm',1000*4046.8564224,'meterssquared','area');
-    //tu('40acres in sqmi',0.0625,'milessquared','area');
-    //tu('25sqmi + 1000acres',68796559.1808,'meterssquared','area');
-    //tu('10m^2',10,'metersquared','area');
+    //compareUnit(t,'8ft^2',64,'meter',3,true);
+    //compareUnit(t,"42 square miles as acres",42,"acre");
+    //compareUnit(t,"200ft * 300ft as acres",42,"acre");
+    //compareUnit("42 mi^2",42,'mile',2);
+    compareUnit(t,'10 square miles',10,'mile',2);
+    compareUnit(t,'10 sq mi',10,'mile',2);
+    compareUnit(t,'10 square meters',10,'meter',2);
+    compareUnit(t,'10 sq m',10,'meter',2);
+    compareUnit(t,'9 sqft',9,'feet',2);
+    //compareUnit(t,'9ft * 8m',21.9456,'meter',2);
+    //compareUnit(t,'8m * 9ft',21.9456,'meter',2);
+    //compareUnit(t,'3ft * 6ft',18,'foot',2);
+    //compareUnit(t,'(3ft * 6ft) as sqmi',0,'miles',2);
+    //compareUnit(t,'1000ac',1000,'acres');
+    //compareUnit(t,'1000ac as sqm',1000*4046.8564224,'meters',2);
+    //compareUnit(t,'40 acres as sq mi',0.0625,'miles',2);
+    //compareUnit(t,'25sqmi + 1000acres',68796559.1808,'meters',2);
+    //compareUnit(t,'10m^2',10,'meter',2);
+
+    compareUnit(t,'8 acres',8,'acre');
+    //compareUnit(t,'1m * 2m as acre',0.000494211,'acre');
+    //testval2('1km * 2km as acre',494.211,Unit('acre'));
+    //compareUnit(t,'4 cu ft as tsp',0,'tsp');
+    compareUnit(t,'1m * 2m as squared feet',21.5278,'feet',2);
+    compareUnit(t,'1m * 2m as sq ft',21.5278,'feet',2);
+    //compareUnit(t,'1m * 2m as sqft',21.5278,'feet',2);
     t.end();
 });
 
 test("velocity units", function(t) {
+    //compareUnit("42 mi/hr",42,'mile per hour');
     //velocity
     //    tu('5meterspersecond',5,'meterspersecond','velocity');
     //    tu('60mph',60,'milesperhour','velocity');
@@ -115,7 +194,6 @@ test("velocity units", function(t) {
     //    tu('5meterspersecond in mph',5/0.44704,'milesperhour','velocity');
     //tu('5mps',5,'meterpersecond','velocity');
     //tu('60mph in m/s',0,'meterpersecond','velocity');
-
     t.end();
 });
 
@@ -138,10 +216,42 @@ test("volume units", function(t) {
     compareUnit(t,'3tsp as tablespoons',1.0,'tablespoons');
     compareUnit(t,'3tbsp as teaspoons',9,'teaspoons');
     compareUnit(t,'21 cu ft',21,'cubicfoot');
-    //compareUnit(t,'3cc',3,'centimetercubed');
-    //compareUnit(t,'3cc',3,'milliliter');
+    //compareUnit(t,'3 cm^3',3,'cm',3);
+    //compareUnit(t,'3 cm^3 as ml',3,'milliliter');
     compareUnit(t,'3ft * 3ft * 3ft',27,'cubicfoot');
     compareUnit(t,'(3ft * 3ft * 3ft) as gallon',201.974,'gallon');
+    //compareUnit(t,'1ft^3',1,'foot',3);
+    compareUnit(t,'4 qt',4,'quart');
+    compareUnit(t,'4 pt',4,'pint');
+    compareUnit(t,'4 qt as gallon',1,'gallon');
+    compareUnit(t,'4 pt as gallon',0.5,'gallon');
+    compareUnit(t,'4 l',4,'liter');
+    compareUnit(t,'4ml',4,'ml');
+    compareUnit(t,'1l as gal',0.264172,'gal');
+    //compareUnit(t,'4l + 3gal',4+11.3562,'litre');
+    compareUnit(t,'1l + 15l as ml',16*1000,'ml');
+    compareUnit(t,'(4l + 3gal) as ml',(4+3*3.7854118)*1000,'millilitre');
+    compareUnit(t,'48tsp as cups',1,'cup');
+    compareUnit(t,'16tbsp as cups',1,'cup');
+    compareUnit(t,'16cups as gal',1,'gal');
+    compareUnit(t,'1tsp as gal',0.00130208,'gal');
+    //compareUnit(t,'1tsp as liter',0.00492892,'liter');
+    //compareUnit(t,'1tsp as ml',4.92892,'ml');
+    compareUnit(t,'4ml as tsp',0.811537,'tsp');
+    compareUnit(t,'4ml as tbsp',0.270512,'tbsp');
+    compareUnit(t,'3 cups + 1 cups',4,'cups');
+    //compareUnit(t,'1/2 cups',0.5,'cups');
+    //compareUnit(t,'3 cups + (1/2cups)',3.5,'cups');
+    compareUnit(t,'1ft * 2ft * 3ft', 6,'feet',3);
+    compareUnit(t,'1ft * 2ft * 3ft as liter', 169.901,'liter');
+    compareUnit(t,'1m * 2m * 3m as liter', 6000,'liter');
+    compareUnit(t,'4ft * 5ft * 6ft as gallon',897.662,'gallon');
+    //compareUnit(t,'4 cuft', 4,'feet',3);
+    compareUnit(t,'4 cu ft', 4,'feet',3);
+    compareUnit(t,'4 sq ft', 4,'feet',2);
+    compareUnit(t,'4 cubic feet', 4,'feet',3);
+    //compareUnit(t,'4 ft^3', 4,'feet',3);
+    //compareUnit(t,'4 cuft as gal', 29.9221,'gal',1);
     t.end();
 });
 
@@ -169,8 +279,8 @@ test("duration units", function(t) {
     compareUnit(t,'30min',30,'minutes');
     compareUnit(t,'3.8hr as seconds',3.8*60*60,'seconds');
     compareUnit(t,'100000s as days',100000/(60*60*24),'days');
-    //compareUnit(t,'3hr + 30min',3.5*60*60,'seconds');
-    //compareUnit(t,'3hr + 30min in minutes',3*60+30,'minutes');
+    compareUnit(t,'3hr + 30min as seconds',3.5*60*60,'seconds');
+    compareUnit(t,'3hr + 30min as minutes',3*60+30,'minutes');
     //compareUnit(t,"date('august 31st, 1975')", moment([1975,8-1,31]),'date','date');
     //compareUnit(t,"date(year:1975)",moment('1975','YYYY'),'date','date');
     //compareUnit(t,"date('1975-08-31',format:'YYYY MM DD')",moment([1975,8-1,31]),'date','date');
@@ -179,8 +289,8 @@ test("duration units", function(t) {
 
 test("time units", function(t) {
     //time
-    //tu('1800 in date',1800,'year','time');
-    //tu('1820 in date',1820,'year','time');
+    //tu('1800 as date',1800,'year','time');
+    //tu('1820 as date',1820,'year','time');
     //tu("date('Sept 26th, 2014')",-1,'date','time');
     //tu("time('12:30')",-1,'time','time');
     //tu("time('13:30')",-1,'time','time');
@@ -188,30 +298,9 @@ test("time units", function(t) {
     //tu("time('8:30 pm') - time('6:30 am')",-1,'time','duration');
     //tu("date('Sept 18th 2000') - date('Sept 14th 1900')",-1,'year','duration');
     //tu("(date('Sept 18th 2000') - date('Sept 14th 1900')) in day",-1,'day','duration');
-
     t.end();
 });
 
-test("length units", function(t) {
-    compareUnit(t,'40m',40,'meter');
-    compareUnit(t,"40m as feet",131.234,'foot');
-    //compareUnit(t,'8ft^2',64,'meter',3,true);
-    //testval2('1ft^3',1,Unit('foot',3));
-    compareUnit(t,"42 square miles",42,'mile',2);
-    compareUnit(t,"42 sq mi",42,'mile',2);
-    //compareUnit("42 mi^2",42,'mile',2);
-    //compareUnit("42 mi/hr",42,'mile per hour');
-    compareUnit(t,"50mm", 50,'millimeters',1);
-    compareUnit(t,"50in", 50, 'inches');
-    compareUnit(t,"50in * 5", 50*5,'inches');
-    compareUnit(t,"50 * 5in", 50*5,'inches');
-    compareUnit(t,"1km+500m", 1500,'meters');
-    compareUnit(t,'3ft + 6ft as meters',2.7432,'meters');
-    compareUnit(t,'(3ft + 6ft) as feet',9,'feet');
-    compareUnit(t,'20000 leagues',20*1000,'league');
-    compareUnit(t,'20000 leagues as miles',60*1000,'miles');
-    t.end();
-});
 
 test("format parsing",function(t) {
     //compareFormat("42",42,"decimal");
@@ -223,11 +312,13 @@ test("format parsing",function(t) {
     t.end();
 });
 
-test("conversions", function(t) {
-    //compareUnit("5lbs + 4oz",5.2,"pounds");
-    //compareUnit("5lbs + 4g as kilograms",5.2,"kilograms");
-    //compareUnit("42 square miles as acres",42,"acre");
-    //compareUnit("200ft * 300ft as acres",42,"acre");
+
+test("variable equations", function(t) {
+    //compareUnit("pi * (42m)^2",Math.PI*42*42,'meter');
+    //compareUnit("ca_pop/ca_area",42,"person per square mile");
+    //compareUnit("earth_circ/700 mi/hr",42,"hours");
+    // how earths could fit inside of jupiter
+    //compareUnit("(4/3 * pi * jupiter_radius^2) / (4/3 * pi * earth_radius)",42);
     t.end();
 });
 
@@ -335,122 +426,6 @@ test("conversions", function(t) {
     testEval("image.getPixel(0,0, image.grayscale(img))",{r:64,g:64,b:64,a:0});
     testEval("image.getPixel(0,0, image.rescale(img, r:0, g:0, b:1))",{r:0,g:0,b:1});
 
-    //length
-
-     */
-//});
-
-/*
-test("arithmetic parsing", function(t) {
-    testval2('4 + 5',9);
-    testval2('4+5',9);
-    testval2('4.8 + 5',9.8);
-    testval2('4ft+5ft',9,Unit('ft'));
-    //testval2('4ft+5',9);  //should error
-    testval2('4ft*5ft',20,Unit('ft',2));
-    testval2('4ft * 5',20,Unit('ft',1));
-    testval2('4ft * 5ft as square meters', 1.85806,Unit('meter',2));
-    testval2('4ft * 5ft * 6ft', 4*5*6,Unit('foot',3));
-    testval2('4ft - 5ft',4-5,Unit('ft'));
-    testval2('4ft * 5ft * 6ft as gal',897.662,Unit('gallon',1));
-    testval2('4',4,Unit('none'));
-    testval2('4.5',4.5,Unit('none'));
-    testval2('4ft as in',4*12,Unit('inch'));
-    testval2('4.5 ft as in',4.5*12,Unit('inch'));
-
-
-    testval2('4 qt',4,Unit('quart'));
-    testval2('4 pt',4,Unit('pint'));
-    testval2('4 qt as gallon',1,Unit('gallon'));
-    testval2('4 pt as gallon',0.5,Unit('gallon'));
-
-
-    testval2('3 mi',3,Unit("mile"));
-    testval2('3 miles',3,Unit("mile"));
-    testval2('3 mi as km',4.82803,Unit('kilometers'));
-});
-
-test("unit parsing", function(t){
-    testval2('6ft + 5ft', 11, Unit('feet'));
-    testval2('1 ft + 2ft + 3ft', 6, Unit('feet'));
-    testval2('1 + 2 + 3 + 4', 10, Unit('none'));
-
-    testval2('1 + 2 * 3 + 4', 13, Unit('none'));
-    testval2('4ft - 5ft', -1, Unit('feet'));
-    testval2('4ft * 5ft', 20, Unit('feet',2));
-    testval2('4ft / 2ft',  2, Unit('none'));
-    testval2('4 + 5 + 6', 15, Unit('none'));
-    testval2('4 + 5 * 6', 54, Unit('none'));
-    testval2('(4+5) * 6', 54, Unit('none'));
-    testval2('4 + (5*6)', 34, Unit('none'));
-    testval2('(1+2)*(3+4)', 21, Unit('none'));
-    testval2('1ft * 2ft * 3ft', 6, Unit('feet',3));
-    testval2('4ft as meter',1.2192,Unit('meter'));
-    testval2('4ft as m',1.2192,Unit('meter'));
-    testval2('4ft as meters',1.2192,Unit('meter'));
-    testval2('4ft as inch',4*12,Unit('inch'));
-    testval2('4ft', 4, Unit('ft'));
-    testval2('4ft/2',2,Unit('feet'));
-    testval2('4ft/2ft',2,Unit('none'));
-    testval2('4ft/2m',0.6096,Unit('none'));
-    //testval2('4ft/2gal',2,Unit('none'));//should error
-    testval2('(4+5)*6',(4+5)*6,Unit('none'));
-    testval2('4+5*6',(4+5)*6,Unit('none'));
-    testval2('4+(5*6)',4+(5*6),Unit('none'));
-    //testval2('4ft - 2gal');//should error
-    testval2('4ft * 2sqft',8,Unit('feet',3));
-    testval2('4m + 12ft',4 + 3.6576,Unit('m'));
-    testval2('4mm + 12ft',4 + (3.6576/0.001),Unit('mm'));
-    testval2('40mm + 40cm + 4m',4440,Unit('mm'));
-    testval2('4 l',4,Unit('liter'));
-    testval2('4ml',4,Unit('ml'));
-    testval2('1l as gal',0.264172,Unit('gal'));
-    testval2('4l + 3gal',4+11.3562,Unit('litre'));
-    testval2('1l + 15l as ml',16*1000,Unit('ml'));
-    testval2('(4l + 3gal) as ml',(4+3*3.7854118)*1000,Unit('millilitre'));
-
-    testval2('48tsp as cups',1,Unit('cup'));
-    testval2('16tbsp as cups',1,Unit('cup'));
-    testval2('16cups as gal',1,Unit('gal'));
-    testval2('1tsp as gal',0.00130208,Unit('gal'));
-    testval2('1tsp as liter',0.00492892,Unit('liter'));
-    testval2('1tsp as ml',4.92892,Unit('ml'));
-    testval2('4ml as tsp',0.811537,Unit('tsp'));
-    testval2('4ml as tbsp',0.270512,Unit('tbsp'));
-    testval2('3 cups + 1 cups',4,Unit('cups'));
-
-    testval2('2ft/2',1,Unit("feet"));
-    testval2('2/2ft',1,Unit("feet"));
-    testval2('2ft*2',4,Unit("feet"));
-    testval2('2*2ft',4,Unit("feet"));
-    testval2('1/2 cups',0.5,Unit('cups'));
-    testval2('3 cups + (1/2cups)',3.5,Unit('cups'));
-    testval2('1ft * 2ft * 3ft', 6, Unit('feet',3));
-    testval2('1ft * 2ft * 3ft as liter', 169.901, Unit('liter'));
-    testval2('1m * 2m * 3m as liter', 6000, Unit('liter'));
-    testval2('4ft * 5ft * 6ft as gallon',897.662,Unit('gallon'));
-
-    testval2('4 cuft', 4, Unit('feet',3));
-    testval2('4 cu ft', 4, Unit('feet',3));
-    testval2('4 sq ft', 4, Unit('feet',2));
-    testval2('4 cubic feet', 4, Unit('feet',3));
-    //testval2('4 ft^3', 4, Unit('feet',3));
-    testval2('4 cuft as gal', 29.9221, Unit('gal',1));
-
-    testval2('8 acres',8,Unit('acre',1));
-    testval2('1m * 2m as acre',0.000494211,Unit('acre'));
-    testval2('1km * 2km as acre',494.211,Unit('acre'));
-    //testval2('4 cuft as tsp',0,Unit('tsp'));
-    testval2('1m * 2m as squared feet',21.5278,Unit('feet',2));
-    testval2('1m * 2m as sq ft',21.5278,Unit('feet',2));
-    testval2('1m * 2m as sqft',21.5278,Unit('feet',2));
-
-    testval2('4ft as in',4*12,Unit('inch'));
-
-})
-*/
-
-/*
 test("symbol with _ in it", function(t) {
     t.plan(3);
     var sym = Symbols.make('foo_bar');
@@ -460,18 +435,7 @@ test("symbol with _ in it", function(t) {
     parse("foo_bar + 5").value().then(function(v) { t.equal(v._value,22+5); });
     parse("5 + foo_bar + 5").value().then(function(v) { t.equal(v._value,5+22+5); });
 });
-*/
 
-
-
-/*
-test("variable equations", function(t) {
-    compareUnit("pi * (42m)^2",Math.PI*42*42,'meter');
-    compareUnit("ca_pop/ca_area",42,"person per square mile");
-    compareUnit("earth_circ/700 mi/hr",42,"hours");
-    // how earths could fit inside of jupiter
-    compareUnit("(4/3 * pi * jupiter_radius^2) / (4/3 * pi * earth_radius)",42);
-});
 */
 
 
@@ -484,7 +448,7 @@ function compareNumber(t,str,val) {
         if(Math.abs(val-v._value) > epsilon) {
             t.fail("not equal " + val + " " +v._value);
         }
-    });
+    }).done();
 }
 function compareUnit(t,str,val,unit,dim, DEBUG) {
     if(!dim) dim = 1;
@@ -504,6 +468,7 @@ function compareUnit(t,str,val,unit,dim, DEBUG) {
         }
         //console.log(v.getUnit().toString());
         //console.log("unit is",Units.equal(v.getUnit(),Units.Unit(unit,dim)));
+        if(v.hasUnit() == false && unit=='none') return;
         if(v.hasUnit() == false) t.fail('unit is missing');
         //t.equal(v.hasUnit(),true);
         //console.log("test unit",unit,'^',dim);
