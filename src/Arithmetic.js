@@ -50,16 +50,46 @@ var Arithmetic = {
     },
     Subtract: {
         type:'operation',
-        name:'*',
-        fun: function(a,b) {
-            return Literals.makeNumber(a._value-b._value);
+        name:'-',
+        fun: function(A,B) {
+            //console.log("subtracting numbers",A.toString(),B.toString());
+            if(Units.equal(A.getUnit(),B.getUnit())) {
+                return Literals.makeNumber(A._value-B._value,A.getUnit());
+            }
+            if(Units.sameType(A.getUnit(),B.getUnit())) {
+                var bv = B._value;
+                var av2 = Arithmetic.ConvertUnit.fun(A,B.getUnit());
+                return Literals.makeNumber(av2._value-bv,B.getUnit());
+            }
+            return Literals.makeNumber(A._value-B._value);
         }
     },
     Divide: {
         type:'operation',
-        name:'*',
-        fun: function(a,b) {
-            return Literals.makeNumber(a._value/b._value);
+        name:'/',
+        fun: function(A,B) {
+            //if no units
+            if(!A.hasUnit() && !B.hasUnit()) return Literals.makeNumber(A._value/B._value);
+            //if just A has a unit
+            if(A.hasUnit() && !B.hasUnit())  return Literals.makeNumber(A._value/B._value,A.getUnit());
+            //if just B has a unit
+            if(!A.hasUnit() && B.hasUnit())  return Literals.makeNumber(A._value/B._value,B.getUnit());
+
+            if(Units.sameName(A.getUnit(),B.getUnit())) {
+                var dim = A.getUnit().dim-B.getUnit().dim;
+                var name = B.getUnit().name;
+                var nu = Units.Unit(name,dim);
+                return Literals.makeNumber(A._value/B._value,nu);
+            }
+
+
+            if(Units.sameType(A.getUnit(),B.getUnit())) {
+                var bv = B._value;
+                var na = Arithmetic.ConvertUnit.fun(A,B.getUnit());
+                var nu = Units.Unit(B.getUnit().name,A.getUnit().dim-B.getUnit().dim);
+                return Literals.makeNumber(na._value/bv, nu);
+            }
+            return Literals.makeNumber(A._value/B._value);
         }
     },
     Exponent: {

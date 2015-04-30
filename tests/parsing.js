@@ -48,7 +48,7 @@ test("notation parsing", function(t) {
     compareUnit(t,'4ft * 5',20,'ft',1);
     compareUnit(t,'4ft * 5ft as square meters', 1.85806,'meter',2);
     compareUnit(t,'4ft * 5ft * 6ft', 4*5*6,'foot',3);
-    //compareUnit(t,'4ft - 5ft',4-5,'ft');
+    compareUnit(t,'4ft - 5ft',4-5,'ft');
     compareUnit(t,'4ft * 5ft * 6ft as gal',897.662,'gallon',1);
     compareUnit(t,'4ft as in',4*12,'inch');
     compareUnit(t,'4.5 ft as in',4.5*12,'inch');
@@ -79,10 +79,10 @@ test("precedence",function(t) {
     compareNumber(t,"(4 * 5 + 3)",23);
     compareNumber(t,"(1+(2*3))",7);
     compareNumber(t,"((1+2)*3)",9);
-    //compareNumber(t,"((1+1)*(2+2))",(1+1)*(2+2));
+    compareNumber(t,"((1+1)*(2+2))",(1+1)*(2+2));
     compareNumber(t,"(5+(6*7))",5+(6*7));
     compareNumber(t,"(5+((6*7)))",5+(6*7));
-    //compareNumber(t,"((1+5)*((6*8)+(7+6)))",(1+5)*((6*8)+(7+6)));
+    compareNumber(t,"((1+5)*((6*8)+(7+6)))",(1+5)*((6*8)+(7+6)));
     t.end();
 });
 
@@ -116,7 +116,7 @@ test("length units", function(t) {
     compareUnit(t,'4 + 5 * 6', 54,'none');
     compareUnit(t,'(4+5) * 6', 54,'none');
     compareUnit(t,'4 + (5*6)', 34,'none');
-    //compareUnit(t,'(1+2)*(3+4)', 21,'none');
+    compareUnit(t,'(1+2)*(3+4)', 21,'none');
     compareUnit(t,'1ft * 2ft * 3ft', 6,'feet',3);
     compareUnit(t,'4ft as meter',1.2192,'meter');
     compareUnit(t,'4ft as m',1.2192,'meter');
@@ -132,8 +132,8 @@ test("length units", function(t) {
     compareUnit(t,'4+(5*6)',4+(5*6),'none');
     //compareUnit(t,'4ft - 2gal');//should error
     compareUnit(t,'4ft * 2sqft',8,'feet',3);
-    //compareUnit(t,'4m + 12ft',4 + 3.6576,'m');
-    //compareUnit(t,'4mm + 12ft',4 + (3.6576/0.001),'mm');
+    compareUnit(t,'4m + 12ft as m',4 + 3.6576,'m');
+    compareUnit(t,'4mm + 12ft as mm',4 + (3.6576/0.001),'mm');
     compareUnit(t,'40mm + 40cm + 4m',4.440,'m');
     t.end();
 });
@@ -466,13 +466,11 @@ function compareUnit(t,str,val,unit,dim, DEBUG) {
         if(Math.abs(val-v._value)/val > epsilon) {
             t.fail("not equal " + val + " " +v._value);
         }
-        //console.log(v.getUnit().toString());
-        //console.log("unit is",Units.equal(v.getUnit(),Units.Unit(unit,dim)));
         if(v.hasUnit() == false && unit=='none') return;
         if(v.hasUnit() == false) t.fail('unit is missing');
-        //t.equal(v.hasUnit(),true);
-        //console.log("test unit",unit,'^',dim);
-        t.ok(Units.equal(v.getUnit(),Units.Unit(unit,dim)),v.getUnit().toString());
+        if(!Units.equal(v.getUnit(),Units.Unit(unit,dim))) {
+            t.fail("units not equal " +  v.getUnit() + ' ' +Units.Unit(unit,dim));
+        }
     }).done();
 }
 

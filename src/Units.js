@@ -350,7 +350,7 @@ names['milliliter'] = 'millilitre';
 names['milliliters'] = 'millilitre';
 
 function UnitToString() {
-    if (this.dim == 0) return " " + this.name;
+    //if (this.dim == 0) return " " + this.name;
     return " " + this.name + "^" + this.dim;
 }
 
@@ -418,8 +418,12 @@ exports.Unit = function (name, dim) {
 
 exports.equal = function (a, b) {
     if(typeof a == 'undefined' && typeof b == 'undefined') return true;
+    if(typeof a != 'undefined' && typeof b == 'undefined') return false;
+    if(typeof a == 'undefined' && typeof b != 'undefined') return false;
+
     //all dimensionless units are equal
     if (a.dim == 0 && b.dim == 0) return true;
+    if (a.dim == 0 && b.name=='none') return true;
 
     if (a.name == b.name) {
         if (a.dim == b.dim) {

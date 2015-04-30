@@ -87,7 +87,7 @@ export ometa Parser {
               |   expr:x       sp op:o sp   numlit:y     -> Expressions.makeFunctionCall(o,[x,y],{})
 
               //|   expr:x       sp op:o sp   listlit:y    -> o.call(null,x,y)
-              //| '(' expr:x ')' sp op:o sp '(' expr:y ')' -> o.call(null,x,y)
+              | '(' expr:x ')' sp op:o sp '(' expr:y ')' -> Expressions.makeFunctionCall(o,[x,y],{})
               |   numlit:x     sp op:o sp '(' expr:y ')' -> Expressions.makeFunctionCall(o,[x,y],{})
               | '(' expr:x ')'                           -> x
               //|   numlit:x     sp op:o sp   numlit:y     -> o.call(null,x,y)
