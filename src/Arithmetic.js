@@ -24,7 +24,6 @@ var Arithmetic = {
         type:'operation',
         name:'*',
         fun: function(A,B) {
-            //console.log("multiplying",A.toString(),B.toString());
             //if no units
             if(!A.hasUnit() && !B.hasUnit()) return Literals.makeNumber(A._value*B._value);
             //if just A has a unit
@@ -34,12 +33,18 @@ var Arithmetic = {
 
             if(Units.sameName(A.getUnit(),B.getUnit())) {
                 var dim = A.getUnit().dim+B.getUnit().dim;
-                var name = A.getUnit().name;
+                var name = B.getUnit().name;
                 var nu = Units.Unit(name,dim);
                 return Literals.makeNumber(A._value*B._value,nu);
             }
 
 
+            if(Units.sameType(A.getUnit(),B.getUnit())) {
+                var bv = B._value;
+                var na = Arithmetic.ConvertUnit.fun(A,B.getUnit());
+                var nu = Units.Unit(B.getUnit().name,A.getUnit().dim+B.getUnit().dim);
+                return Literals.makeNumber(na._value*bv, nu);
+            }
             return Literals.makeNumber(A._value*B._value);
         }
     },
@@ -111,10 +116,14 @@ var Arithmetic = {
             if(au.type == 'length' && au.dim == 3 && u.type == 'volume') {
                 return CrossConvert(a,u);
             }
-            if(a.unit.type == 'length' && a.unit.dim == 2 && u.type == 'area') {
+            if(a.getUnit().type == 'length' && a.getUnit().dim == 2 && u.type == 'area') {
                 return CrossConvert(a,u);
             }
-            console.log("ERROR! CAN'T CONVERT " + a.unit + " to " + u);
+            if(a.getUnit().type == 'area' && a.getUnit().dim == 1 && u.type == 'length') {
+                return CrossConvert(a,u);
+            }
+
+            console.log("ERROR! CAN'T CONVERT " + a.getUnit().toString() + " to " + u);
         }
     }
 };
@@ -131,7 +140,7 @@ function CrossConvert(a,u) {
     au = Units.Unit(au.base,au.dim);
 
     var us = 1;
-    if(u.name != u.base) {
+    while(u.name != u.base) {
         us /= u.scale;
         u = Units.Unit(u.base,u.dim);
     }
@@ -140,7 +149,13 @@ function CrossConvert(a,u) {
         return Literals.makeNumber(av,startu);
     }
     if(au.name == 'meter' && au.dim == 2 && u.name == 'acre') {
-        av = av/4046.8564224 * us;
+        var ratio = 0.000247105;
+        av = av*ratio * us;
+        return Literals.makeNumber(av,startu);
+    }
+    if(au.name == 'acre' && au.dim == 1 && u.name == 'meter' && u.dim == 2) {
+        var ratio = 4046.86;
+        av = av*ratio * us;
         return Literals.makeNumber(av,startu);
     }
 

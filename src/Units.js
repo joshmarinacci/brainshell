@@ -191,7 +191,7 @@ var units = [
     //area
     {
         name: 'acre',
-        abbr: 'acre',
+        abbr: 'ac',
         type: 'area',
         base: 'acre',
         scale: 1,
