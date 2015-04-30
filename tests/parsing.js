@@ -228,15 +228,15 @@ test("volume units", function(t) {
     compareUnit(t,'4 l',4,'liter');
     compareUnit(t,'4ml',4,'ml');
     compareUnit(t,'1l as gal',0.264172,'gal');
-    //compareUnit(t,'4l + 3gal',4+11.3562,'litre');
+    compareUnit(t,'4l + 3gal',3+1.05669,'gal');
     compareUnit(t,'1l + 15l as ml',16*1000,'ml');
     compareUnit(t,'(4l + 3gal) as ml',(4+3*3.7854118)*1000,'millilitre');
     compareUnit(t,'48tsp as cups',1,'cup');
     compareUnit(t,'16tbsp as cups',1,'cup');
     compareUnit(t,'16cups as gal',1,'gal');
     compareUnit(t,'1tsp as gal',0.00130208,'gal');
-    //compareUnit(t,'1tsp as liter',0.00492892,'liter');
-    //compareUnit(t,'1tsp as ml',4.92892,'ml');
+    compareUnit(t,'1tsp as liter',0.00492892,'liter');
+    compareUnit(t,'1tsp as ml',4.92892,'ml');
     compareUnit(t,'4ml as tsp',0.811537,'tsp');
     compareUnit(t,'4ml as tbsp',0.270512,'tbsp');
     compareUnit(t,'3 cups + 1 cups',4,'cups');

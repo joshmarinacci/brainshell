@@ -86,19 +86,19 @@ var Arithmetic = {
 
                 au = Units.Unit(au.base,au.dim);
                 if(au.base == u.name) return Literals.makeNumber(av * au.scale,u);
-                if(au.base == u.base) return Num(av / u.scale,u);
+                if(au.base == u.base) return Literals.makeNumber(av / u.scale,u);
                 av = av * au.scale;
 
                 au = Units.Unit(au.base,au.dim);
-                if(au.base == u.name) return Num(av * au.scale,u);
+                if(au.base == u.name) return Literals.makeNumber(av * au.scale,u);
 
                 av = av * au.scale;
                 au = Units.Unit(au.base,au.dim);
-                if(au.base == u.name) return Num(av * au.scale,u);
+                if(au.base == u.name) return Literals.makeNumber(av * au.scale,u);
 
                 var us = u.scale;
                 if(au.name == u.base) {
-                    return Num(av * au.scale/us,u);
+                    return Literals.makeNumber(av * au.scale/us,u);
                 }
 
                 u = Units.Unit(u.base,u.dim);
