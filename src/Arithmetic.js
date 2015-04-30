@@ -45,7 +45,7 @@ var Arithmetic = {
                 var nu = Units.Unit(B.getUnit().name,A.getUnit().dim+B.getUnit().dim);
                 return Literals.makeNumber(na._value*bv, nu);
             }
-            return Literals.makeNumber(A._value*B._value);
+            throw new Error("cannot convert between units " + A.getUnit() + " " + B.getUnit());
         }
     },
     Subtract: {
@@ -61,7 +61,7 @@ var Arithmetic = {
                 var av2 = Arithmetic.ConvertUnit.fun(A,B.getUnit());
                 return Literals.makeNumber(av2._value-bv,B.getUnit());
             }
-            return Literals.makeNumber(A._value-B._value);
+            throw new Error("cannot convert between units " + A.getUnit() + " " + B.getUnit());
         }
     },
     Divide: {
@@ -89,7 +89,7 @@ var Arithmetic = {
                 var nu = Units.Unit(B.getUnit().name,A.getUnit().dim-B.getUnit().dim);
                 return Literals.makeNumber(na._value/bv, nu);
             }
-            return Literals.makeNumber(A._value/B._value);
+            throw new Error("cannot convert between units " + A.getUnit() + " " + B.getUnit());
         }
     },
     Exponent: {
