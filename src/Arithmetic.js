@@ -7,8 +7,26 @@ var Arithmetic = {
     Add: {
         type:'operation',
         name:'+',
-        fun: function(a,b) {
-            return Literals.makeNumber(a._value+b._value);
+        fun: function(A,B) {
+            if(Units.equal(A.getUnit(),B.getUnit())) {
+                //console.log("equal units");
+                return Literals.makeNumber(A._value+B._value,A.getUnit());
+            }
+            //console.log("going more");
+            if(Units.sameType(A.getUnit(),B.getUnit())) {
+                //console.log("same type")
+                var av = A._value;
+                //console.log("av = ", av,A.getUnit().toString());
+                var bv = B._value;
+                //console.log("bv = ", bv,B.getUnit().toString());
+                var av2 = Arithmetic.ConvertUnit.fun(A,B.getUnit());
+                //console.log("av2 = ", av2._value);
+                var fin = Literals.makeNumber(av2._value+bv,B.getUnit());
+                //console.log("fin",fin);
+                return fin;
+            }
+            console.log("throwing");
+            throw new UnitConversionError("cannot convert between units",A.unit,B.unit);
         }
     },
     Multiply: {

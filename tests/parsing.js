@@ -38,8 +38,6 @@ test("notation parsing", function(t) {
     compareNumber(t,'1.2/3.4',1.2/3.4);
     compareNumber(t,'4+5+6',15);
     compareNumber(t,'(4+5+6)',15);
-    
-    
     t.end();
 });
 
@@ -76,12 +74,14 @@ test("precedence",function(t) {
 
 test("weight units", function(t) {
     compareUnit(t,"50g",50,'gram');
-    compareUnit(t,"50kg", 50, 'kilograms');
+    compareUnit(t,"50kg", 50,'kilograms');
     compareUnit(t,'50lb', 50,'pounds');
     compareUnit(t,'50oz', 50,'ounces');
     compareUnit(t,'50lb as grams',22679.6,'grams');
     compareUnit(t,'50oz as grams',1417.475, 'grams');
-    //compareUnit(t,'1oz + 1lbs',481.94149999999996,'grams');
+    compareUnit(t,'50oz + 60oz',110, 'oz');
+    compareUnit(t,'1oz + 1lb',17*1/16.0,'pounds');
+    compareUnit(t,'(1oz + 1lb) as grams',481.942,'gram');
     t.end();
 });
 
@@ -100,7 +100,6 @@ test("area units", function(t) {
     //tu('40acres in sqmi',0.0625,'milessquared','area');
     //tu('25sqmi + 1000acres',68796559.1808,'meterssquared','area');
     //tu('10m^2',10,'metersquared','area');
-
     t.end();
 });
 
