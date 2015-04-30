@@ -267,9 +267,15 @@ test("temperature units", function(t) {
     compareUnit(t,'24K', 24,'kelvin');
     compareUnit(t,'24F', 24,'fahrenheit');
     compareUnit(t,"40 C",40,'celsius');
-    //compareUnit("40 C as Kelvin",40,'kelvin');
-    //compareUnit(t,"24C as fahrenheit",75.2,'fahrenheit');
-    //compareUnit(t,"400K as celsius",126.85,'celsius');
+    compareUnit(t,"75 F as C",23.8889,'celsius');
+    compareUnit(t,"75 C as F",167,'fahrenheit');
+    compareUnit(t,"40 C as kelvin",313.15,'kelvin');
+    compareUnit(t,"300 K as celsius",26.85,'celsius');
+    compareUnit(t,"300 K as C",26.85,'C');
+    compareUnit(t,"24C as fahrenheit",75.2,'fahrenheit');
+    compareUnit(t,"24C as Fahrenheit",75.2,'fahrenheit');
+    compareUnit(t,"300 K as F",80.33,'F');
+    compareUnit(t,"75 F as K",297.039,'K');
     t.end();
 });
 

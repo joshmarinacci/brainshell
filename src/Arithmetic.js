@@ -104,6 +104,7 @@ var Arithmetic = {
         type:'operation',
         name:'as',
         fun:function(a,u) {
+            if(u.convert) return u.convert(a);
             //console.log('converting',a._value,'from',a.getUnit().toString(),'to',u.toString());
             var au = a.getUnit();
             var startu = u;

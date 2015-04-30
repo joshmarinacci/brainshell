@@ -1,4 +1,5 @@
 var Q = require('q');
+var Literals = require('./Literals');
 
 //these are the extra plurals and abbreviations.
 var names = {
@@ -207,7 +208,14 @@ var units = [
         type:'temperature',
         base:'celsius',
         scale:1,
-        dim:1
+        dim:1,
+        convert: function(A) {
+            if(A.getUnit().name == 'fahrenheit')
+                return Literals.makeNumber((A.getNumber()-32) * 100/180,this);
+            if(A.getUnit().name == 'kelvin')
+                return Literals.makeNumber(A.getNumber()-273.15,this);
+            throw new Error("CAN'T CONVERT " + A.getUnit().toString() + " to " + this);
+        }
     },
     {
         name:'kelvin',
@@ -215,7 +223,14 @@ var units = [
         type:'temperature',
         base:'celsius',
         scale:1,
-        dim:1
+        dim:1,
+        convert: function(A) {
+            if(A.getUnit().name == 'celsius')
+                return Literals.makeNumber(A.getNumber() + 273.15,this);
+            if(A.getUnit().name == 'fahrenheit')
+                return Literals.makeNumber((A.getNumber()-32)*100/180 + 273.15,this);
+            throw new Error("CAN'T CONVERT " + A.getUnit().toString() + " to " + this);
+        }
     },
     {
         name:'fahrenheit',
@@ -223,7 +238,14 @@ var units = [
         type:'temperature',
         base:'celsius',
         scale:1,
-        dim:1
+        dim:1,
+        convert: function(A) {
+            if(A.getUnit().name == 'celsius')
+                return Literals.makeNumber((A.getNumber() * 180/100) + 32,this);
+            if(A.getUnit().name == 'kelvin')
+                return Literals.makeNumber((A.getNumber() - 273.15)*180/100 + 32,this);
+            throw new Error("CAN'T CONVERT " + A.getUnit().toString() + " to " + this);
+        }
     },
 
 
@@ -401,6 +423,8 @@ var unit_modifiers = {
 
 exports.Unit = function (name, dim) {
     //console.log("making unit",name,dim);
+    //lower case longer names
+    if(name.length >= 3) name = name.toLowerCase();
     if (names[name] && map[names[name]]) {
         var unit = map[names[name]];
         var outunit = Object.create(unit);
@@ -444,6 +468,7 @@ exports.sameType = function (a, b) {
 
 exports.isValidUnitName = function (name) {
     if (names.hasOwnProperty(name)) return true;
+    if (names.hasOwnProperty(name.toLowerCase())) return true;
     return false;
 };
 exports.isValidUnitModifierName = function (name) {
