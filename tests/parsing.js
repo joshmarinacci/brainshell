@@ -52,6 +52,10 @@ test("notation parsing", function(t) {
     compareUnit(t,'4ft * 5ft * 6ft as gal',897.662,'gallon',1);
     compareUnit(t,'4ft as in',4*12,'inch');
     compareUnit(t,'4.5 ft as in',4.5*12,'inch');
+    compareUnit(t,'4ft',4,'ft',1);
+    compareUnit(t,'(4ft)',4,'ft',1);
+    compareUnit(t,'4ft^2',4,'ft',2);
+    compareUnit(t,'(4ft)^2',16,'ft',1);
     t.end();
 });
 
@@ -155,10 +159,11 @@ test("mass units", function(t) {
 });
 
 test("area units", function(t) {
-    //compareUnit(t,'8ft^2',64,'meter',3,true);
+    compareUnit(t,'8ft^2',8,'foot',2);
+    compareUnit(t,'(8ft)^2',64,'foot',1);
     compareUnit(t,"1 square miles as acres",1*640,"acre");
     compareUnit(t,"200ft * 300ft as acres",1.3774105,"acre");
-    //compareUnit("42 mi^2",42,'mile',2);
+    compareUnit(t,"42 mi^2",42,'mile',2);
     compareUnit(t,'10 square miles',10,'mile',2);
     compareUnit(t,'10 sq mi',10,'mile',2);
     compareUnit(t,'10 square meters',10,'meter',2);
@@ -172,7 +177,7 @@ test("area units", function(t) {
     compareUnit(t,'1000ac as sq m',1000*4046.8564224,'meters',2);
     //compareUnit(t,'40 acres as sq mi',0.0625,'miles',2);
     //compareUnit(t,'25sqmi + 1000acres',68796559.1808,'meters',2);
-    //compareUnit(t,'10m^2',10,'meter',2);
+    compareUnit(t,'10m^2',10,'meter',2);
 
     compareUnit(t,'8 acres',8,'acre');
     compareUnit(t,'1m * 2m as acre',0.000494211,'acre');
@@ -215,11 +220,11 @@ test("volume units", function(t) {
     compareUnit(t,'3tsp as tablespoons',1.0,'tablespoons');
     compareUnit(t,'3tbsp as teaspoons',9,'teaspoons');
     compareUnit(t,'21 cu ft',21,'cubicfoot');
-    //compareUnit(t,'3 cm^3',3,'cm',3);
-    //compareUnit(t,'3 cm^3 as ml',3,'milliliter');
+    compareUnit(t,'3 cm^3',3,'cm',3);
+    compareUnit(t,'3 cm^3 as ml',3,'milliliter');
     compareUnit(t,'3ft * 3ft * 3ft',27,'cubicfoot');
     compareUnit(t,'(3ft * 3ft * 3ft) as gallon',201.974,'gallon');
-    //compareUnit(t,'1ft^3',1,'foot',3);
+    compareUnit(t,'1ft^3',1,'foot',3);
     compareUnit(t,'4 qt',4,'quart');
     compareUnit(t,'4 pt',4,'pint');
     compareUnit(t,'4 qt as gallon',1,'gallon');
@@ -249,7 +254,7 @@ test("volume units", function(t) {
     compareUnit(t,'4 cu ft', 4,'feet',3);
     compareUnit(t,'4 sq ft', 4,'feet',2);
     compareUnit(t,'4 cubic feet', 4,'feet',3);
-    //compareUnit(t,'4 ft^3', 4,'feet',3);
+    compareUnit(t,'4 ft^3', 4,'feet',3);
     //compareUnit(t,'4 cuft as gal', 29.9221,'gal',1);
     t.end();
 });

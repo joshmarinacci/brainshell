@@ -421,8 +421,9 @@ var unit_modifiers = {
     'squared': 2
 };
 
-exports.Unit = function (name, dim) {
-    //console.log("making unit",name,dim);
+exports.Unit = function (name, dim, exp) {
+    //console.log("making unit",name,dim,exp);
+    if(typeof exp !== 'undefined') dim = exp;
     //lower case longer names
     if(name.length >= 3) name = name.toLowerCase();
     if (names[name] && map[names[name]]) {

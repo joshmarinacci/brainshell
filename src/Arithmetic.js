@@ -95,9 +95,16 @@ var Arithmetic = {
     Exponent: {
         type:'operation',
         name:'^',
-        fun: function(a,b) {
-            var v = Math.pow(a._value,b._value);
-            return Literals.makeNumber(v);
+        fun: function(A,B) {
+            if(!A.hasUnit() && !B.hasUnit()) {
+                var v = Math.pow(A._value, B._value);
+                return Literals.makeNumber(v);
+            }
+            if(A.hasUnit() && !B.hasUnit()) {
+                var v = Math.pow(A._value, B._value);
+                return Literals.makeNumber(v, A.getUnit());
+            }
+            throw new Error("cannot convert between units " + A.getUnit() + " " + B.getUnit());
         }
     },
     ConvertUnit:{

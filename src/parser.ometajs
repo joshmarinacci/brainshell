@@ -57,7 +57,8 @@ export ometa Parser {
     num       = '-'?:n dig+:x '%'?:p                                    -> parseInteger(n,x,p),
 
     unitmodifier = ("cubic" | "cu" | "squared" | "square" | "sq"):c isUnitModifier(c) ' ' -> c,
-    unit      = sp unitmodifier?:c word:u isUnit(u) -> Units.Unit(u,c),
+    unitexponent = '^' digit:d -> d,
+    unit      = sp unitmodifier?:c word:u unitexponent?:e isUnit(u) -> Units.Unit(u,c,e),
     numunit   = num:x unit:u             -> Literals.makeNumber(x,u),
     numsolo   = num:x                    -> Literals.makeNumber(x),
     numlit    = numunit | numsolo,
