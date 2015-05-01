@@ -9,6 +9,9 @@ exports.asCode = function asCode(obj) {
     if(obj.type == 'symbol') {
         return obj.name();
     }
+    if(!obj.toCode) {
+        console.log("WARNING. MISSING toCode on ", obj.toString(), obj);
+    }
     return obj.toCode();
 };
 

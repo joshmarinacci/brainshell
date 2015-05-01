@@ -387,12 +387,18 @@ function UnitToString() {
     //if (this.dim == 0) return " " + this.name;
     return " " + this.name + "^" + this.dim;
 }
+function UnitToCode() {
+    if(this.dim == 0) return "";
+    if(this.dim == 1) return this.name;
+    return this.name + "^" + this.dim;
+}
 
 var map = {};
 units.forEach(function (unit) {
     //put into the map
     map[unit.name] = unit;
     unit.toString = UnitToString;
+    unit.toCode = UnitToCode;
     unit.value = function () {
         var self = this;
         return Q.fcall(function () {

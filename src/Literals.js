@@ -37,9 +37,9 @@ function NumberLiteral(num,unit) {
     this.toCode = function() {
         var us = "";
         if(this._unit) {
-            us = ' ' + this._unit.toString();
+            us = ' ' + this._unit.toCode();
         }
-        return this._value + us;
+        return " " + this._value + us;
     };
     this.getNumber = function() {
         return this._value;
