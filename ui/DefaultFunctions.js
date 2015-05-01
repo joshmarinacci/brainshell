@@ -6,10 +6,37 @@ var moment = require('moment');
 function regSimple(ctx,fun) {
     fun.kind = "function";
     fun.type = "simple";
+    if(fun.init) fun.init();
     var sym = Symbols.make(fun.name);
     sym.update(fun);
-    if(fun.init) fun.init();
     ctx.register(sym);
+}
+
+var BaseValue = {
+    onChange: function(cb) {
+        //console.log("added a listener",this.name,this._cbs.length);
+        this._cbs.push(cb);
+        return cb;
+    },
+    removeListener: function(cb) {
+        var n = this._cbs.indexOf(cb);
+        if(n >= 0)  this._cbs.splice(n,1);
+    },
+    notify: function () {
+        //console.log("notifying:",this.name, this._cbs.length);
+        var self = this;
+        this._cbs.forEach(function (cb) {
+            cb(self);
+        });
+    }
+};
+
+function Extendo(base,addons) {
+    var obj = Object.create(base);
+    for(var name in addons) {
+        obj[name] = addons[name];
+    }
+    return obj;
 }
 
 exports.makeDefaultFunctions = function(ctx) {
@@ -93,36 +120,6 @@ exports.makeDefaultFunctions = function(ctx) {
         }
     });
 
-    /*
-    regSimple(ctx,{
-        name:'makeGrowTable',
-        cbs:[],
-        onChange:function(cb) {
-            this.cbs.push(cb);
-        },
-        notify: function() {
-            var self = this;
-            this.cbs.forEach(function(cb) {
-                cb(self);
-            });
-        },
-        init: function() {
-            var items = [Literals.makeNumber(1), Literals.makeNumber(2)];
-            this.list = Literals.makeList(items);
-            var i = 3;
-            var self = this;
-            setInterval(function () {
-                items.push(Literals.makeNumber(i));
-                self.list.update(items);
-                Context.global().lookup('makeGrowTable').notify();
-                i++;
-            }, 2500);
-        },
-        fun: function() {
-            return this.list;
-        }
-    });*/
-
     regSimple(ctx, {
         name: 'sum',
         cbs: [],
@@ -147,39 +144,32 @@ exports.makeDefaultFunctions = function(ctx) {
     });
 
 
-    regSimple(ctx,{
+    regSimple(ctx, Extendo(BaseValue,{
         name:'RandomWalk',
-        cbs: [],
-        init: function(){
-            console.log("random walk initted");
-            var items = [];
-            this.list = Literals.makeList(items);
-            var self = this;
-            var num = 0;
-            setInterval(function () {
-                num += (Math.random()*10)-5;
-                items.push(Literals.makeNumber(num));
-                self.list.update(items);
-                self.notify();
-            }, 100);
-        },
-        onChange: function (cb) {
-            this.cbs.push(cb);
-        },
-        notify: function () {
-            var self = this;
-            this.cbs.forEach(function (cb) {
-                cb(self);
-            });
-        },
         list:[],
+        init: function(){
+            this._cbs=[];
+            this.items = [];
+            this.list = Literals.makeList(this.items);
+            this.num = 0;
+            setInterval(this.appendNumber.bind(this),50);
+        },
+        appendNumber: function() {
+            this.num += (Math.random()*10)-5;
+            this.items.push(Literals.makeNumber(this.num));
+            this.list.update(this.items);
+            this.notify();
+        },
         fun: function (data) {
             return this.list;
         }
-    });
+    }));
 
-    regSimple(ctx, {
+    regSimple(ctx, Extendo(BaseValue,{
         name:'RunningAverage',
+        init: function() {
+            this._cbs=[];
+        },
         fun: function(data) {
             var it = data.getIterator();
             var vals = [];
@@ -193,10 +183,13 @@ exports.makeDefaultFunctions = function(ctx) {
             }
             return Literals.makeList(vals);
         }
-    });
+    }));
 
     regSimple(ctx, {
         name:"TakeFive",
+        init: function() {
+            this._cbs=[];
+        },
         fun: function(data) {
             var it = data.getIterator();
             var vals = [];

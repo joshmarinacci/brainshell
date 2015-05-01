@@ -16,15 +16,17 @@ DefaultFunctions.makeDefaultFunctions(ctx);
 
 test("Test RandomWalk",function(t) {
     t.ok(ctx.hasSymbol("RandomWalk"),"symbol exists");
-    var out = Parser.matchAll('RandomWalk()','start');
-    out.onChange(function(ex) {
+    var expr = Parser.matchAll('RandomWalk()','start');
+    var cb = expr.onChange(function(ex) {
         ex.value().then(function(v){
             if(v.length() == 2) {
+                expr.removeListener(cb);
                 t.end();
             }
         }).done();
     });
 });
+
 
 
 test("Test RunningAverage", function(t) {
@@ -36,7 +38,6 @@ test("Test RunningAverage", function(t) {
         t.end();
     }).done();
 });
-
 
 
 test("Test Piped RunningAverage", function(t) {
@@ -51,7 +52,6 @@ test("Test Piped RunningAverage", function(t) {
     });
 
 });
-
 
 test("Test TakeFive", function(t) {
     t.ok(ctx.hasSymbol("TakeFive"), "symbol exists");
