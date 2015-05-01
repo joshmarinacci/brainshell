@@ -37,6 +37,7 @@ test("notation parsing", function(t) {
     compareNumber(t, "5^3", 125);
     compareNumber(t, "2.2e2", 220);
     compareNumber(t, '2.2E2', 220);
+    //compareNumber(t, '2.2E10', 22000000); // this currently fails
     compareNumber(t, '2e2', 200);
     compareNumber(t, '3e9', 3 * 1000 * 1000 * 1000);
     compareNumber(t, '2e-2', 0.02);
