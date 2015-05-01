@@ -141,12 +141,10 @@ var MainView = React.createClass({
             </div>
             <div className="vbox" id="help-pane">
                 <header>Resources</header>
-                <div className="form">
-                    <div className="row">
-                        <input type="search"/>
-                        <button className="fa fa-search"></button>
-                    </div>
-                </div>
+                        <div className='group'>
+                            <input type="search" className='grow'/>
+                            <button className="fa fa-search"></button>
+                        </div>
                 <ul className="list">
                     <li>Elements</li>
                     <li>Stock</li>

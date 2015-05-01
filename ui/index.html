@@ -20,8 +20,7 @@
             border-left-style: solid;
         }
         .edit-panel textarea {
-            min-height: 1em;
-            padding: 1em;
+            padding: 0.5em;
             border-width: 0;
             margin: 0;
         }
@@ -29,7 +28,7 @@
             max-height: 20em;
         }
 
-        header button {
+        header button, footer button {
             margin-top: 0;
             margin-bottom: 0;
         }
@@ -42,15 +41,13 @@
             margin: 0.5em;
             border-width: 1px;
             border-style: solid;
-        }
-        .edit-panel textarea {
-            min-height: 4em;
+            margin-bottom: 2em;
         }
 
-        header {
+        header, footer {
             align-items: center;
         }
-        header h3 {
+        header h3, footer h3 {
             margin: 0;
         }
 
@@ -62,6 +59,27 @@
         .group span {
             vertical-align: baseline;
             padding: 0em 0.5em;
+        }
+
+
+        .group button, .group input {
+            height: 1.5em;
+            box-sizing: content-box;
+        }
+
+        .edit-panel .error {
+            border-bottom-width: 1px;
+            border-bottom-style: solid;
+        }
+
+        .edit-panel textarea {
+            background-color: #eee;
+            border-bottom-width: 1px;
+            border-bottom-style: solid;
+            resize: none;
+        }
+        .edit-panel textarea:focus {
+            background-color: white;
         }
 
     </style>

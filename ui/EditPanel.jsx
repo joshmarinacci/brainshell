@@ -20,19 +20,24 @@ var EditPanel = React.createClass({
     getInitialState: function() {
         return {
             evaluated: false,
-            result: null,
-            raw: 'nothing'
+            result: ".",
+            raw: 'nothing',
+            rows:1
         }
     },
-    componentDidMount: function() {
+    setRaw: function(content) {
+        var lines = content.split('\n').length;
+        console.log("lins = ", lines);
         this.setState({
-            raw: this.props.expr.content
+            raw: content,
+            rows:lines
         });
     },
+    componentDidMount: function() {
+        this.setRaw(this.props.expr.content);
+    },
     changed: function() {
-        this.setState({
-            raw: this.refs.text.getDOMNode().value
-        });
+        this.setRaw(this.refs.text.getDOMNode().value);
     },
     doEval: function() {
         var self = this;
@@ -66,6 +71,7 @@ var EditPanel = React.createClass({
     },
     renderResult: function(res) {
         if(!res) return "";
+        if(typeof res == 'string') return res;
         if(res.type == 'list') {
             return <TableOutput data={res}/>
         }
@@ -89,10 +95,14 @@ var EditPanel = React.createClass({
             <textarea
                 ref='text'
                 className=""
+                rows={this.state.rows}
                 value={this.state.raw}
                 onChange={this.changed}
                 onKeyDown={this.keyDown}
                 ></textarea>
+            <div className='error'>
+                <span>error goes here</span>
+            </div>
             <div className="results">
                 {res}
             </div>
