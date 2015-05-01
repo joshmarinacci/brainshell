@@ -26,6 +26,9 @@ function LiteralBase() {
     this.isPair = function() {
         return this.type == 'pair';
     }
+    this.toCode = function() {
+        return "EMPTY OBJ";
+    }
 }
 
 function NumberLiteral(num,unit) {
@@ -204,6 +207,9 @@ util.inherits(KeyValuePair, LiteralBase);
 
 
 var Literal = {
+    makeEmpty: function() {
+        return new LiteralBase();
+    },
     makeNumber: function(jsnum, unit) {
         return new NumberLiteral(jsnum,unit);
     },

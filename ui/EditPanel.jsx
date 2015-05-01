@@ -27,7 +27,6 @@ var EditPanel = React.createClass({
     },
     setRaw: function(content) {
         var lines = content.split('\n').length;
-        console.log("lins = ", lines);
         this.setState({
             raw: content,
             rows:lines
@@ -36,25 +35,36 @@ var EditPanel = React.createClass({
     componentDidMount: function() {
         this.setRaw(this.props.expr.content);
     },
+    componentWillUnmount: function() {
+        if(this.expr) {
+            this.expr.removeListener(this.cb);
+        }
+    },
     changed: function() {
         this.setRaw(this.refs.text.getDOMNode().value);
     },
     doEval: function() {
         var self = this;
         var expr = ParseExpression(this.state.raw);
-        if(expr.onChange) {
-            expr.onChange(function() {
-                expr.value(Context.global()).then(function(v) {
-                    self.setResult(v);
-                }).done();
-            });
+        if(!expr.onChange) {
+            throw new Error("missing on change setter");
         }
+        //remove the old one
+        if(this.expr) {
+            this.expr.removeListener(this.cb);
+        }
+        this.expr = expr;
+        this.cb = expr.onChange(function() {
+            expr.value(Context.global()).then(function(v) {
+                self.setResult(v);
+            }).done();
+        });
         expr.value(Context.global()).then(function(v) {
+            self.props.onChange(self.props.expr,self.state.raw);
             self.setResult(v);
         }).done();
     },
     setResult: function(v) {
-        this.props.onChange(this.props.expr,this.state.raw);
         this.setState({
             result: v
         });
@@ -72,6 +82,9 @@ var EditPanel = React.createClass({
     renderResult: function(res) {
         if(!res) return "";
         if(typeof res == 'string') return res;
+        if(res.type == 'schart') {
+            return <SChart data={res}/>
+        }
         if(res.type == 'list') {
             return <TableOutput data={res}/>
         }

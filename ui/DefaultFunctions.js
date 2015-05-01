@@ -152,7 +152,7 @@ exports.makeDefaultFunctions = function(ctx) {
             this.items = [];
             this.list = Literals.makeList(this.items);
             this.num = 0;
-            setInterval(this.appendNumber.bind(this),50);
+            setInterval(this.appendNumber.bind(this),1000);
         },
         appendNumber: function() {
             this.num += (Math.random()*10)-5;
@@ -201,5 +201,17 @@ exports.makeDefaultFunctions = function(ctx) {
             };
             return Literals.makeList(vals);
         }
-    })
+    });
+
+    regSimple(ctx, Extendo(BaseValue,{
+        name:'SChart',
+        init: function() {
+            this._cbs=[];
+        },
+        fun: function(data) {
+            var obj = Literals.makeEmpty();
+            obj.type = 'schart';
+            return obj;
+        }
+    }));
 };
