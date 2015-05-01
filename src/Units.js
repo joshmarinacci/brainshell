@@ -282,6 +282,18 @@ var units = [
         scale:60*60*24,
         dim:1
     },
+
+
+
+    //number formats
+    {
+        name:'hexadecimal',
+        abbr:'hex',
+        type:'numeric',
+        base:'decimal',
+        scale:1,
+        dim:1
+    }
 ];
 
 

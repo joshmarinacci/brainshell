@@ -20,6 +20,18 @@ test("multiple blocks", function(t) {
 });
 */
 
+test("format parsing",function(t) {
+    //compareFormat(t,"42",42,"decimal");
+    //compareFormat(t,"x42",42,"hex");
+    //compareFormat("0xFFCC88",0xFFCC88,'hex');
+    //compareFormat("42 as hex",42,"hex");
+    //compareFormat("42 as octal",42,"octal");
+    //compareFormat("42 as binary",42,"binary");
+    //compareFormat("0xBEEF as decimal",0xBEEF,'decimal');
+    t.end();
+});
+//return;
+
 test("notation parsing", function(t) {
     compareNumber(t, "8^2", 64);
     compareNumber(t, "5^3", 125);
@@ -185,7 +197,7 @@ test("area units", function(t) {
     compareUnit(t,'4 cu ft as tsp',22980.2,'tsp');
     compareUnit(t,'1m * 2m as squared feet',21.5278,'feet',2);
     compareUnit(t,'1m * 2m as sq ft',21.5278,'feet',2);
-    //compareUnit(t,'1m * 2m as sqft',21.5278,'feet',2);
+    //compareUnit(t,'1m * 2m as sqft' ,21.5278,'feet',2);
     t.end();
 });
 
@@ -312,15 +324,6 @@ test("time units", function(t) {
 });
 
 
-test("format parsing",function(t) {
-    //compareFormat("42",42,"decimal");
-    //compareFormat("0xFFCC88",0xFFCC88,'hex');
-    //compareFormat("42 as hex",42,"hex");
-    //compareFormat("42 as octal",42,"octal");
-    //compareFormat("42 as binary",42,"binary");
-    //compareFormat("0xBEEF as decimal",0xBEEF,'decimal');
-    t.end();
-});
 
 
 test("variable equations", function(t) {
@@ -457,6 +460,21 @@ function compareNumber(t,str,val) {
     parse(str).value().then(function(v){
         if(Math.abs(val-v._value) > epsilon) {
             t.fail("not equal " + val + " " +v._value);
+        }
+    }).done();
+}
+
+function compareFormat(t,str,val,unit) {
+    var epsilon = 0.01;
+    parse(str).value().then(function(v) {
+        console.log("value is ", v.toString());
+        if(Math.abs(val-v._value)/val > epsilon) {
+            t.fail("not equal " + val + " " +v._value);
+        }
+        if(v.hasUnit() == false && unit=='decimal') return;
+        if(v.hasUnit() == false) t.fail('unit is missing');
+        if(!Units.equal(v.getUnit(),Units.Unit(unit))) {
+            t.fail("units not equal " +  v.getUnit() + ' ' +unit);
         }
     }).done();
 }

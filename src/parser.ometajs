@@ -60,8 +60,9 @@ export ometa Parser {
     unitexponent = '^' digit:d -> d,
     unit      = sp unitmodifier?:c word:u unitexponent?:e isUnit(u) -> Units.Unit(u,c,e),
     numunit   = num:x unit:u             -> Literals.makeNumber(x,u),
+    numhex    = 'x' num:x                -> Literals.makeNumber(x,'hexadecimal'),
     numsolo   = num:x                    -> Literals.makeNumber(x),
-    numlit    = numunit | numsolo,
+    numlit    =  numhex | numunit | numsolo,
 
     strlit    = sp '"'  (~'"'  anything)*:x  '"'  sp -> Literals.makeString(x.join("")),
     strlit    = sp '\'' (~'\'' anything)*:x  '\'' sp -> Literals.makeString(x.join("")),
