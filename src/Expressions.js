@@ -29,6 +29,11 @@ var Expressions = {
             },
             onChange: function(cb) {
                 this.cbs.push(cb);
+                return cb;
+            },
+            removeListener: function(cb) {
+                var n = this.cbs.indexOf(cb);
+                if(n >= 0)  this.cbs.splice(n,1);
             },
             notify: function() {
                 var self = this;

@@ -9,6 +9,9 @@ function Context() {
     this.lookup = function(name) {
         return registry[name];
     };
+    this.hasSymbol = function(name) {
+        return (typeof registry[name] !== 'undefined');
+    }
     this.dump = function() {
         for(var key in registry) {
             console.log(key,registry[key]);

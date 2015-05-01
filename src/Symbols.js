@@ -14,8 +14,14 @@ var Symbol = {
             _name:name,
             name: function() { return this._name; },
             _value:null,
+            _cb: function() {
+                this.notify();
+            },
             update: function(val) {
                 this._value = val;
+                if(this._value.onChange) {
+                    this._value.onChange(this._cb.bind(this));
+                }
                 this.notify();
             },
             cbs:[],

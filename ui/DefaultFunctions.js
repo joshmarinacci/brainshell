@@ -145,4 +145,68 @@ exports.makeDefaultFunctions = function(ctx) {
             return Literals.makeNumber(total);
         }
     });
+
+
+    regSimple(ctx,{
+        name:'RandomWalk',
+        cbs: [],
+        init: function(){
+            console.log("random walk initted");
+            var items = [];
+            this.list = Literals.makeList(items);
+            var self = this;
+            var num = 0;
+            setInterval(function () {
+                num += (Math.random()*10)-5;
+                items.push(Literals.makeNumber(num));
+                self.list.update(items);
+                self.notify();
+            }, 100);
+        },
+        onChange: function (cb) {
+            this.cbs.push(cb);
+        },
+        notify: function () {
+            var self = this;
+            this.cbs.forEach(function (cb) {
+                cb(self);
+            });
+        },
+        list:[],
+        fun: function (data) {
+            return this.list;
+        }
+    });
+
+    regSimple(ctx, {
+        name:'RunningAverage',
+        fun: function(data) {
+            var it = data.getIterator();
+            var vals = [];
+            var prev = null;
+            while (it.hasNext()) {
+                var v = it.next();
+                if (prev != null) {
+                    vals.push(Literals.makeNumber((v._value + prev._value) / 2));
+                }
+                prev = v;
+            }
+            return Literals.makeList(vals);
+        }
+    });
+
+    regSimple(ctx, {
+        name:"TakeFive",
+        fun: function(data) {
+            var it = data.getIterator();
+            var vals = [];
+            while (it.hasNext()) {
+                vals.push(it.next());
+                if(vals.length > 5) {
+                    vals.shift();
+                };
+            };
+            return Literals.makeList(vals);
+        }
+    })
 };
