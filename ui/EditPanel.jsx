@@ -157,3 +157,48 @@ var TableOutput = React.createClass({
         </table></div>
     }
 });
+
+
+var SChart = React.createClass({
+    componentDidMount: function() {
+        this.drawCanvas(this.props.data.data);
+    },
+    componentWillReceiveProps: function(newProps) {
+        this.drawCanvas(newProps.data.data);
+    },
+    drawCanvas: function(table) {
+        var can = this.refs.canvas.getDOMNode();
+        var g = can.getContext('2d');
+        var w = 500;
+        var h = 250;
+        g.fillStyle = "lightGray";
+        g.fillRect(0,0,w,h);
+        g.fillStyle = "red";
+        var len = table.length();
+        g.save();
+        g.translate(50,0);
+        w-=100;
+        var gap = 10;
+        var bw = (w/len);
+        var it = table.getIterator();
+        var vals = [];
+        while(it.hasNext()) {
+            vals.push(it.next().getNumber());
+        }
+        var min =  1000000;
+        var max = -1000000;
+        vals.forEach(function(v) {
+            min = Math.min(v,min);
+            max = Math.max(v,max);
+        });
+        for(var i=0; i<vals.length; i++) {
+            var val = vals[i];
+            var vv = (val-min)/(max-min)*100;
+            g.fillRect(i*bw,h-vv,bw-gap,vv);
+        }
+        g.restore();
+    },
+    render: function() {
+        return <div>a chart is here:<br/><canvas ref='canvas' width='500' height='250'></canvas></div>
+    }
+});

@@ -190,12 +190,17 @@ exports.makeDefaultFunctions = function(ctx) {
         init: function() {
             this._cbs=[];
         },
-        fun: function(data) {
+        fun: function(data,num) {
+            var count = 5;
+            if(num) {
+                //console.log("the number we should take is",num);
+                //count = num.getNumber();
+            }
             var it = data.getIterator();
             var vals = [];
             while (it.hasNext()) {
                 vals.push(it.next());
-                if(vals.length > 5) {
+                if(vals.length > count) {
                     vals.shift();
                 };
             };
@@ -210,6 +215,7 @@ exports.makeDefaultFunctions = function(ctx) {
         },
         fun: function(data) {
             var obj = Literals.makeEmpty();
+            obj.data = data;
             obj.type = 'schart';
             return obj;
         }
