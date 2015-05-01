@@ -79,14 +79,16 @@ var EditPanel = React.createClass({
 
         return (<div className="vbox edit-panel">
             <header>
-                <button>move</button>
-                <button onClick={this.doEval}>eval</button>
-                <button>delete</button>
-                <button onClick={this.doAppend}>append</button>
+                <div className='group'>
+                    <button>move</button>
+                    <button onClick={this.doEval}>eval</button>
+                    <button>delete</button>
+                    <button onClick={this.doAppend}>append</button>
+                </div>
             </header>
             <textarea
                 ref='text'
-                className="grow"
+                className=""
                 value={this.state.raw}
                 onChange={this.changed}
                 onKeyDown={this.keyDown}

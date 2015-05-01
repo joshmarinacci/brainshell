@@ -114,19 +114,26 @@ var MainView = React.createClass({
         }
         return(
             <div className="fill vbox">
-            <header>BrainShell</header>
+            <header>
+                <h3>BrainShell</h3>
+                <span className='grow'></span>
+                <div className='group'>
+                    <button className='fa fa-toggle-left'></button>
+                    <button className='fa fa-toggle-right'></button>
+                </div>
+            </header>
             <div className="hbox grow">
-            <div className="vbox" id="docs-pane">
-                <header>Documents</header>
-                <ul className="list grow">{docs}</ul>
-                <footer>
-                    <button onClick={this.createNewDoc}>add</button>
-                </footer>
-            </div>
-            <div className="vbox grow" id="editor-pane">
-                <header>
-                    <EditableLabel value={title} onChange={this.titleChanged}/>
-                    <button onClick={this.deleteDoc}>delete</button>
+                <div className="vbox" id="docs-pane">
+                    <header>Documents</header>
+                    <ul className="list grow">{docs}</ul>
+                    <footer>
+                        <button onClick={this.createNewDoc} className='fa fa-plus'></button>
+                    </footer>
+                </div>
+                <div className="vbox grow" id="editor-pane">
+                    <header>
+                        <EditableLabel value={title} onChange={this.titleChanged}/>
+                        <button onClick={this.deleteDoc} className="fa fa-close"></button>
                 </header>
                 <div className='grow scroll'>
                     {panels}
