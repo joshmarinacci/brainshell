@@ -108,8 +108,88 @@ sort by a column
 filter by some criteria, like start and ending dates, or range of value, or particular
 column equals some value.
 
+
+----
  
+compound units:
  
+gravity is 9.8 meters per seconds squared. the current units system can't represent this.
+to solve this we need compound units. a compound unit is composed of multiple units combined with
+exponents/dimension. potentially this could subsume the current way of working with units, but for
+now this will be an addition. 
+
+there are three parts to the implementation.
+
+* representing compound units in code
+* parsing the written representation
+* doing math with them and regular units
+
+to represent the compound unit we have a new unit with the type 'compound'. it contains an array of sub-units.
+it reimplements the various unit methods to work correctly with the sub-units. this may require changing
+the api since currently units have some exposed properties instead of using proper methods.
+
+unit.toString()
+unit.dimension()
+unit.name()
+unit.type()
+unit.toJSON() ??
+unit.base()
+unit.scale()
+
+unit.abbr() shouldn't be here. that should be a separate mapping. scale and base might also be 
+internal. move to underscore prop notation
+
+gravity is represented as 
+
+```
+{
+    type: 'compound',
+    name: 'compound',
+    //base
+    //abbr
+    //scale
+    units: [
+        {
+            type:'length',
+            name:'meter',
+            dim:1,
+        },
+        {
+            type:'duration',
+            name:'second',
+            dim:-2,
+        }
+    ]
+}
+```
+
+parsing requires modifying the parser.  we should support only canonical respresentaitons like
+m/s^2 and mi/h, at least first. some special cases may be for common uses such as mph. might become
+tricky, though.
+
+extend the unit parser rule to have
+unit = unitname (^ num)? ('/' unitname (^num)?)?  | unitname (^num)?
+
+math with these compound units requires scaling them all to a common base unit (as applicable by type), 
+appending to the list of subunits, then reducing. this happens with multplication and division.
+for addition and subtraction they must simply have the same units to be combined.
+
+ex:  5m/s * 10h = 100m.
+convert to compound units
+5(m^1,s^-2) * 10(h^1)
+check that the units are scaled correctly. s and h are compatible but in the wrong base.
+convert 10 to seconds.
+5(m^1,s^-2) * 10*60*60(s^1)
+now multiply the scalars and combine the units
+5*10*60*60 (m^1,s^-2,s^1)
+reduce the units. add exponents: s^-2 and s^1 => s^-1 
+180_000 (m^1, s^-1)
+render the compound unit
+180,000 m/s
+
+when reducing, if the exponent of a unit is 0, then remove it
+
+
   
 
 

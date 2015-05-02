@@ -32,6 +32,14 @@ test("format parsing",function(t) {
 });
 //return;
 
+test("constants",function(t){
+    compareNumber(t,'PI',Math.PI);
+    compareNumber(t,'E',Math.E);
+    compareNumber(t,'earth_circumference',24901);
+    compareNumber(t,'earth_radius',3959);
+    //575mph is cruising speed of long haul airliner
+});
+
 test("notation parsing", function(t) {
     compareNumber(t, "8^2", 64);
     compareNumber(t, "5^3", 125);
