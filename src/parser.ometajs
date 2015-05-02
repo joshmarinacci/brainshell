@@ -71,7 +71,7 @@ export ometa Parser {
     listitem  = (sp keyval) | (sp expr),
     listlit   = sp '[' sp listOf(#listitem, ','):e sp ']' sp -> Literals.makeList(e),
 
-    symbol    = sp letter:l (letter|digit)*:s sp -> Symbols.make(l+s.join("")),
+    symbol    = sp letter:l (letter|digit|'_')*:s sp -> Symbols.make(l+s.join("")),
     //newsymbol = sp letter:l (letter|digit)*:s sp -> (l+s.join("")),
     leftarrow = '=' | '\u21d0', //\u21d0 is ⇐
 

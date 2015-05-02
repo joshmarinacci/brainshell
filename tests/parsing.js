@@ -30,13 +30,22 @@ test("format parsing",function(t) {
     //compareFormat("0xBEEF as decimal",0xBEEF,'decimal');
     t.end();
 });
-//return;
 
-test("constants",function(t){
-    //compareNumber(t,'PI',Math.PI);
-    //compareNumber(t,'E',Math.E);
-    //compareNumber(t,'earth_circumference',24901);
-    //compareNumber(t,'earth_radius',3959);
+function regSymbol(name,val) {
+    var sym = Symbols.make(name);
+    sym.update(Literals.makeNumber(val));
+    ctx.register(sym);
+}
+regSymbol('PI',Math.PI);
+regSymbol('E',Math.E);
+regSymbol('earth_circumference',24901);
+regSymbol('earth_radius',3959);
+
+test("constants", function(t){
+    compareNumber(t,'PI',Math.PI);
+    compareNumber(t,'E',Math.E);
+    compareNumber(t,'earth_circumference',24901);
+    compareNumber(t,'earth_radius',3959);
     //575mph is cruising speed of long haul airliner
     t.end();
 });
