@@ -32,8 +32,8 @@ var Arithmetic = {
             if(!A.hasUnit() && B.hasUnit())  return Literals.makeNumber(A._value*B._value,B.getUnit());
 
             if(Units.sameName(A.getUnit(),B.getUnit())) {
-                var dim = A.getUnit().dim+B.getUnit().dim;
-                var name = B.getUnit().name;
+                var dim = A.getUnit().getDimension()+B.getUnit().getDimension();
+                var name = B.getUnit().getName();
                 var nu = Units.Unit(name,dim);
                 return Literals.makeNumber(A._value*B._value,nu);
             }
@@ -42,7 +42,7 @@ var Arithmetic = {
             if(Units.sameType(A.getUnit(),B.getUnit())) {
                 var bv = B._value;
                 var na = Arithmetic.ConvertUnit.fun(A,B.getUnit());
-                var nu = Units.Unit(B.getUnit().name,A.getUnit().dim+B.getUnit().dim);
+                var nu = Units.Unit(B.getUnit().getName(),A.getUnit().getDimension()+B.getUnit().getDimension());
                 return Literals.makeNumber(na._value*bv, nu);
             }
             throw new Error("cannot convert between units " + A.getUnit() + " " + B.getUnit());
@@ -76,8 +76,8 @@ var Arithmetic = {
             if(!A.hasUnit() && B.hasUnit())  return Literals.makeNumber(A._value/B._value,B.getUnit());
 
             if(Units.sameName(A.getUnit(),B.getUnit())) {
-                var dim = A.getUnit().dim-B.getUnit().dim;
-                var name = B.getUnit().name;
+                var dim = A.getUnit().getDimension()-B.getUnit().getDimension();
+                var name = B.getUnit().getName();
                 var nu = Units.Unit(name,dim);
                 return Literals.makeNumber(A._value/B._value,nu);
             }
@@ -86,7 +86,7 @@ var Arithmetic = {
             if(Units.sameType(A.getUnit(),B.getUnit())) {
                 var bv = B._value;
                 var na = Arithmetic.ConvertUnit.fun(A,B.getUnit());
-                var nu = Units.Unit(B.getUnit().name,A.getUnit().dim-B.getUnit().dim);
+                var nu = Units.Unit(B.getUnit().getName(),A.getUnit().getDimension()-B.getUnit().getDimension());
                 return Literals.makeNumber(na._value/bv, nu);
             }
             throw new Error("cannot convert between units " + A.getUnit() + " " + B.getUnit());
@@ -118,46 +118,46 @@ var Arithmetic = {
             if(au.type == u.type) {
                 var av = a.getNumber();
 
-                av = av * Math.pow(au.scale,au.dim);
-                if(au.base == u.name) return Literals.makeNumber(av, u);
-                if(au.base == u.base) return Literals.makeNumber(av / Math.pow(u.scale,u.dim),u);
+                av = av * Math.pow(au.scale,au.getDimension());
+                if(au.base == u.getName()) return Literals.makeNumber(av, u);
+                if(au.base == u.base) return Literals.makeNumber(av / Math.pow(u.scale,u.getDimension()),u);
 
-                au = Units.Unit(au.base,au.dim);
-                if(au.base == u.name) return Literals.makeNumber(av * au.scale,u);
+                au = Units.Unit(au.base,au.getDimension());
+                if(au.base == u.getName()) return Literals.makeNumber(av * au.scale,u);
                 if(au.base == u.base) return Literals.makeNumber(av / u.scale,u);
                 av = av * au.scale;
 
-                au = Units.Unit(au.base,au.dim);
-                if(au.base == u.name) return Literals.makeNumber(av * au.scale,u);
+                au = Units.Unit(au.base,au.getDimension());
+                if(au.base == u.getName()) return Literals.makeNumber(av * au.scale,u);
 
                 av = av * au.scale;
-                au = Units.Unit(au.base,au.dim);
-                if(au.base == u.name) return Literals.makeNumber(av * au.scale,u);
+                au = Units.Unit(au.base,au.getDimension());
+                if(au.base == u.getName()) return Literals.makeNumber(av * au.scale,u);
 
                 var us = u.scale;
-                if(au.name == u.base) {
+                if(au.getName() == u.base) {
                     return Literals.makeNumber(av * au.scale/us,u);
                 }
 
-                u = Units.Unit(u.base,u.dim);
+                u = Units.Unit(u.base,u.getDimension());
                 us *= u.scale;
-                u = Units.Unit(u.base,u.dim);
+                u = Units.Unit(u.base,u.getDimension());
                 us *= u.scale;
-                u = Units.Unit(u.base,u.dim);
+                u = Units.Unit(u.base,u.getDimension());
                 us *= u.scale;
-                if(au.name == u.name) {
+                if(au.getName() == u.getName()) {
                     return Literals.makeNumber(av*au.scale/us, startu);
                 }
                 return Literals.makeNumber(av * au.scale / (us*u.scale), u);
             }
 
-            if(au.type == 'length' && au.dim == 3 && u.type == 'volume') {
+            if(au.type == 'length' && au.getDimension() == 3 && u.type == 'volume') {
                 return CrossConvert(a,u);
             }
-            if(a.getUnit().type == 'length' && a.getUnit().dim == 2 && u.type == 'area') {
+            if(a.getUnit().type == 'length' && a.getUnit().getDimension() == 2 && u.type == 'area') {
                 return CrossConvert(a,u);
             }
-            if(a.getUnit().type == 'area' && a.getUnit().dim == 1 && u.type == 'length') {
+            if(a.getUnit().type == 'area' && a.getUnit().getDimension() == 1 && u.type == 'length') {
                 return CrossConvert(a,u);
             }
 
@@ -174,24 +174,24 @@ function CrossConvert(a,u) {
     var startu = u;
     //convert A to it's base unit
     var au = a.getUnit();
-    var av = a.getNumber() * Math.pow(au.scale,au.dim);
-    au = Units.Unit(au.base,au.dim);
+    var av = a.getNumber() * Math.pow(au.scale,au.getDimension());
+    au = Units.Unit(au.base,au.getDimension());
 
     var us = 1;
-    while(u.name != u.base) {
+    while(u.getName() != u.base) {
         us /= u.scale;
-        u = Units.Unit(u.base,u.dim);
+        u = Units.Unit(u.base,u.getDimension());
     }
-    if(au.name == 'meter' && au.dim == 3 && u.name == 'litre') {
+    if(au.getName() == 'meter' && au.getDimension() == 3 && u.getName() == 'litre') {
         av = av*1000.0/1.0 * us;
         return Literals.makeNumber(av,startu);
     }
-    if(au.name == 'meter' && au.dim == 2 && u.name == 'acre') {
+    if(au.getName() == 'meter' && au.getDimension() == 2 && u.getName() == 'acre') {
         var ratio = 0.000247105;
         av = av*ratio * us;
         return Literals.makeNumber(av,startu);
     }
-    if(au.name == 'acre' && au.dim == 1 && u.name == 'meter' && u.dim == 2) {
+    if(au.getName() == 'acre' && au.getDimension() == 1 && u.getName() == 'meter' && u.getDimension() == 2) {
         var ratio = 4046.86;
         av = av*ratio * us;
         return Literals.makeNumber(av,startu);

@@ -1,6 +1,53 @@
 var Q = require('q');
 var Literals = require('./Literals');
 
+function UnitBase(def) {
+    this._name = def.name;
+    this._dim = def.dim;
+    this.base = def.base;
+    this.type = def.type;
+    this.scale = def.scale;
+    this.getName = function() {
+        return this._name;
+    };
+    this.getDimension = function() {
+        return this._dim;
+    };
+    this.toString = function() {
+        if (this._dim == 0) return " " + this.getName();
+        return " " + this.getName() + "^" + this.getDimension();
+    };
+    this.toCode = function() {
+        if(this._dim == 0) return "";
+        if(this._dim == 1) return this._name;
+        return this._name + "^" + this._dim;
+    };
+    this.value = function () {
+        var self = this;
+        return Q.fcall(function () {
+            return self;
+        });
+    };
+
+    this.abbrs = [];
+    if(def.abbr) this.abbrs.push(def.abbr);
+    this.getAbbreviations = function() {
+        return this.abbrs;
+    }
+
+    if(def.convert) {
+        this.convert = def.convert;
+    }
+}
+
+function Extendo(base,addons) {
+    var obj = Object.create(base);
+    for(var name in addons) {
+        obj[name] = addons[name];
+    }
+    return obj;
+}
+
 //these are the extra plurals and abbreviations.
 var names = {
     'inches': 'inch',
@@ -40,169 +87,36 @@ names['sqft'] = 'squarefoot';
 
 //start with the non-metric units, since they aren't uniform
 var units = [
-    {
-        name: 'none',
-        type: 'none',
-        base: 'none',
-        abbr: '',
-        scale: 1.0,
-        dim: 0
-    },
-
-
+    new UnitBase({ name: 'none', type: 'none',   base: 'none',   abbr: '',   scale: 1.0,  dim: 0 }),
     //length
-    {
-        name: 'foot',
-        type: 'length',
-        base: 'meter',
-        abbr: 'ft',
-        scale: 0.3048,
-        dim: 1
-    },
-    {
-        name: 'inch',
-        type: 'length',
-        base: 'meter',
-        abbr: 'in',
-        scale: 0.0254,
-        dim: 1
-    },
-    {
-        name: 'yard',
-        type: 'length',
-        base: 'meter',
-        abbr: 'yd',
-        scale: 0.9144,
-        dim: 1
-    },
-    {
-        name: 'mile',
-        type: 'length',
-        base: 'meter',
-        abbr: 'mi',
-        scale: 1609.34,
-        dim: 1
-    },
-    {
-        name: 'league',
-        type: 'length',
-        base: 'mile',
+    new UnitBase({ name: 'foot', type: 'length', base: 'meter',  abbr: 'ft', scale: 0.3048, dim: 1 }),
+    new UnitBase({ name: 'inch', type: 'length', base: 'meter',  abbr: 'in', scale: 0.0254, dim: 1 }),
 
-        scale: 3,
-        dim: 1
-    },
-
-
+    new UnitBase({ name: 'yard', type: 'length', base: 'meter',  abbr: 'yd', scale: 0.9144, dim: 1 }),
+    new UnitBase({ name: 'mile', type: 'length', base: 'meter',  abbr: 'mi', scale: 1609.34,  dim: 1 }),
+    new UnitBase({ name: 'league',  type: 'length', base: 'mile',            scale: 3,      dim: 1 }),
     /// volume
+    new UnitBase({ name: 'gallon', type: 'volume',  base: 'litre', abbr: 'gal', scale: 3.7854118, dim: 1 }),
+    new UnitBase({ name: 'quart',  type:'volume',   base:'gallon', abbr: 'qt',  scale: 1 / 4,     dim: 1 }),
+    new UnitBase({ name: 'pint',   type: 'volume',  base: 'gallon',abbr: 'pt',  scale: 1 / 8,     dim: 1 }),
+    new UnitBase({ name: 'cup',    type: 'volume',  base: 'gallon', abbr: 'cup', scale: 1 / 16,   dim: 1 }),
+    new UnitBase({ name: 'gill',   type: 'volume',  base: 'pint',   abbr: 'gl',  scale: 1 / 4,    dim: 1 }),
 
-    {
-        name: 'gallon',
-        abbr: 'gal',
-        type: 'volume',
-        base: 'litre',
-        scale: 3.7854118,
-        dim: 1
-    },
-    {
-        name: 'quart',
-        abbr: 'qt',
-        type: 'volume',
-        base: 'gallon',
-        scale: 1 / 4,
-        dim: 1
-    },
-    {
-        name: 'pint',
-        abbr: 'pt',
-        type: 'volume',
-        base: 'gallon',
-        scale: 1 / 8,
-        dim: 1
-    },
-    {
-        name: 'cup',
-        abbr: 'cup',
-        type: 'volume',
-        base: 'gallon',
-        scale: 1 / 16,
-        dim: 1
-    },
-    {
-        name: 'gill',
-        abbr: 'gl',
-        type: 'volume',
-        base: 'pint',
-        scale: 1 / 4,
-        dim: 1
-    },
-
-    {
-        name: 'teaspoon',
-        abbr: 'tsp',
-        type: 'volume',
-        base: 'cup',
-        scale: 1 / 48,
-        dim: 1
-    },
-    {
-        name: 'tablespoon',
-        abbr: 'tbsp',
-        type: 'volume',
-        base: 'cup',
-        scale: 1 / 16,
-        dim: 1
-    },
-
+    new UnitBase({ name: 'teaspoon', type: 'volume', base: 'cup',   abbr: 'tsp', scale: 1 / 48,   dim: 1 }),
+    new UnitBase({ name: 'tablespoon', type: 'volume', base: 'cup', abbr: 'tbsp', scale: 1 / 16,  dim: 1 }),
 
     //mass
-    {
-        name:'pound',
-        abbr:'lb',
-        type:'mass',
-        base:'gram',
-        scale: 453.592,
-        dim:1
-    },
-    {
-        name:'grain',
-        abbr:'gr',
-        type:'mass',
-        base:'pound',
-        scale: 1/7000,
-        dim: 1
-    },
-    {
-        name:'ounce',
-        abbr:'oz',
-        type:'mass',
-        base:'pound',
-        scale: 1/16,
-        dim: 1
-    },
-    {
-        name:'ton',
-        type:'mass',
-        base:'pound',
-        scale: 2000,
-        dim:1
-    },
-
-
-
+    new UnitBase({ name:'pound', type:'mass', base:'gram',  abbr:'lb', scale: 453.592, dim:1 }),
+    new UnitBase({ name:'grain', type:'mass', base:'pound', abbr:'gr', scale: 1/7000,  dim: 1 }),
+    new UnitBase({ name:'ounce', type:'mass', base:'pound', abbr:'oz', scale: 1/16,    dim:1 }),
+    new UnitBase({ name:'ton',   type:'mass', base:'pound',            scale: 2000,    dim:1 }),
     //area
-    {
-        name: 'acre',
-        abbr: 'ac',
-        type: 'area',
-        base: 'acre',
-        scale: 1,
-        dim: 1
-    },
+    new UnitBase({ name:'acre',  type:'area', base:'acre',  abbr:'ac', scale: 1,       dim: 1 }),
 
 
 
     //temperature
-    {
+    new UnitBase({
         name:'celsius',
         abbr:'C',
         type:'temperature',
@@ -210,14 +124,15 @@ var units = [
         scale:1,
         dim:1,
         convert: function(A) {
-            if(A.getUnit().name == 'fahrenheit')
+            if(A.getUnit().getName() == 'fahrenheit')
                 return Literals.makeNumber((A.getNumber()-32) * 100/180,this);
-            if(A.getUnit().name == 'kelvin')
+            if(A.getUnit().getName() == 'kelvin')
                 return Literals.makeNumber(A.getNumber()-273.15,this);
             throw new Error("CAN'T CONVERT " + A.getUnit().toString() + " to " + this);
         }
-    },
-    {
+    }),
+
+    new UnitBase({
         name:'kelvin',
         abbr:'K',
         type:'temperature',
@@ -225,14 +140,14 @@ var units = [
         scale:1,
         dim:1,
         convert: function(A) {
-            if(A.getUnit().name == 'celsius')
+            if(A.getUnit().getName() == 'celsius')
                 return Literals.makeNumber(A.getNumber() + 273.15,this);
-            if(A.getUnit().name == 'fahrenheit')
+            if(A.getUnit().getName() == 'fahrenheit')
                 return Literals.makeNumber((A.getNumber()-32)*100/180 + 273.15,this);
             throw new Error("CAN'T CONVERT " + A.getUnit().toString() + " to " + this);
         }
-    },
-    {
+    }),
+    new UnitBase({
         name:'fahrenheit',
         abbr:'F',
         type:'temperature',
@@ -240,105 +155,100 @@ var units = [
         scale:1,
         dim:1,
         convert: function(A) {
-            if(A.getUnit().name == 'celsius')
+            if(A.getUnit().getName() == 'celsius')
                 return Literals.makeNumber((A.getNumber() * 180/100) + 32,this);
-            if(A.getUnit().name == 'kelvin')
+            if(A.getUnit().getName() == 'kelvin')
                 return Literals.makeNumber((A.getNumber() - 273.15)*180/100 + 32,this);
             throw new Error("CAN'T CONVERT " + A.getUnit().toString() + " to " + this);
         }
-    },
+    }),
 
 
     //time durations
-    {
+    new UnitBase({
         name:'second',
         abbr:'s',
         type:'duration',
         base:'second',
         scale:1,
         dim:1
-    },
-    {
+    }),
+    new UnitBase({
         name:'minute',
         abbr:'min',
         type:'duration',
         base:'second',
         scale:60,
         dim:1
-    },
-    {
+    }),
+    new UnitBase({
         name:'hour',
         abbr:'h',
         type:'duration',
         base:'second',
         scale:60*60,
         dim:1
-    },
-    {
+    }),
+    new UnitBase({
         name:'day',
         abbr:'d',
         type:'duration',
         base:'second',
         scale:60*60*24,
         dim:1
-    },
+    }),
 
 
 
     //number formats
-    {
+    new UnitBase({
         name:'hexadecimal',
         abbr:'hex',
         type:'numeric',
         base:'decimal',
         scale:1,
         dim:1
-    }
+    })
 ];
 
-
-function genMetricLen(name, abbr, scale) {
-    var unit = {
-        name: name,
-        type: 'length',
-        base: 'meter',
-        abbr: abbr,
-        scale: scale,
-        dim: 1
-    };
-
-    units.push(unit);
-    names[unit.name] = unit.name;
-    names[unit.name + 's'] = unit.name;
-    names[unit.abbr] = unit.name;
+function addUnit(unit) {
+    var u = new UnitBase(unit);
+    units.push(u);
+    names[u.getName() + 's'] = u.getName();
 }
 
-genMetricLen('megameter', 'Mm', 1000000);
-genMetricLen('kilometer', 'km', 1000);
-genMetricLen('hectometer', 'hm', 100);
-genMetricLen('decameter', 'dam', 10);
-genMetricLen('meter', 'm', 1);
-genMetricLen('decimeter', 'dm', 0.1);
-genMetricLen('centimeter', 'cm', 0.01);
-genMetricLen('millimeter', 'mm', 0.001);
-genMetricLen('micrometer', 'um', 0.000001);
-genMetricLen('nanometer', 'nm', 0.00000000001);
+function genMetricLen(name, abbr, scale) {
+    addUnit({
+        name:  name,
+        type: 'length',
+        base: 'meter',
+        abbr:  abbr,
+        scale: scale,
+        dim:   1
+    });
+}
+
+genMetricLen('megameter',  'Mm',  1000000);
+genMetricLen('kilometer',  'km',  1000);
+genMetricLen('hectometer', 'hm',  100);
+genMetricLen('decameter',  'dam', 10);
+genMetricLen('meter',      'm',   1);
+genMetricLen('decimeter',  'dm',  0.1);
+genMetricLen('centimeter', 'cm',  0.01);
+genMetricLen('millimeter', 'mm',  0.001);
+genMetricLen('micrometer', 'um',  0.000001);
+genMetricLen('nanometer',  'nm',  0.00000000001);
 
 
 function genMetricVol(name, abbr, scale) {
-    var unit = {
+    addUnit({
         name: name,
         type: 'volume',
         base: 'litre',
         abbr: abbr,
         scale: scale,
         dim: 1
-    };
-
-    units.push(unit);
-    names[unit.name] = unit.name;
-    names[unit.name + 's'] = unit.name;
-    names[unit.abbr] = unit.name;
+    });
 }
 
 genMetricVol('megalitre',  'Ml', 1000*1000);
@@ -352,19 +262,14 @@ genMetricVol('millilitre', 'ml', 0.001);
 genMetricVol('microlitre', 'ul', 0.000001);
 
 function genMetricMass(name, abbr, scale) {
-    var unit = {
+    addUnit({
         name: name,
         type: 'mass',
         base: 'gram',
         abbr: abbr,
         scale: scale,
         dim: 1
-    }
-
-    units.push(unit);
-    names[unit.name] = unit.name;
-    names[unit.name + 's'] = unit.name;
-    names[unit.abbr] = unit.name;
+    });
 }
 
 genMetricMass('megagram',   'Mg', 1000*1000);
@@ -383,52 +288,35 @@ names['liters'] = 'litre';
 names['milliliter'] = 'millilitre';
 names['milliliters'] = 'millilitre';
 
-function UnitToString() {
-    //if (this.dim == 0) return " " + this.name;
-    return " " + this.name + "^" + this.dim;
-}
-function UnitToCode() {
-    if(this.dim == 0) return "";
-    if(this.dim == 1) return this.name;
-    return this.name + "^" + this.dim;
-}
 
 var map = {};
 units.forEach(function (unit) {
-    //put into the map
-    map[unit.name] = unit;
-    unit.toString = UnitToString;
-    unit.toCode = UnitToCode;
-    unit.value = function () {
-        var self = this;
-        return Q.fcall(function () {
-            return self;
-        });
-    };
+    if(!unit.getName) return;
+    map[unit.getName()] = unit;
     //add name and abbr to the name lookup table
-    names[unit.name] = unit.name;
-    names[unit.abbr] = unit.name;
+    names[unit.getName()] = unit.getName();
+    unit.getAbbreviations().forEach(function(abbr){
+        names[abbr] = unit.getName();
+    });
 });
 
 
-map['cubicfoot'] = {
+map['cubicfoot'] = new UnitBase({
     name: 'foot',
     type: 'length',
     base: 'meter',
     abbr: 'ft',
     scale: 0.3048,
-    dim: 3,
-    toString: UnitToString
-};
-map['squarefoot'] = {
+    dim: 3
+});
+map['squarefoot'] = new UnitBase({
     name: 'foot',
     type: 'length',
     base: 'meter',
     abbr: 'ft',
     scale: 0.3048,
-    dim: 2,
-    toString: UnitToString
-};
+    dim: 2
+});
 
 
 var unit_modifiers = {
@@ -443,7 +331,7 @@ exports.Unit = function (name, dim, exp) {
     //console.log("making unit",name,dim,exp);
     if(typeof exp !== 'undefined') dim = exp;
     //lower case longer names
-    if(name.length >= 3) name = name.toLowerCase();
+    if (name.length >= 3) name = name.toLowerCase();
     if (names[name] && map[names[name]]) {
         var unit = map[names[name]];
         var outunit = Object.create(unit);
@@ -451,12 +339,11 @@ exports.Unit = function (name, dim, exp) {
             dim = unit_modifiers[dim];
         }
         if (dim != null) {
-            outunit.dim = dim;
+            outunit._dim = dim;
         }
         return outunit;
     }
-    console.log("ERRROR. INVALID UNIT", name);
-    return null;
+    throw new Error("ERRROR. INVALID UNIT " + name);
 };
 
 exports.equal = function (a, b) {
@@ -465,11 +352,11 @@ exports.equal = function (a, b) {
     if(typeof a == 'undefined' && typeof b != 'undefined') return false;
 
     //all dimensionless units are equal
-    if (a.dim == 0 && b.dim == 0) return true;
-    if (a.dim == 0 && b.name=='none') return true;
+    if (a._dim == 0 && b._dim == 0) return true;
+    if (a._dim == 0 && b.getName()=='none') return true;
 
-    if (a.name == b.name) {
-        if (a.dim == b.dim) {
+    if (a._name == b._name) {
+        if (a._dim == b._dim) {
             return true;
         }
     }
@@ -478,7 +365,7 @@ exports.equal = function (a, b) {
 
 
 exports.sameName = function (a, b) {
-    return (a.name == b.name);
+    return (a.getName() == b.getName());
 };
 
 exports.sameType = function (a, b) {
@@ -497,7 +384,7 @@ exports.isValidUnitModifierName = function (name) {
 
 exports.hasUnit = function (A) {
     if (typeof A.unit === 'undefined') return false;
-    if (A.unit.name == 'none') return false;
+    if (A.unit.getName() == 'none') return false;
     return true;
 };
 
