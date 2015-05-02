@@ -74,3 +74,80 @@ test("Test Piped TakeFive", function(t) {
         }).done();
     });
 });
+
+
+test("Test Mean", function(t) {
+    t.ok(ctx.hasSymbol("Mean"), "symbol exists");
+    var expr = Parser.matchAll('Mean([1,2,3,4,5,6,7,8,9,10])','start');
+    expr.value(ctx).then(function(v) {
+        if(v.length() == 10) {
+            t.end();
+            console.log("DONE!");
+        }
+    }).done();
+});
+
+test("Test Elements", function(t) {
+    t.ok(ctx.hasSymbol("Elements"), "symbol exists");
+    var expr = Parser.matchAll('Elements()','start');
+    expr.value(ctx).then(function(v) {
+        if(v.length() == 126) {
+            t.end();
+            console.log("DONE!");
+        }
+    }).done();
+});
+
+test("Test Take", function(t) {
+    t.ok(ctx.hasSymbol("Take"), "symbol exists");
+    var expr1 = Parser.matchAll('Take([1,2,3,4,5,6,7,8,9,10],3)','start');
+    expr1.value(ctx).then(function(v) {
+        t.equal(v.length(),3);
+        t.equal(v.item(0).getNumber(),1);
+        t.equal(v.item(2).getNumber(),3)
+    }).done();
+
+    var expr2 = Parser.matchAll('Take([1,2,3,4,5,6,7,8,9,10],-4)','start');
+    expr2.value(ctx).then(function(v) {
+        t.equal(v.length(),4);
+        t.equal(v.item(0).getNumber(),7);
+        t.equal(v.item(3).getNumber(),10)
+        t.end();
+    }).done();
+});
+
+test("Test Take Update", function(t) {
+    var expr1 = Parser.matchAll('RandomWalk() => Take(3)','start');
+    var count = 0;
+    var cb = expr1.onChange(function(ex){
+        ex.value(ctx).then(function(v){
+            t.equal(v.length(),3);
+            count++;
+            if(count == 3) {
+                expr1.removeListener(cb);
+                t.end();
+            }
+        });
+    });
+});
+
+test("Test Make List", function(t) {
+    var expr1 = Parser.matchAll('MakeList(10)','start');
+    expr1.value(ctx).then(function(v){
+        t.equal(v.length(),10);
+        t.equal(v.item(0),1);
+    });
+    var expr2 = Parser.matchAll('MakeList(10, start:5','start');
+    expr2.value(ctx).then(function(v){
+        t.equal(v.length(),10);
+        t.equal(v.item(0),5);
+        t.equal(v.item(1),6);
+    });
+    var expr3 = Parser.matchAll('MakeList(10, start:5, step:2','start');
+    expr3.value(ctx).then(function(v){
+        t.equal(v.length(),10);
+        t.equal(v.item(0),5);
+        t.equal(v.item(1),7);
+        t.end();
+    });
+});

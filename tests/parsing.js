@@ -328,11 +328,22 @@ test("time units", function(t) {
 
 
 test("variable equations", function(t) {
-    //compareUnit("pi * (42m)^2",Math.PI*42*42,'meter');
-    //compareUnit("ca_pop/ca_area",42,"person per square mile");
-    //compareUnit("earth_circ/700 mi/hr",42,"hours");
+    //pi
+    compareNumber(t,'pi',Math.PI);
+    compareUnit(t,'pi * 1m',Math.PI,'meter');
+    compareUnit(t,"pi * (42m)^2",Math.PI*42*42,'meter',2);
+    //people per square mile in CA.
+    compareNumber(t,'ca_pop',100,'custom');
+    compareUnit(t,'ca_area',1000,'mile',2);
+    compareCompoundUnit(t,'ca_area/ca_pop',10,['custom',1,'mile',2]);
+    //time to fly around the earth
+    compareUnit(t,'earth_circ',7*1000,'mile');
+    compareCompoundUnit(t,'airspeed',700,['miles',1,'hour',-1]);
+    compareUnit(t,'earth_circ/airspeed',10,'hour',1);
     // how earths could fit inside of jupiter
-    //compareUnit("(4/3 * pi * jupiter_radius^2) / (4/3 * pi * earth_radius)",42);
+    compareUnit(t,'jupiter_rad',10*1000,'mile',1);
+    compareUnit(t,'earth_rad',1*1000,'mile',1);
+    compareUnit(t,'(4/3*pi*jupiter_rad^2)/(4/3*pi*earth_rad^2)',10,'none');
     t.end();
 });
 
