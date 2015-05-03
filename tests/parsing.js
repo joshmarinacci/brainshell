@@ -221,21 +221,20 @@ test("area units", function(t) {
 });
 
 test("velocity units", function(t) {
-    //compareUnit("42 mi/hr",42,'mile per hour');
-    //velocity
-    //    tu('5meterspersecond',5,'meterspersecond','velocity');
-    //    tu('60mph',60,'milesperhour','velocity');
-    //    tu('60mph in kph',96.5606,'kilometersperhour','velocity');
-    //    tu('5meterspersecond in mph',5/0.44704,'milesperhour','velocity');
-    //tu('5mps',5,'meterpersecond','velocity');
-    //tu('60mph in m/s',0,'meterpersecond','velocity');
+    compareCompoundUnit(t,"42mi/hr",42,['mile',1,'hour',1]);
+    compareCompoundUnit(t,"42m/s^2",42,['meter',1,'second',-2]);
+    //compareCompoundUnit(t,"6s * 7m/s^2 ",42,'mile per hour');
+    compareCompoundUnit(t,'5m/s',5,['meter',1,'second',-1]);
+    compareCompoundUnit(t,'60 mi/hr',60,['mile',1,'hour',-1]);
+    //compareCompoundUnit(t,'60 mi/hr as km/hr',80['kilometer',1,'hour',-1]);
+    //compareCompoundUnit(t,'5 m/s as mi/hr',500,['mile',1,'hour',-1]);
+    //compareCompoundUnit(t,'60 mph ',60['mile',1,'hour',-1]);
+    //compareCompoundUnit(t,'60 mph as m/s',6,['meter',1,'second',-1]);
     t.end();
 });
 
 test("acceleration units", function(t) {
-    //acceleration
-    //tu('9.8mpssq',9.8,'meterpersecondsquared','acceleration');
-    //tu('9.8m/s^2',9.8,'meterpersecondsquared','acceleration');
+    compareCompoundUnit(t,'9.8 m/s^2',9.8,['meter',1,'second',-2]);
     t.end();
 });
 
@@ -535,4 +534,13 @@ function compareUnit(t,str,val,unit,dim, DEBUG) {
         }
     }).done();
 }
+function compareCompoundUnit(t,str,val,units) {
+    parse(str).value().then(function(v){
+        console.log("became " + v);
+        //console.log("number = ", v.getNumber());
+        t.equal(v.getNumber(),val);
+        var u = v.getUnit();
+        t.equal(u.type,'compound');
+    }).done();
 
+}

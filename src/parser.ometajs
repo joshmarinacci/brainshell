@@ -58,7 +58,8 @@ export ometa Parser {
 
     unitmodifier = ("cubic" | "cu" | "squared" | "square" | "sq"):c isUnitModifier(c) ' ' -> c,
     unitexponent = '^' digit:d -> d,
-    unit      = sp unitmodifier?:c word:u unitexponent?:e isUnit(u) -> Units.Unit(u,c,e),
+    unit      = sp word:u1 unitexponent?:e1 '/' word:u2 unitexponent?:e2 -> Units.CompoundUnit(u1,e1,u2,e2)
+              | sp unitmodifier?:c word:u unitexponent?:e isUnit(u)      -> Units.Unit(u,c,e),
     numunit   = num:x unit:u             -> Literals.makeNumber(x,u),
     numhex    = 'x' num:x                -> Literals.makeNumber(x,'hexadecimal'),
     numsolo   = num:x                    -> Literals.makeNumber(x),
