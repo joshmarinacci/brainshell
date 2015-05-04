@@ -284,4 +284,36 @@ exports.makeDefaultFunctions = function(ctx) {
             return Literals.makeList(arr);
         }
     }));
+
+    regSimple(ctx, Extendo(BaseValue,{
+        name:'Take',
+        init: function() {
+            this._cbs=[];
+        },
+        fun: function(data,Bnum) {
+            var num = Bnum.getNumber();
+            if(num < 0) {
+                var arr = it2Array(data.getIterator());
+                arr = arr.slice(arr.length + num);
+                return Literals.makeList(arr);
+            }
+            if(num > 0) {
+                var arr = it2Array(data.getIterator());
+                arr = arr.slice(0,num);
+                return Literals.makeList(arr);
+
+            }
+            // if num is 0
+            return Literals.makeList([]);
+        }
+    }));
 };
+
+
+function it2Array(it) {
+    var arr = [];
+    while(it.hasNext()) {
+        arr.push(it.next());
+    }
+    return arr;
+}

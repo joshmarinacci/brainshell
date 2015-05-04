@@ -31,6 +31,30 @@ test("Test Mean", function(t) {
     }).done();
 });
 
+test("Test Take", function(t) {
+    t.ok(ctx.hasSymbol("Take"), "symbol exists");
+    Parser.matchAll('Take([1,2,3,4,5,6,7,8,9,10],3)','start').value(ctx).then(function(v) {
+        t.equal(v.length(),3);
+        t.equal(v.item(0).getNumber(),1);
+        t.equal(v.item(2).getNumber(),3);
+    }).done();
+    Parser.matchAll('Take([1,2,3,4,5,6,7,8,9,10],-4)','start').value(ctx).then(function(v) {
+        t.equal(v.length(),4);
+        t.equal(v.item(0).getNumber(),7);
+        t.equal(v.item(3).getNumber(),10);
+    }).done();
+
+    Parser.matchAll('MakeList(5) => Take(-2)','start').value(ctx).then(function(v) {
+        t.equal(v.length(),2);
+        t.equal(v.item(0).getNumber(),4);
+        t.equal(v.item(1).getNumber(),5);
+        t.end();
+    }).done();
+});
+
+
+return;
+
 
 test("Test RandomWalk",function(t) {
     t.ok(ctx.hasSymbol("RandomWalk"),"symbol exists");
@@ -113,24 +137,6 @@ test("Test Elements", function(t) {
             t.end();
             console.log("DONE!");
         }
-    }).done();
-});
-
-test("Test Take", function(t) {
-    t.ok(ctx.hasSymbol("Take"), "symbol exists");
-    var expr1 = Parser.matchAll('Take([1,2,3,4,5,6,7,8,9,10],3)','start');
-    expr1.value(ctx).then(function(v) {
-        t.equal(v.length(),3);
-        t.equal(v.item(0).getNumber(),1);
-        t.equal(v.item(2).getNumber(),3)
-    }).done();
-
-    var expr2 = Parser.matchAll('Take([1,2,3,4,5,6,7,8,9,10],-4)','start');
-    expr2.value(ctx).then(function(v) {
-        t.equal(v.length(),4);
-        t.equal(v.item(0).getNumber(),7);
-        t.equal(v.item(3).getNumber(),10);
-        t.end();
     }).done();
 });
 
