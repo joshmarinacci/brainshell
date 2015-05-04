@@ -52,6 +52,23 @@ test("Test Take", function(t) {
     }).done();
 });
 
+test("Test Elements", function(t) {
+    t.ok(ctx.hasSymbol("Elements"), "symbol exists");
+    var exp = Parser.matchAll('Elements()','start');
+    exp.value(ctx).then(function(v) {
+        t.equal(v.length(),118);
+        t.equal(v.item(0).length(),4);
+        var num = v.item(0).item(0);
+        var weight = v.item(0).item(1);
+        var name = v.item(0).item(2);
+        t.equal(num.isString(),true);
+        t.equal(weight.isString(),true);
+        t.equal(name.isString(),true);
+        t.equal(name.getString(),"Hydrogen");
+        t.equal(v.item(108).item(2).getString(),'Meitnerium');
+        t.end();
+    }).done();
+});
 
 return;
 
@@ -118,27 +135,6 @@ test("Test Piped TakeFive", function(t) {
 });
 
 
-test("Test Mean", function(t) {
-    t.ok(ctx.hasSymbol("Mean"), "symbol exists");
-    var expr = Parser.matchAll('Mean([1,2,3,4,5,6,7,8,9,10])','start');
-    expr.value(ctx).then(function(v) {
-        if(v.length() == 10) {
-            t.end();
-            console.log("DONE!");
-        }
-    }).done();
-});
-
-test("Test Elements", function(t) {
-    t.ok(ctx.hasSymbol("Elements"), "symbol exists");
-    var expr = Parser.matchAll('Elements()','start');
-    expr.value(ctx).then(function(v) {
-        if(v.length() == 126) {
-            t.end();
-            console.log("DONE!");
-        }
-    }).done();
-});
 
 test("Test Take Update", function(t) {
     var expr1 = Parser.matchAll('RandomWalk() => Take(3)','start');

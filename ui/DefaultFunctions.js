@@ -1,7 +1,10 @@
+var fs       = require('fs');
+var csvparse = require('csv-parse');
 var Literals = require('../src/Literals');
 var Symbols = require('../src/Symbols');
 var Context = require('../src/Context');
 var moment = require('moment');
+var Q = require('q');
 
 function regSimple(ctx,fun) {
     fun.kind = "function";
@@ -305,6 +308,24 @@ exports.makeDefaultFunctions = function(ctx) {
             }
             // if num is 0
             return Literals.makeList([]);
+        }
+    }));
+
+    regSimple(ctx, Extendo(BaseValue, {
+        name:"Elements",
+        init: function() {
+            this._cbs=[];
+        },
+        fun: function() {
+            return Q.nfcall(fs.readFile,"tests/resources/elements.csv").then(function(buff) {
+                return Q.nfcall(csvparse,buff).then(function(rows){
+                    return Literals.makeList(rows.map(function(row) {
+                        return Literals.makeList(row.map(function(col) {
+                            return Literals.makeString(col);
+                        }));
+                    }));
+                });
+            });
         }
     }));
 };
