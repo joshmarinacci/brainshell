@@ -121,8 +121,10 @@ exports.makeDefaultFunctions = function(ctx) {
     });
 
     regSimple(ctx, {
-        name: 'sum',
+        name: 'Sum',
         cbs: [],
+        init: function() {
+        },
         onChange: function (cb) {
             this.cbs.push(cb);
         },
@@ -133,16 +135,63 @@ exports.makeDefaultFunctions = function(ctx) {
             });
         },
         fun: function (data) {
+            //console.log("summing data",data);
             var it = data.getIterator();
-            var total = 0;
+            var infos = data.getColumnInfos();
+            var totals = [];
+            for(var i=0; i<infos.length; i++) {
+                totals[infos[i].id()] = 0;
+            }
             while (it.hasNext()) {
                 var v = it.next();
-                total += v._value;
+                for(var i=0; i<infos.length; i++) {
+                    totals[infos[i].id()] += infos[i].getValue(v).getNumber();
+                }
             }
-            return Literals.makeNumber(total);
+            if(totals.length == 1) {
+                return Literals.makeNumber(totals[0]);
+            }
+            var arr = totals.map(function(v) {
+                return Literals.makeNumber(v);
+            });
+            return Literals.makeList(arr);
         }
     });
 
+    regSimple(ctx, {
+        name: 'Mean',
+        cbs: [],
+        init: function() {
+        },
+        onChange: function (cb) {
+            this.cbs.push(cb);
+        },
+        notify: function () {
+            var self = this;
+            this.cbs.forEach(function (cb) {
+                cb(self);
+            });
+        },
+        fun: function (data) {
+            var infos = data.getColumnInfos();
+            function calcMean(info) {
+                var it = data.getIterator();
+                var total = 0;
+                var count = 0;
+                while(it.hasNext()) {
+                    count++;
+                    var v = it.next();
+                    total += info.getValue(v).getNumber();
+                }
+                return Literals.makeNumber(total/count);
+            }
+            var totals = infos.map(calcMean);
+            if(totals.length == 1) {
+                return totals[0];
+            }
+            return Literals.makeList(totals);
+        }
+    });
 
     regSimple(ctx, Extendo(BaseValue,{
         name:'RandomWalk',
@@ -218,6 +267,21 @@ exports.makeDefaultFunctions = function(ctx) {
             obj.data = data;
             obj.type = 'schart';
             return obj;
+        }
+    }));
+
+    regSimple(ctx, Extendo(BaseValue,{
+        name:'MakeList',
+        init: function() {
+            this._cbs=[];
+        },
+        fun: function(num) {
+            var n = num.getNumber();
+            var arr = [];
+            for(var i=0; i<n; i++) {
+                arr.push(Literals.makeNumber(i+1));
+            }
+            return Literals.makeList(arr);
         }
     }));
 };

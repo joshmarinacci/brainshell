@@ -14,6 +14,24 @@ var ctx = Context.global();
 DefaultFunctions.makeDefaultFunctions(ctx);
 
 
+test("Sum of list", function(t) {
+    Parser.matchAll("MakeList(10) => Sum()",'start').value(ctx).then(function(v){
+        console.log("final value is",v.toString());
+        t.equal(v.getNumber(),55);
+        t.end();
+    }).done();
+});
+
+test("Test Mean", function(t) {
+    t.ok(ctx.hasSymbol("Mean"), "symbol exists");
+    Parser.matchAll('Mean([1,2,3,4,5,6,7,8,9,10])','start').value(ctx).then(function(v) {
+        console.log("result = ", v.toString());
+        t.equal(v.getNumber(),55/10);
+        t.end();
+    }).done();
+});
+
+
 test("Test RandomWalk",function(t) {
     t.ok(ctx.hasSymbol("RandomWalk"),"symbol exists");
     var expr = Parser.matchAll('RandomWalk()','start');
@@ -111,7 +129,7 @@ test("Test Take", function(t) {
     expr2.value(ctx).then(function(v) {
         t.equal(v.length(),4);
         t.equal(v.item(0).getNumber(),7);
-        t.equal(v.item(3).getNumber(),10)
+        t.equal(v.item(3).getNumber(),10);
         t.end();
     }).done();
 });
