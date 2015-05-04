@@ -12,21 +12,14 @@ var Context = require('../src/Context');
 var Symbols = require('../src/Symbols');
 var EditableLabel = require('./EditableLabel.jsx');
 var DefaultFunctions = require('./DefaultFunctions.js');
+var CustomList = require('../node_modules/appy-style/react/CustomList.jsx');
 
 var ctx = Context.global();
 
 DefaultFunctions.makeDefaultFunctions(ctx);
-
-var ListItem = React.createClass({
-    clicked: function() {
-        this.props.onSelect(this.props.item);
-    },
+var DocItem = React.createClass({
     render: function() {
-        var cn = "";
-        if(this.props.item == this.props.selectedItem) {
-            cn += 'selected';
-        }
-        return <li className={cn} onClick={this.clicked}>{this.props.children}</li>;
+        return <li draggable='false' {...this.props}>{this.props.item.title}</li>
     }
 });
 
@@ -97,10 +90,6 @@ var MainView = React.createClass({
     },
     render: function() {
         var self = this;
-        var docs = this.state.docs.map(function(doc) {
-            return <ListItem key={doc._id} item={doc} onSelect={self.docSelected} selectedItem={self.state.selectedDoc}>{doc.title}</ListItem>;
-        });
-        var self = this;
         var doc = this.state.selectedDoc;
         if(doc == null) {
             var panels = [];
@@ -125,7 +114,7 @@ var MainView = React.createClass({
             <div className="hbox grow">
                 <div className="vbox" id="docs-pane">
                     <header>Documents</header>
-                    <ul className="list grow">{docs}</ul>
+                    <CustomList items={this.state.docs} template={<DocItem/>} onSelect={this.docSelected}/>
                     <footer>
                         <button onClick={this.createNewDoc} className='fa fa-plus'></button>
                     </footer>
