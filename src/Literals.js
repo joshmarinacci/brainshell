@@ -209,14 +209,14 @@ function KeyValuePair(key,value) {
     this._key = key;
     this._value = value;
     this.toString = function() {
-        return 'KVP [' + this._key + ":"+this._value+']';
+        return this._key + ":"+this._value.toString();
     };
     this.getKey = function() {
         return this._key;
     };
     this.getValue = function() {
         return this._value;
-    },
+    };
     this.toCode = function() {
         return this._key + ':' + this._value;
     }

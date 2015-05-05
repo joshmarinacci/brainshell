@@ -8,6 +8,7 @@ var csv = require("csv-streamify");
 var fs = require('fs');
 var es = require("event-stream");
 var moment = require('moment');
+var JSONStream = require("JSONStream");
 
 function loadCSV(file) {
     console.log("invoking load CSV on file",file);
@@ -63,13 +64,51 @@ function StockHistory(query) {
     });
 }
 
+function EarthquakeHistory() {
+    return Q.promise(function(resolve, reject, notify) {
+        try {
+            var req = request("http://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/significant_month.geojson");
+            req.on('error', function () {
+                console.log("got an error");
+            });
+            req.on('response', function (res) {
+                res
+                    .pipe(JSONStream.parse("features.*"))
+                    .pipe(es.mapSync(function (data) {
+                        //console.log('row',data);
+                        //reformat the data to include just what we want
+                        return {
+                            mag: data.properties.mag,
+                            id: data.id,
+                            place: data.properties.place,
+                            time: data.properties.time,
+                            type: data.properties.type,
+                            magType: data.properties.magType,
+                            geometry_coordinates: data.geometry.coordinates,
+                            geometry_type: data.geometry.type
+                        }
+                    }))
+                    .pipe(new JStream(resolve))
+                ;
+
+            })
+        } catch (e) {
+            console.log(e);
+            reject(e);
+        }
+    });
+}
 
 var services = {
     loadCSV: loadCSV,
     StockHistory: StockHistory,
+    EarthquakeHistory: EarthquakeHistory,
 };
 
 exports.invoke = function(id, args) {
-    console.log("ServiceManager: invoking", id, 'with args',args);
+    if(!services[id]) return new Q.fcall(function(){
+        console.log("doing an error");
+        throw new Error("unknown service " + id);
+    });
     return services[id].apply(null,args);
 };

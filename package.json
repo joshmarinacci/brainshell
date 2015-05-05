@@ -23,6 +23,7 @@
   },
   "homepage": "https://github.com/joshmarinacci/brainshell",
   "dependencies": {
+    "JSONStream": "^0.10.0",
     "appy-style": "^0.0.2",
     "body-parser": "^1.12.3",
     "cors": "^2.6.0",

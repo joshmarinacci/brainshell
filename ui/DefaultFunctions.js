@@ -344,6 +344,26 @@ exports.makeDefaultFunctions = function(ctx) {
             });
         }
     }));
+
+    regSimple(ctx, Extendo(BaseValue, {
+        name:"EarthquakeHistory",
+        init: function() {
+            this._cbs=[];
+        },
+        fun: function() {
+            return utils.invokeService("EarthquakeHistory").then(function(rows) {
+                return Literals.makeList(rows.map(function(row) {
+                    var vals = [];
+                    for(var name in row) {
+                        vals.push(Literals.makeKeyValue(name,Literals.makeString(row[name])));
+                    }
+                    return Literals.makeList(vals);
+                }));
+            });
+        }
+    }));
+
+
 };
 
 

@@ -60,11 +60,13 @@ app.post('/josh/deletedoc', function(req,res) {
 
 
 app.post('/service/:id',function(req,res) {
-    ServiceManager
-        .invoke(req.params.id, req.body.arguments)
+    ServiceManager.invoke(req.params.id, req.body.arguments)
         .then(function(result) {
             res.send(result);
-        });
+        }).fail(function(err) {
+            console.log("an error happened");
+            res.send({status:'error'});
+        }).done();
 });
 
 

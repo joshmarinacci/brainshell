@@ -77,8 +77,19 @@ test("Test StockHistory", function(t) {
         console.log("got back value", v.length());
         var l = v.length();
         var last = v.item(l-1);
-        console.log("last = ", last);
-    });
+        //console.log("last = ", last);
+    }).done();
+});
+
+test("Test EarthquakeHistory", function(t) {
+    t.ok(ctx.hasSymbol("EarthquakeHistory"), "symbol exists");
+    var exp = Parser.matchAll("EarthquakeHistory()",'start');
+    exp.value(ctx).then(function(v) {
+        console.log("got back value", v.length());
+        var l = v.length();
+        var last = v.item(l-1);
+        //console.log("last = ", last.toString());
+    }).done();
 });
 
 return;
