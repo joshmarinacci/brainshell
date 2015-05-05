@@ -31,6 +31,13 @@ var Arithmetic = {
             //if just B has a unit
             if(!A.hasUnit() && B.hasUnit())  return Literals.makeNumber(A._value*B._value,B.getUnit());
 
+            if(A.getUnit().type != 'compound' && B.getUnit().type == 'compound') {
+                return MultiplyCompoundPost(A,B);
+            }
+            if(A.getUnit().type == 'compound' && B.getUnit().type != 'compound') {
+                return MultiplyCompoundPost(B,A);
+            }
+
             if(Units.sameName(A.getUnit(),B.getUnit())) {
                 var dim = A.getUnit().getDimension()+B.getUnit().getDimension();
                 var name = B.getUnit().getName();
@@ -198,4 +205,39 @@ function CrossConvert(a,u) {
     }
 
     console.log("ERROR! CAN'T CROSS CONVERT " + au + " to " + u);
+}
+
+function printarray(lens) {
+    console.log("array==")
+    lens.forEach(function(u){
+        console.log(u.toString());
+    });
+}
+function reduceUnits(subunits,type) {
+    var lens = subunits.filter(function(u) { return u.type == type; });
+    if(lens.length > 1) {
+        //console.log("have to reduce",type);
+        var dim = 0;
+        lens.forEach(function(u){
+            dim += u._dim;
+        });
+        //console.log("final dim = ", dim, lens[0]._name);
+        return Units.Unit(lens[0]._name,dim);
+    } else {
+        return Units.Unit(lens[0]._name,lens[0]._dim);
+    }
+}
+
+function MultiplyCompoundPost(A,B) {
+    //console.log("multiplying",A.toString(),B.toString());
+    var fval = A.getNumber() * B.getNumber();
+    //console.log("new val = ",fval);
+    var subunits = B.getUnit().subunits.slice();
+    subunits.push(A.getUnit());
+    //printarray(subunits);
+    var finalunits = [];
+    finalunits.push(reduceUnits(subunits,'length'));
+    finalunits.push(reduceUnits(subunits,'duration'));
+    //printarray(finalunits);
+    return Literals.makeNumber(fval,Units.CompoundUnitFromList(finalunits));
 }

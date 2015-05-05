@@ -346,29 +346,37 @@ exports.Unit = function (name, dim, exp) {
     throw new Error("ERRROR. INVALID UNIT " + name);
 };
 
+var CompoundUnit = {
+    type:'compound',
+    toString: function() {
+        var str = this.subunits.map(function(un){
+            var exp = un.getDimension();
+            if(exp == 1) return " " + un.getName();
+            if(exp > 1) return " " + un.getName() + "^" + exp;
+            if(exp < 0) {
+                exp = -exp;
+                if(exp == 1) return "/" + un.getName();
+                return "/"+ un.getName() + "^"+exp;
+            }
+        }).join("");
+        return "COMPOUND UNIT" + str;
+    },
+    getName: function() {
+        return 'compound';
+    }
+};
+
 exports.CompoundUnit = function(name1, exp1, name2, exp2) {
     if(!exp1) exp1 = 1;
     if(!exp2) exp2 = 1;
-
-    return {
-        type:'compound',
-        subunits:[exports.Unit(name1,exp1), exports.Unit(name2,-exp2)],
-        toString: function() {
-            var str = this.subunits.map(function(un){
-                var exp = un.getDimension();
-                if(exp == 1) return " " + un.getName();
-                if(exp < 0) {
-                    exp = -exp;
-                    if(exp == 1) return "/" + un.getName();
-                    return "/"+ un.getName() + "^"+exp;
-                }
-            }).join("");
-            return "COMPOUND UNIT" + str;
-        },
-        getName: function() {
-            return 'compound';
-        }
-    }
+    var obj = Object.create(CompoundUnit);
+    obj.subunits =[exports.Unit(name1,exp1), exports.Unit(name2,-exp2)];
+    return obj;
+};
+exports.CompoundUnitFromList = function(subs) {
+    var obj = Object.create(CompoundUnit);
+    obj.subunits = subs.slice();
+    return obj;
 };
 
 exports.equal = function (a, b) {

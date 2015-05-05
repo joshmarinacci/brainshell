@@ -223,9 +223,10 @@ test("area units", function(t) {
 test("velocity units", function(t) {
     compareCompoundUnit(t,"42mi/hr",42,['mile',1,'hour',1]);
     compareCompoundUnit(t,"42m/s^2",42,['meter',1,'second',-2]);
-    //compareCompoundUnit(t,"6s * 7m/s^2 ",42,'mile per hour');
+    compareCompoundUnit(t,"6s * 7m/s^2 ",42,['meter','1','second',-1]);
     compareCompoundUnit(t,'5m/s',5,['meter',1,'second',-1]);
     compareCompoundUnit(t,'60 mi/hr',60,['mile',1,'hour',-1]);
+    compareCompoundUnit(t,'7m/s^2 * 6m',42,['meter',2,'second',-2]);
     //compareCompoundUnit(t,'60 mi/hr as km/hr',80['kilometer',1,'hour',-1]);
     //compareCompoundUnit(t,'5 m/s as mi/hr',500,['mile',1,'hour',-1]);
     //compareCompoundUnit(t,'60 mph ',60['mile',1,'hour',-1]);
