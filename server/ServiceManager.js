@@ -2,8 +2,12 @@
  * Created by josh on 5/5/15.
  */
 var Q = require('q');
+var request = require('request');
 var csvparse = require('csv-parse');
+var csv = require("csv-streamify");
 var fs = require('fs');
+var es = require("event-stream");
+var moment = require('moment');
 
 function loadCSV(file) {
     console.log("invoking load CSV on file",file);
@@ -14,8 +18,55 @@ function loadCSV(file) {
     });
 }
 
+var JStream = function (cb) {
+    this.writable = true;
+    this.arr = [];
+    this.write = function(d) {
+        //console.log('got write data',d);
+        this.arr.push(d);
+    }
+    this.end = function() {
+        for(var i=0; i<Math.min(10,this.arr.length); i++) {
+            //console.log(this.arr[i]);
+        }
+        if(cb) cb(this.arr);
+    }
+}
+require('util').inherits(JStream, require('stream'));
+function StockHistory(query) {
+    return Q.promise(function(resolve, reject, notify) {
+        try {
+            var req = request("http://real-chart.finance.yahoo.com/table.csv?s=" + query + "&d=9&e=8&f=2015&g=d&a=0&b=3&c=1994&ignore=.csv");
+            req.on('error', function () {
+                console.log("got an error");
+            });
+            req.on('response', function (res) {
+                res
+                    .pipe(csv({objectMode: true, columns: true}))
+                    .pipe(es.mapSync(function (d) {
+                        d.Date = moment(d.Date).toJSON();
+                        d.Open = parseFloat(d.Open);
+                        d.High = parseFloat(d.High);
+                        d.Low = parseFloat(d.Low);
+                        d.Close = parseFloat(d.Close);
+                        d.Volume = parseInt(d.Volume);
+                        d['Adj Close'] = parseFloat(d['Adj Close']);
+                        return d;
+                    }))
+                    .pipe(new JStream(resolve))
+                ;
+            })
+        } catch (e) {
+            console.log(e);
+            reject(e);
+        }
+    });
+}
+
+
 var services = {
-    loadCSV: loadCSV
+    loadCSV: loadCSV,
+    StockHistory: StockHistory,
 };
 
 exports.invoke = function(id, args) {

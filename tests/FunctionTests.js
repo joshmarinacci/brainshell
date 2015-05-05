@@ -70,6 +70,17 @@ test("Test Elements", function(t) {
     }).done();
 });
 
+test("Test StockHistory", function(t) {
+    t.ok(ctx.hasSymbol("StockHistory"), "symbol exists");
+    var exp = Parser.matchAll("StockHistory('AAPL')",'start');
+    exp.value(ctx).then(function(v) {
+        console.log("got back value", v.length());
+        var l = v.length();
+        var last = v.item(l-1);
+        console.log("last = ", last);
+    });
+});
+
 return;
 
 
