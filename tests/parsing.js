@@ -227,10 +227,9 @@ test("velocity units", function(t) {
     compareCompoundUnit(t,'5m/s',5,['meter',1,'second',-1]);
     compareCompoundUnit(t,'60 mi/hr',60,['mile',1,'hour',-1]);
     compareCompoundUnit(t,'7m/s^2 * 6m',42,['meter',2,'second',-2]);
-    //compareCompoundUnit(t,'60 mi/hr as km/hr',80['kilometer',1,'hour',-1]);
-    //compareCompoundUnit(t,'5 m/s as mi/hr',500,['mile',1,'hour',-1]);
-    //compareCompoundUnit(t,'60 mph ',60['mile',1,'hour',-1]);
-    //compareCompoundUnit(t,'60 mph as m/s',6,['meter',1,'second',-1]);
+    compareCompoundUnit(t,'60 mi/hr as km/hr',96.5604,['kilometer',1,'hour',-1]);
+    compareCompoundUnit(t,'5 m/s as mi/hr',11.1847,['mile',1,'hour',-1]);
+    compareCompoundUnit(t,'60 mi/hr as m/s ',26.8224,['meter',1,'second',-1]);
     t.end();
 });
 
@@ -536,10 +535,13 @@ function compareUnit(t,str,val,unit,dim, DEBUG) {
     }).done();
 }
 function compareCompoundUnit(t,str,val,units) {
+    var epsilon = 0.01;
     parse(str).value().then(function(v){
-        console.log("became " + v);
+        //console.log("became " + v);
         //console.log("number = ", v.getNumber());
-        t.equal(v.getNumber(),val);
+        if(Math.abs(val-v.getNumber())/val > epsilon) {
+            t.fail("not equal " + val + " " +v.getNumber());
+        }
         var u = v.getUnit();
         t.equal(u.type,'compound');
     }).done();

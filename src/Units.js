@@ -348,6 +348,12 @@ exports.Unit = function (name, dim, exp) {
 
 var CompoundUnit = {
     type:'compound',
+    value : function () {
+        var self = this;
+        return Q.fcall(function () {
+            return self;
+        });
+    },
     toString: function() {
         var str = this.subunits.map(function(un){
             var exp = un.getDimension();

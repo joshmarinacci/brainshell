@@ -121,6 +121,9 @@ var Arithmetic = {
             if(u.convert) return u.convert(a);
             //console.log('converting',a._value,'from',a.getUnit().toString(),'to',u.toString());
             var au = a.getUnit();
+            if(au.type == 'compound' && u.type =='compound') {
+                return compoundToCompoundConversion(a,u);
+            }
             var startu = u;
             if(au.type == u.type) {
                 var av = a.getNumber();
@@ -229,9 +232,7 @@ function reduceUnits(subunits,type) {
 }
 
 function MultiplyCompoundPost(A,B) {
-    //console.log("multiplying",A.toString(),B.toString());
     var fval = A.getNumber() * B.getNumber();
-    //console.log("new val = ",fval);
     var subunits = B.getUnit().subunits.slice();
     subunits.push(A.getUnit());
     //printarray(subunits);
@@ -240,4 +241,49 @@ function MultiplyCompoundPost(A,B) {
     finalunits.push(reduceUnits(subunits,'duration'));
     //printarray(finalunits);
     return Literals.makeNumber(fval,Units.CompoundUnitFromList(finalunits));
+}
+
+
+function findType(arr, type) {
+    for(var i=0; i<arr.length; i++) {
+        if(arr[i].type == type) return arr[i];
+    }
+    return null;
+}
+
+function convertTypes(aunits, bunits, type) {
+    var Atype = findType(aunits,type);
+    var Btype = findType(bunits,type);
+    if(Atype == null) return 1;
+    if(Btype == null) return 1;
+    //console.log("A and B",Atype.toString(),Btype.toString());
+    if(Atype.getName() == Btype.getName()) {
+        //console.log("already the same. do nothing");
+        return 1;
+    } else {
+        //console.log("they are different. must convert", type);
+        //console.log("scale = ",Atype.scale, Atype.getDimension());
+        var av = Math.pow(Atype.scale,Atype.getDimension());
+        var aun = Atype.base;
+        //console.log("new value is ", av, aun);
+        var uun = Btype.base;
+        //console.log("target base is",uun, Btype.scale, Btype.getDimension());
+        av = av / Math.pow(Btype.scale,Atype.getDimension());
+        aun = uun;
+        //console.log("new value is ", av, aun);
+        return av;
+    }
+}
+function compoundToCompoundConversion(A,U) {
+    //console.log("converting",A._value,A.getUnit().toString(),"to",U.toString());
+    var subunits = A.getUnit().subunits.slice();
+    var finalunits = [];
+    var av = A.getNumber();
+    var scale = convertTypes(A.getUnit().subunits,U.subunits,'length');
+    av = av * scale;
+    //console.log("must scale lengths by",scale,A.getNumber(),av);
+    var scale = convertTypes(A.getUnit().subunits,U.subunits,'duration');
+    av = av * scale;
+    //console.log("must scale durations by",scale,A.getNumber(),av);
+    return Literals.makeNumber(av,U);
 }
