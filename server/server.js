@@ -8,10 +8,14 @@ var DB = require('./database');
 DB.initDB();
 
 var express = require('express');
+var cors = require('cors');
 var bodyParser = require('body-parser');
 
 var app = express();
+app.use(cors());
 app.use(bodyParser.json());
+app.use(express.static('ui'));
+app.use(express.static('node_modules'));
 
 app.all('*',function(req,res,next) {
     if (!req.get('Origin')) return next();
