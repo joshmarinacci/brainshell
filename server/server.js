@@ -3,6 +3,7 @@
  */
 
 
+var ServiceManager = require('./ServiceManager');
 var DB = require('./database');
 DB.initDB();
 
@@ -51,6 +52,15 @@ app.post('/josh/deletedoc', function(req,res) {
     DB.deleteDoc(req.body, function(resp) {
         res.send({status:'success'});
     });
+});
+
+
+app.post('/service/:id',function(req,res) {
+    ServiceManager
+        .invoke(req.params.id, req.body.arguments)
+        .then(function(result) {
+            res.send(result);
+        });
 });
 
 

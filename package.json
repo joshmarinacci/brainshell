@@ -23,7 +23,7 @@
   },
   "homepage": "https://github.com/joshmarinacci/brainshell",
   "dependencies": {
-    "appy-style": "^0.0.1",
+    "appy-style": "^0.0.2",
     "body-parser": "^1.12.3",
     "csv-parse": "^0.1.1",
     "express": "^4.12.3",

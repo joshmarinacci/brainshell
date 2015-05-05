@@ -1,8 +1,8 @@
 var fs       = require('fs');
-var csvparse = require('csv-parse');
 var Literals = require('../src/Literals');
 var Symbols = require('../src/Symbols');
 var Context = require('../src/Context');
+var utils    = require('../src/utils');
 var moment = require('moment');
 var Q = require('q');
 
@@ -317,14 +317,12 @@ exports.makeDefaultFunctions = function(ctx) {
             this._cbs=[];
         },
         fun: function() {
-            return Q.nfcall(fs.readFile,"tests/resources/elements.csv").then(function(buff) {
-                return Q.nfcall(csvparse,buff).then(function(rows){
-                    return Literals.makeList(rows.map(function(row) {
-                        return Literals.makeList(row.map(function(col) {
-                            return Literals.makeString(col);
-                        }));
+            return utils.invokeService("loadCSV",["tests/resources/elements.csv"]).then(function(rows) {
+                return Literals.makeList(rows.map(function(row) {
+                    return Literals.makeList(row.map(function(col) {
+                        return Literals.makeString(col);
                     }));
-                });
+                }));
             });
         }
     }));

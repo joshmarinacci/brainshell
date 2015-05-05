@@ -4,6 +4,7 @@
 
 var Q = require('q');
 
+var ServiceManager = require('../server/ServiceManager');
 
 exports.asCode = function asCode(obj) {
     if(obj.type == 'symbol') {
@@ -55,4 +56,17 @@ exports.POSTJSON = function(url, data) {
 
 exports.makeId = function (prefix) {
     return prefix + Math.floor(Math.random()*2*1000*1000*1000);
-}
+};
+
+exports.invokeService = function (id, args) {
+    if(typeof window === 'undefined') {
+        console.log("doing a local invocation");
+        return ServiceManager.invoke(id,args);
+    }
+
+    return exports.POSTJSON('http://localhost:30045/service/'+id,{
+        type:'invoke',
+        arguments:args
+    });
+};
+

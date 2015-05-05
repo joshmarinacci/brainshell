@@ -165,8 +165,17 @@ function ListLiteral(list) {
                 print: function(row) { return this.getValue(row).toCode(); }
             }];
         }
+        if(first.isString()) {
+            return [{
+                id:function() { return 0; },
+                title: function() { return this.id()+""; },
+                type: function() { return 'number'; },
+                getValue: function(row) { return row; },
+                print: function(row) { return this.getValue(row).toCode(); }
+            }]
+        }
         if(first.isList()) {
-            first._value.map(function(datum) {
+            first._value.map(function(datum,i) {
                 if(datum.type == 'pair') {
                     var key = datum._key;
                     var value = datum._value;
@@ -175,6 +184,15 @@ function ListLiteral(list) {
                         title: function() { return this.id(); },
                         type: function() { return value.type; },
                         getValue: function(row) { return row.itemByKey(key); },
+                        print: function(row) { return this.getValue(row).toCode(); }
+                    });
+                }
+                if(datum.type == 'string') {
+                    infos.push({
+                        id:function() { return i; },
+                        title: function() { return this.id()+""; },
+                        type: function() { return 'string'; },
+                        getValue: function(row) { return row.item(i); },
                         print: function(row) { return this.getValue(row).toCode(); }
                     });
                 }
