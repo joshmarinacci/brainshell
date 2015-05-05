@@ -78,6 +78,7 @@ test("Test StockHistory", function(t) {
         var l = v.length();
         var last = v.item(l-1);
         //console.log("last = ", last);
+        t.end();
     }).done();
 });
 
@@ -89,6 +90,7 @@ test("Test EarthquakeHistory", function(t) {
         var l = v.length();
         var last = v.item(l-1);
         //console.log("last = ", last.toString());
+        t.end();
     }).done();
 });
 
