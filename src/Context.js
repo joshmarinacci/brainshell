@@ -17,6 +17,19 @@ function Context() {
             console.log(key,registry[key]);
         }
     }
+    this.listSymbols = function() {
+        var list = [];
+        for(var name in registry) {
+            list.push({
+                name: name,
+                symbol: registry[name]
+            });
+        }
+        list.sort(function(a,b) {
+            return a.name - b.name;
+        });
+        return list;
+    }
 }
 
 

@@ -11,6 +11,7 @@ var moment = require('moment');
 var Context = require('../src/Context');
 var Symbols = require('../src/Symbols');
 var EditableLabel = require('./EditableLabel.jsx');
+var SymbolsPanel = require('./SymbolsPanel.jsx');
 var DefaultFunctions = require('./DefaultFunctions.js');
 var CustomList = require('../node_modules/appy-style/react/CustomList.jsx');
 
@@ -130,15 +131,11 @@ var MainView = React.createClass({
             </div>
             <div className="vbox" id="help-pane">
                 <header>Resources</header>
-                        <div className='group'>
-                            <input type="search" className='grow'/>
-                            <button className="fa fa-search"></button>
-                        </div>
-                <ul className="list">
-                    <li>Elements</li>
-                    <li>Stock</li>
-                    <li>ExoPlanets</li>
-                </ul>
+                <div className='group'>
+                    <input type="search" className='grow'/>
+                    <button className="fa fa-search"></button>
+                </div>
+                <SymbolsPanel items={Context.global().listSymbols()}/>
             </div>
             </div>
             </div>
@@ -147,6 +144,5 @@ var MainView = React.createClass({
 });
 
 React.render(<MainView/>,document.getElementById("main"));
-
 
 DocsStore.init();
