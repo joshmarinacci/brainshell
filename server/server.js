@@ -35,6 +35,11 @@ app.get('/josh/docs', function(req,res) {
     });
 });
 
+app.get ('/josh/docs/:id', function(req,res) {
+    DB.loadDoc(req.params.id, function(doc) {
+        res.send(doc);
+    })
+});
 app.post('/josh/docs/:id', function(req,res) {
     console.log("got a post");
     console.log(req.body);
@@ -46,6 +51,12 @@ app.post('/josh/docs/:id', function(req,res) {
 app.post('/josh/createdoc', function(req,res) {
     console.log("making a new doc");
     DB.newDoc(req.body,function(resp) {
+        res.send(resp);
+    });
+});
+
+app.post('/josh/forkdoc', function(req,res) {
+    DB.forkDoc(req.body,function(resp) {
         res.send(resp);
     });
 });

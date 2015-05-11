@@ -63,6 +63,14 @@ var DB = {
         });
     },
 
+    loadDoc: function(id,cb) {
+        db.find({_id:id}).exec(function(err,docs) {
+            if(err) throw err;
+            console.log(docs[0]);
+            cb(docs[0]);
+        });
+    },
+
     saveDoc: function(doc, cb) {
         db.update({_id:doc._id},doc,{},function(err,num){
             console.log("updated ",num);
@@ -75,6 +83,14 @@ var DB = {
             console.log("the new doc is",doc);
             cb(doc);
         })
+    },
+
+    forkDoc: function(body, cb) {
+        delete body._id;
+        db.insert(body, function(err,doc) {
+            console.log("the new forked doc is",doc);
+            cb(doc);
+        });
     },
 
     deleteDoc: function(doc, cb) {

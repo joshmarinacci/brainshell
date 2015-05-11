@@ -14,6 +14,7 @@ var EditableLabel = require('./EditableLabel.jsx');
 var SymbolsPanel = require('./SymbolsPanel.jsx');
 var DefaultFunctions = require('./DefaultFunctions.js');
 var CustomList = require('../node_modules/appy-style/react/CustomList.jsx');
+var LocationStore = require('./LocationStore.jsx');
 
 var ctx = Context.global();
 
@@ -34,6 +35,23 @@ var MainView = React.createClass({
     },
     componentDidMount: function() {
         var self = this;
+        if(LocationStore.hasDocId()) {
+            var id = LocationStore.getDocId();
+            console.log("we need to preload a doc",id);
+            DocsStore.loadDoc(id).then(function(doc) {
+                self.setState({
+                    selectedDoc: doc
+                });
+            })
+        } else {
+            console.log("no prefab doc");
+            DocsStore.createDoc().then(function(doc) {
+                self.setState({
+                    selectedDoc: doc
+                });
+                LocationStore.setDoc(doc);
+            });
+        }
         DocsStore.on('load',function(type) {
             if(type != 'load') return;
             var state = {
@@ -59,6 +77,15 @@ var MainView = React.createClass({
     contentChanged: function(expr, content) {
         expr.content = content;
         DocsStore.saveDoc(this.state.selectedDoc);
+    },
+    forkDoc: function(){
+        var self = this;
+        DocsStore.forkDoc(this.state.selectedDoc).then(function(newDoc) {
+            self.setState({
+                selectedDoc: newDoc
+            });
+            LocationStore.setDoc(newDoc);
+        });
     },
     docSelected: function(doc) {
         this.setState({
@@ -107,19 +134,13 @@ var MainView = React.createClass({
             <header>
                 <h3>BrainShell</h3>
                 <span className='grow'></span>
+                <button onClick={this.forkDoc}>fork</button>
                 <div className='group'>
-                    <button className='fa fa-toggle-left'></button>
+                    <button className='fa fa-toggle-left hidden'></button>
                     <button className='fa fa-toggle-right'></button>
                 </div>
             </header>
             <div className="hbox grow">
-                <div className="vbox" id="docs-pane">
-                    <header>Documents</header>
-                    <CustomList items={this.state.docs} template={<DocItem/>} onSelect={this.docSelected}/>
-                    <footer>
-                        <button onClick={this.createNewDoc} className='fa fa-plus'></button>
-                    </footer>
-                </div>
                 <div className="vbox grow" id="editor-pane">
                     <header>
                         <EditableLabel value={title} onChange={this.titleChanged}/>
@@ -130,8 +151,8 @@ var MainView = React.createClass({
                 </div>
             </div>
             <div className="vbox" id="help-pane">
-                <header>Resources</header>
-                <div className='group'>
+                <header>Symbols</header>
+                <div className='group hidden'>
                     <input type="search" className='grow'/>
                     <button className="fa fa-search"></button>
                 </div>
@@ -146,3 +167,12 @@ var MainView = React.createClass({
 React.render(<MainView/>,document.getElementById("main"));
 
 DocsStore.init();
+/*
+ <div className="vbox" id="docs-pane">
+ <header>Documents</header>
+ <CustomList items={this.state.docs} template={<DocItem/>} onSelect={this.docSelected}/>
+ <footer>
+ <button onClick={this.createNewDoc} className='fa fa-plus'></button>
+ </footer>
+ </div>
+ */

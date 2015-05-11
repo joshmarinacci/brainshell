@@ -32,6 +32,11 @@ var DocsStore = {
     getDocs: function() {
         return this._docs;
     },
+    loadDoc: function(id) {
+        return utils.GETJSON('http://localhost:30045/josh/docs/'+id).then(function(res) {
+            return res;
+        })
+    },
     saveDoc: function(doc) {
         utils.POSTJSON('http://localhost:30045/josh/docs/'+doc.id, doc).then(function(res) {
             //console.log("saved!",res);
@@ -43,6 +48,14 @@ var DocsStore = {
             self._docs.push(doc);
             self.notify('create');
             return doc;
+        });
+    },
+    forkDoc: function(doc) {
+        var self = this;
+        return utils.POSTJSON('http://localhost:30045/josh/forkdoc',doc).then(function(newdoc){
+            self._docs.push(newdoc);
+            self.notify('fork');
+            return newdoc;
         });
     },
     deleteDoc: function(doc) {

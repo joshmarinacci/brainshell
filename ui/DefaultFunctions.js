@@ -44,6 +44,10 @@ function Extendo(base,addons) {
 
 exports.makeDefaultFunctions = function(ctx) {
 
+    var sym = Symbols.make("PI");
+    sym.update(Literals.makeNumber(Math.PI));
+    ctx.register(sym);
+
     regSimple(ctx,{
         name:'setColumnFormat',
         fun: function(data, columnArg, typeArg, parseArg, patternArg) {
