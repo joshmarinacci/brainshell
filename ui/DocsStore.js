@@ -16,7 +16,7 @@ var DocsStore = {
     },
     init: function() {
         var self = this;
-        utils.GETJSON('http://localhost:30045/josh/docs').then(function(data) {
+        utils.GETJSON('/josh/docs').then(function(data) {
             self._docs = data;
             self._docs.forEach(function(doc) {
                 doc.expressions.forEach(function(expr) {
@@ -33,18 +33,18 @@ var DocsStore = {
         return this._docs;
     },
     loadDoc: function(id) {
-        return utils.GETJSON('http://localhost:30045/josh/docs/'+id).then(function(res) {
+        return utils.GETJSON('/josh/docs/'+id).then(function(res) {
             return res;
         })
     },
     saveDoc: function(doc) {
-        utils.POSTJSON('http://localhost:30045/josh/docs/'+doc.id, doc).then(function(res) {
+        utils.POSTJSON('/josh/docs/'+doc.id, doc).then(function(res) {
             //console.log("saved!",res);
         });
     },
     createDoc: function() {
         var self = this;
-        return utils.POSTJSON('http://localhost:30045/josh/createdoc',{}).then(function(doc){
+        return utils.POSTJSON('/josh/createdoc',{}).then(function(doc){
             self._docs.push(doc);
             self.notify('create');
             return doc;
@@ -52,7 +52,7 @@ var DocsStore = {
     },
     forkDoc: function(doc) {
         var self = this;
-        return utils.POSTJSON('http://localhost:30045/josh/forkdoc',doc).then(function(newdoc){
+        return utils.POSTJSON('/josh/forkdoc',doc).then(function(newdoc){
             self._docs.push(newdoc);
             self.notify('fork');
             return newdoc;
@@ -64,7 +64,7 @@ var DocsStore = {
         console.log("found index to delete",n);
         self._docs.splice(n,1);
         self.notify('delete');
-        return utils.POSTJSON('http://localhost:30045/josh/deletedoc',doc).then(function(doc) {
+        return utils.POSTJSON('/josh/deletedoc',doc).then(function(doc) {
             console.log("delete was successsful");
         });
     },
