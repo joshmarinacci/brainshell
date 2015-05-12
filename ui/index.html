@@ -81,12 +81,18 @@
             border-bottom-style: solid;
             resize: none;
         }
-        .edit-panel textarea:focus {
+        .edit-panel textarea:focus, .group input:focus {
             background-color: white;
+            outline: none;
+            border-color: blue;
         }
         .edit-panel .results {
             padding: 0.5em;
             font-family: serif;
+        }
+        .edit-panel .error {
+            font-weight: bold;
+            color: #990000;
         }
         input {
             -webkit-appearance: none;

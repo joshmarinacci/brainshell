@@ -343,7 +343,7 @@ exports.Unit = function (name, dim, exp) {
         }
         return outunit;
     }
-    throw new Error("ERRROR. INVALID UNIT " + name);
+    throw new Error("Invalid Unit: " + name);
 };
 
 var CompoundUnit = {

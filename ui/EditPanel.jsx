@@ -22,7 +22,8 @@ var EditPanel = React.createClass({
             evaluated: false,
             result: ".",
             raw: 'nothing',
-            rows:1
+            rows:1,
+            error:null,
         }
     },
     setRaw: function(content) {
@@ -45,7 +46,12 @@ var EditPanel = React.createClass({
     },
     doEval: function() {
         var self = this;
-        var expr = ParseExpression(this.state.raw);
+        try {
+            var expr = ParseExpression(this.state.raw);
+        } catch (err) {
+            this.setError(err);
+            return;
+        }
         //remove the old one
         if (this.expr && this.cb) {
             this.expr.removeListener(this.cb);
@@ -62,11 +68,19 @@ var EditPanel = React.createClass({
         expr.value(Context.global()).then(function(v) {
             self.props.onChange(self.props.expr,self.state.raw);
             self.setResult(v);
+            self.setError(null);
+        },function(err) {
+            self.setError(err);
         }).done();
     },
     setResult: function(v) {
         this.setState({
             result: v
+        });
+    },
+    setError: function(e) {
+        this.setState({
+            error:e
         });
     },
     doAppend: function() {
@@ -80,6 +94,7 @@ var EditPanel = React.createClass({
         }
     },
     renderResult: function(res) {
+        if(res == null) return "null";
         if(!res) return "";
         if(typeof res == 'string') return res;
         if(res.type == 'schart') {
@@ -93,8 +108,13 @@ var EditPanel = React.createClass({
         }
         return  <div>{res.toCode()}</div>
     },
+    renderError: function(err) {
+        if(!err || err == null) return (<div className='error hidden'></div>);
+        return (<div className='error'>{err.toString()}</div>);
+    },
     render: function() {
         var res = this.renderResult(this.state.result);
+        var err = this.renderError(this.state.error);
 
         return (<div className="vbox edit-panel">
             <header>
@@ -113,9 +133,7 @@ var EditPanel = React.createClass({
                 onChange={this.changed}
                 onKeyDown={this.keyDown}
                 ></textarea>
-            <div className='error hidden'>
-                <span>error goes here</span>
-            </div>
+            {err}
             <div className="results">{res}</div>
         </div>)
     }

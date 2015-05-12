@@ -49,6 +49,7 @@ var Symbol = {
                 return this._value.value();
             },
             toCode: function() {
+                if(this._value == null) return 'null';
                 return name +'<=' + this._value.toCode();
             },
             isSymbol: function() {
