@@ -131,34 +131,22 @@ var MainView = React.createClass({
         }
         return(
             <div className="fill vbox">
-            <header>
-                <h3>BrainShell</h3>
-                <span className='grow'></span>
-                <button onClick={this.forkDoc}>fork</button>
-                <div className='group'>
-                    <button className='fa fa-toggle-left hidden'></button>
-                    <button className='fa fa-toggle-right'></button>
-                </div>
-            </header>
-            <div className="hbox grow">
-                <div className="vbox grow" id="editor-pane">
-                    <header>
-                        <EditableLabel value={title} onChange={this.titleChanged}/>
-                        <button onClick={this.deleteDoc} className="fa fa-close"></button>
+                <header>
+                    <h3>BrainShell</h3>
+                    <span className='grow'></span>
+                    <button onClick={this.forkDoc}>fork</button>
+                    <div className='group hidden'>
+                        <button className='fa fa-toggle-left hidden'></button>
+                        <button className='fa fa-toggle-right'></button>
+                    </div>
                 </header>
-                <div className='grow scroll'>
-                    {panels}
+                <div className="hbox grow">
+                    <div className="vbox grow" id="editor-pane">
+                        <div className='grow scroll'>
+                            {panels}
+                        </div>
+                    </div>
                 </div>
-            </div>
-            <div className="vbox" id="help-pane">
-                <header>Symbols</header>
-                <div className='group hidden'>
-                    <input type="search" className='grow'/>
-                    <button className="fa fa-search"></button>
-                </div>
-                <SymbolsPanel items={Context.global().listSymbols()}/>
-            </div>
-            </div>
             </div>
            );
     }
@@ -174,5 +162,20 @@ DocsStore.init();
  <footer>
  <button onClick={this.createNewDoc} className='fa fa-plus'></button>
  </footer>
+ </div>
+
+ <header>
+ <EditableLabel value={title} onChange={this.titleChanged}/>
+ <button onClick={this.deleteDoc} className="fa fa-close"></button>
+ </header>
+
+
+ <div className="vbox" id="help-pane">
+ <header>Symbols</header>
+ <div className='group hidden'>
+ <input type="search" className='grow'/>
+ <button className="fa fa-search"></button>
+ </div>
+ <SymbolsPanel items={Context.global().listSymbols()}/>
  </div>
  */
