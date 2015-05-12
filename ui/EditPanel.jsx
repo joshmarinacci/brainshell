@@ -36,7 +36,7 @@ var EditPanel = React.createClass({
         this.setRaw(this.props.expr.content);
     },
     componentWillUnmount: function() {
-        if(this.expr) {
+        if(this.expr && this.cb) {
             this.expr.removeListener(this.cb);
         }
     },
@@ -46,19 +46,19 @@ var EditPanel = React.createClass({
     doEval: function() {
         var self = this;
         var expr = ParseExpression(this.state.raw);
-        if(!expr.onChange) {
-            throw new Error("missing on change setter");
-        }
         //remove the old one
-        if(this.expr) {
+        if (this.expr && this.cb) {
             this.expr.removeListener(this.cb);
         }
         this.expr = expr;
-        this.cb = expr.onChange(function() {
-            expr.value(Context.global()).then(function(v) {
-                self.setResult(v);
-            }).done();
-        });
+        this.cb = null;
+        if (this.expr.onChange) {
+            this.cb = this.expr.onChange(function () {
+                expr.value(Context.global()).then(function (v) {
+                    self.setResult(v);
+                }).done();
+            });
+        }
         expr.value(Context.global()).then(function(v) {
             self.props.onChange(self.props.expr,self.state.raw);
             self.setResult(v);
@@ -91,7 +91,7 @@ var EditPanel = React.createClass({
         if(res.type == 'list-wrapper') {
             return <TableOutput data={res}/>
         }
-        return  <div>{res.toCode()}<br/>{res.type}<br/> {res.kind}</div>
+        return  <div>{res.toCode()}</div>
     },
     render: function() {
         var res = this.renderResult(this.state.result);
@@ -113,12 +113,10 @@ var EditPanel = React.createClass({
                 onChange={this.changed}
                 onKeyDown={this.keyDown}
                 ></textarea>
-            <div className='error'>
+            <div className='error hidden'>
                 <span>error goes here</span>
             </div>
-            <div className="results">
-                {res}
-            </div>
+            <div className="results">{res}</div>
         </div>)
     }
 });
