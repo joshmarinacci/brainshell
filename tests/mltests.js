@@ -18,9 +18,9 @@ var Literals = require("../src/Literals");
 //NDJSON filename, only loads first 100
 //parse March 5th as a partial date
 //FilterByDateRange(data, 'column name', from: March 5th to: March 9th)
-//Unique(list)
+//-Unique(list)
 //Unique(table,'column name')
-//SplitUnique(table, 'column name')
+//--SplitUnique(table, 'column name')
 //Histogram(table)
 
 
@@ -173,8 +173,55 @@ test('table functions', function(t){
 
 test('unique functions', function(t) {
     var list = Literals.makeList([1,2,3,2,1,3,2,3,2].map(function(v){ return Literals.makeNumber(v); }));
-    console.log("list = ", list.toString());
     var l_uniq = Unique(list);
-    console.log("uinque = ", l_uniq.toString());
+    t.equal(l_uniq.length(),3,'list');
     t.end();
-})
+});
+
+function objectTableToLiteral(js) {
+    return Literals.makeList(js.map(function(row) {
+        return Literals.makeList(Object.keys(row).map(function(col) {
+            return Literals.makeKeyValue(col, Literals.makeString(row[col]));
+        }));
+    }));
+}
+
+function SplitUnique(table, tcol) {
+    var outputs = {};
+    for(var i=0; i<table.length(); i++) {
+        var row = table.item(i);
+        var col = row.itemByKey(tcol);
+        var key = col.getString();
+        if(!outputs.hasOwnProperty(key)) {
+            outputs[key] = Literals.makeList([]);
+        }
+        outputs[key]._value.push(row);
+    }
+    return Literals.makeList(Object.keys(outputs).map(function(key) {
+        var value = outputs[key];
+        return Literals.makeKeyValue(key, value);
+    }));
+}
+
+test('split unique', function(t) {
+    var jstable = [
+        {a:'foo',b:'boo'},
+        {a:'far',b:'bar'},
+        {a:'faz',b:'baz'},
+        {a:'foo',b:'booz'},
+        {a:'far',b:'barz'},
+        {a:'faz',b:'bazz'},
+        {a:'far',b:'bars'},
+    ];
+    var table = objectTableToLiteral(jstable);
+    var tables = SplitUnique(table,'a');
+    t.equal(tables.length(),3);
+    var table0 = tables.itemByKey('foo');
+    t.equal(table0.length(),2);
+    var table1 = tables.itemByKey('far');
+    t.equal(table1.length(),3);
+    var table2 = tables.itemByKey('faz');
+    t.equal(table2.length(),2);
+    t.end();
+});
+
