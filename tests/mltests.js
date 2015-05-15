@@ -7,12 +7,12 @@ var test = require('tape');
 var Literals = require("../src/Literals");
 
 //summary of table, runs summary on each column, prints max,min, mean,median
-//max of list
-//max of table
-//min of list
-//min of table
-//mean of list
-//mean of table
+//-max of list
+//-max of table
+//-min of list
+//-min of table
+//-mean of list
+//-mean of table
 //summary of list
 //summary of table
 //NDJSON filename, only loads first 100
@@ -96,16 +96,29 @@ function Min(data) {
     return DataUtil.reduceListOrTable(data, MinFunc, Number.MAX_VALUE);
 }
 function Max(data) {
-    return DataUtil.reduceListOrTable(data, MaxFunc, Number.MIN_VALUE);
+    return DataUtil.reduceListOrTable(data, MaxFunc, -Number.MAX_VALUE);
 }
 function Mean(data) {
-    return DataUtil.reduceListOrTable(data, SumFunc, Number.MIN_VALUE, function(data,val,cinfo) {
+    return DataUtil.reduceListOrTable(data, SumFunc, 0, function(data,val,cinfo) {
         if(cinfo) {
             //console.log(val.getValue().toString());
             var nval = Literals.makeNumber(val.getValue().getNumber()/data.length());
             return Literals.makeKeyValue(val.getKey(), nval);
         }
         return Literals.makeNumber(val.getNumber()/data.length());
+    });
+}
+
+function UniqueFunc(a,b) {
+    b[a] = a;
+    return b;
+}
+
+function Unique(data) {
+    return DataUtil.reduceListOrTable(data, UniqueFunc, {}, function(data,val,cinfo) {
+        return Literals.makeList(Object.keys(val._value).map(function(key) {
+            return Literals.makeNumber(val._value[key]);
+        }));
     });
 }
 
@@ -150,9 +163,18 @@ test('table functions', function(t){
     var table = makeTable(10,[['a',0,-1], ['b',0,5]]);
     t.equal(Min(table).itemByKey('a').getNumber(),-10,'min');
     t.equal(Min(table).itemByKey('b').getNumber(),0,'min');
+    t.equal(Max(table).itemByKey('a').getNumber(),0,'max');
+    t.equal(Max(table).itemByKey('b').getNumber(),50,'max');
     t.equal(Mean(table).itemByKey('a').getNumber(),-5,'mean');
     t.equal(Mean(table).itemByKey('b').getNumber(),25,'mean');
     t.end();
 });
 
 
+test('unique functions', function(t) {
+    var list = Literals.makeList([1,2,3,2,1,3,2,3,2].map(function(v){ return Literals.makeNumber(v); }));
+    console.log("list = ", list.toString());
+    var l_uniq = Unique(list);
+    console.log("uinque = ", l_uniq.toString());
+    t.end();
+})
