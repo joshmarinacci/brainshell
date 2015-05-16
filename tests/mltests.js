@@ -5,23 +5,27 @@
 
 var test = require('tape');
 var Literals = require("../src/Literals");
+/*
 
-//summary of table, runs summary on each column, prints max,min, mean,median
-//-max of list
-//-max of table
-//-min of list
-//-min of table
-//-mean of list
-//-mean of table
-//summary of list
-//summary of table
-//NDJSON filename, only loads first 100
-//parse March 5th as a partial date
-//FilterByDateRange(data, 'column name', from: March 5th to: March 9th)
-//-Unique(list)
-//Unique(table,'column name')
-//--SplitUnique(table, 'column name')
-//Histogram(table)
+summary of table, runs summary on each column, prints max,min, mean,median
+-max of list
+-max of table
+-min of list
+-min of table
+-mean of list
+-mean of table
+summary of list
+summary of table
+NDJSON filename, only loads first 100
+parse March 5th as a partial date
+FilterByDateRange(data, 'column name', from: March 5th to: March 9th)
+-Unique(list)
+Unique(table,'column name')
+-SplitUnique(table, 'column name')
+Histogram(list)
+Histogram(table,'column name')
+
+*/
 
 
 /**
@@ -224,4 +228,68 @@ test('split unique', function(t) {
     t.equal(table2.length(),2);
     t.end();
 });
+
+/*
+ histogram
+ looks as the frequency of values, grouped into buckets.
+ given a list of N numbers it will
+ find min
+ find max
+ define N buckets between min and max
+ go through all numbers
+ determine which bucket contains that value
+ increment the count of that bucket
+
+ return the list of buckets
+
+ chart index vs bucket value
+
+
+ */
+function Histogram(list, bucketCount) {
+    if(typeof bucketCount == 'undefined') bucketCount = 10;
+    var min = Min(list).getNumber();
+    var max = Max(list).getNumber();
+    var buckets = [];
+    //this is a hack. not sure how to fix it
+    for(var i=0; i<bucketCount+1; i++) {
+        buckets[i] = 0;
+    }
+    function valToBucketIndex(val) {
+        return Math.floor((val-min)/(max-min)*bucketCount);
+    }
+    var it = list.getIterator();
+    while(it.hasNext()) {
+        var val = it.next();
+        var n = valToBucketIndex(val.getNumber());
+        buckets[n]++;
+    }
+    return numberArrayToLiteral(buckets);
+}
+
+function numberArrayToLiteral(arr) {
+    return Literals.makeList(arr.map(function(v){ return Literals.makeNumber(v)}));
+}
+
+function stringChartList(list) {
+    var it = list.getIterator();
+    while(it.hasNext()) {
+        var val = it.next().getNumber();
+        var str = "";
+        for(var i=0; i<val; i++) {
+            str += '#';
+        }
+        console.log(str);
+    }
+}
+
+test('histogram list', function(t){
+    var list = numberArrayToLiteral([1,2,3,4,3,7,8,1,8,2,2,9,8,2,1,2,3,0,8,9,1,5,7,2,1,3,8]);
+    console.log("list is ", list.toString());
+    var hist = Histogram(list,10);
+    console.log("hist is ", hist.toString());
+    stringChartList(hist);
+    t.end();
+});
+
 
