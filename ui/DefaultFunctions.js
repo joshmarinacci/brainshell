@@ -100,11 +100,72 @@ function Extendo(base,addons) {
     return obj;
 }
 
+function MinFunc(a,b) {  return Math.min(a,b);  }
+function MaxFunc(a,b) {  return Math.max(a,b);  }
+function SumFunc(a,b) {  return a+b;            }
+
+function Min(data)  { return DataUtil.reduceListOrTable(data, MinFunc, Number.MAX_VALUE); };
+function Max(data)  { return DataUtil.reduceListOrTable(data, MaxFunc, -Number.MAX_VALUE); }
+function Sum(data)  { return DataUtil.reduceListOrTable(data, SumFunc, 0); }
+function Mean(data) {
+    return DataUtil.reduceListOrTable(data, SumFunc, 0, function (data, val, cinfo) {
+        if (cinfo) {
+            var nval = Literals.makeNumber(val.getValue().getNumber() / data.length());
+            return Literals.makeKeyValue(val.getKey(), nval);
+        }
+        return Literals.makeNumber(val.getNumber() / data.length());
+    });
+}
+function UniqueFunc(a,b) {
+    b[a] = a;
+    return b;
+}
+function Unique(data) {
+    return DataUtil.reduceListOrTable(data, UniqueFunc, {}, function(data,val,cinfo) {
+        return Literals.makeList(Object.keys(val._value).map(function(key) {
+            return Literals.makeNumber(val._value[key]);
+        }));
+    });
+}
+
+function Histogram(list, bucketCount) {
+    var bc = 10;
+    if (typeof bucketCount !== 'undefined') bc = bucketCount.getNumber();
+    var min = Min(list).getNumber();
+    //var min = 0;
+    var max = Max(list).getNumber();
+    //var max = 10;
+    var buckets = [];
+    //this is a hack. not sure how to fix it
+    for (var i = 0; i < bc + 1; i++) {
+        buckets[i] = 0;
+    }
+    function valToBucketIndex(val) {
+        return Math.floor((val - min) / (max - min) * bc);
+    }
+
+    var it = list.getIterator();
+    while (it.hasNext()) {
+        var val = it.next();
+        var n = valToBucketIndex(val.getNumber());
+        buckets[n]++;
+    }
+    return DataUtil.numberArrayToLiteral(buckets);
+}
+
 exports.makeDefaultFunctions = function(ctx) {
 
     var sym = Symbols.make("PI");
     sym.update(Literals.makeNumber(Math.PI));
     ctx.register(sym);
+
+    regSimple(ctx, Extendo(BaseValue, { name:"Min",         fun: Min  }));
+    regSimple(ctx, Extendo(BaseValue, { name:"Max",         fun: Max  }));
+    regSimple(ctx, Extendo(BaseValue, { name:"Mean",        fun: Mean }));
+    regSimple(ctx, Extendo(BaseValue, { name:"Sum",         fun: Sum  }));
+    regSimple(ctx, Extendo(BaseValue, { name: "Unique",     fun: Unique }));
+    regSimple(ctx, Extendo(BaseValue, { name: "Histogram",  fun: Histogram }));
+
 
     regSimple(ctx,{
         name:'setColumnFormat',
@@ -182,79 +243,6 @@ exports.makeDefaultFunctions = function(ctx) {
                     parsePattern:parsePattern,
                     printPattern: 'MMMM DD, YYYY'
                 });
-        }
-    });
-
-    regSimple(ctx, {
-        name: 'Sum',
-        cbs: [],
-        init: function() {
-        },
-        onChange: function (cb) {
-            this.cbs.push(cb);
-        },
-        notify: function () {
-            var self = this;
-            this.cbs.forEach(function (cb) {
-                cb(self);
-            });
-        },
-        fun: function (data) {
-            //console.log("summing data",data);
-            var it = data.getIterator();
-            var infos = data.getColumnInfos();
-            var totals = [];
-            for(var i=0; i<infos.length; i++) {
-                totals[infos[i].id()] = 0;
-            }
-            while (it.hasNext()) {
-                var v = it.next();
-                for(var i=0; i<infos.length; i++) {
-                    totals[infos[i].id()] += infos[i].getValue(v).getNumber();
-                }
-            }
-            if(totals.length == 1) {
-                return Literals.makeNumber(totals[0]);
-            }
-            var arr = totals.map(function(v) {
-                return Literals.makeNumber(v);
-            });
-            return Literals.makeList(arr);
-        }
-    });
-
-    regSimple(ctx, {
-        name: 'Mean',
-        cbs: [],
-        init: function() {
-        },
-        onChange: function (cb) {
-            this.cbs.push(cb);
-        },
-        notify: function () {
-            var self = this;
-            this.cbs.forEach(function (cb) {
-                cb(self);
-            });
-        },
-        fun: function (data) {
-            var infos = data.getColumnInfos();
-            function calcMean(info) {
-                var it = data.getIterator();
-                var total = 0;
-                var count = 0;
-                while(it.hasNext()) {
-                    count++;
-                    var v = it.next();
-                    total += info.getValue(v).getNumber();
-                }
-                return Literals.makeNumber(total/count);
-            }
-            var totals = infos.map(calcMean);
-            if(totals.length == 1) {
-                return totals[0];
-            }
-            return Literals.makeList(totals);
         }
     });
 
@@ -422,82 +410,6 @@ exports.makeDefaultFunctions = function(ctx) {
                     return Literals.makeList(vals);
                 }));
             });
-        }
-    }));
-
-    regSimple(ctx, Extendo(BaseValue, {
-        name:"Min",
-        MinFunc: function(a,b) {
-            return Math.min(a,b)
-        },
-        fun: function(data) {
-            return DataUtil.reduceListOrTable(data, this.MinFunc, Number.MAX_VALUE);
-        }
-    }));
-    regSimple(ctx, Extendo(BaseValue, {
-        name:"Max",
-        MaxFunc:function(a,b) {
-            return Math.max(a,b);
-        },
-        fun: function(data) {
-            return DataUtil.reduceListOrTable(data, this.MaxFunc, -Number.MAX_VALUE);
-        }
-    }));
-    regSimple(ctx, Extendo(BaseValue, {
-        name:"Mean",
-        SumFunc: function(a,b) {
-            return a+b;
-        },
-        fun: function(data) {
-            return DataUtil.reduceListOrTable(data, this.SumFunc, 0, function (data, val, cinfo) {
-                if (cinfo) {
-                    //console.log(val.getValue().toString());
-                    var nval = Literals.makeNumber(val.getValue().getNumber() / data.length());
-                    return Literals.makeKeyValue(val.getKey(), nval);
-                }
-                return Literals.makeNumber(val.getNumber() / data.length());
-            });
-        }
-    }));
-    regSimple(ctx, Extendo(BaseValue, {
-        name: "Unique",
-        UniqueFunc:function(a,b) {
-            b[a] = a;
-            return b;
-        },
-        fun: function(data) {
-            return DataUtil.reduceListOrTable(data, this.UniqueFunc, {}, function(data,val,cinfo) {
-                return Literals.makeList(Object.keys(val._value).map(function(key) {
-                    return Literals.makeNumber(val._value[key]);
-                }));
-            });
-        }
-    }));
-    regSimple(ctx, Extendo(BaseValue, {
-        name: "Histogram",
-        fun: function (list, bucketCount) {
-            var bc = 10;
-            if (typeof bucketCount !== 'undefined') bc = bucketCount.getNumber();
-            //var min = Min(list).getNumber();
-            var min = 0;
-            //var max = Max(list).getNumber();
-            var max = 10;
-            var buckets = [];
-            //this is a hack. not sure how to fix it
-            for (var i = 0; i < bc + 1; i++) {
-                buckets[i] = 0;
-            }
-            function valToBucketIndex(val) {
-                return Math.floor((val - min) / (max - min) * bc);
-            }
-
-            var it = list.getIterator();
-            while (it.hasNext()) {
-                var val = it.next();
-                var n = valToBucketIndex(val.getNumber());
-                buckets[n]++;
-            }
-            return DataUtil.numberArrayToLiteral(buckets);
         }
     }));
 
