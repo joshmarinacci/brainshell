@@ -5,62 +5,7 @@ var Context = require('../src/Context');
 var utils    = require('../src/utils');
 var moment = require('moment');
 var Q = require('q');
-
-
-var DataUtil = {
-    is1D: function(data) {
-        var first = data._value[0];
-        if(first.isNumber()) return true;
-        return false;
-    },
-    is2D: function(data) {
-        return !this.is1D(data);
-    },
-    reduce: function(data, func, initVal, post) {
-        var it = data.getIterator();
-        var acc = initVal;
-        while(it.hasNext()) {
-            var row = it.next();
-            acc = func(row.getNumber(),acc);
-            //console.log("row",row.toString(),acc);
-        }
-        var val = Literals.makeNumber(acc);
-        if(post) return post(data, val);
-        return val;
-    },
-    reduceColumn: function(cinfo, data, func, initVal) {
-        //console.log('doing column',cinfo.id());
-        var it = data.getIterator();
-        var acc = initVal;
-        while(it.hasNext()) {
-            var row = it.next();
-            acc = func(cinfo.getValue(row).getNumber(),acc);
-        }
-        //console.log("final is",acc);
-        return Literals.makeKeyValue(cinfo.id(),Literals.makeNumber(acc));
-    },
-    reduceAllColumns: function(data, func, initVal, post) {
-        var cinfos = data.getColumnInfos();
-        var fvals = cinfos.map(function(cinfo) {
-            var val = DataUtil.reduceColumn(cinfo,data,func,initVal);
-            if(post) return post(data, val, cinfo);
-            return val;
-        });
-        return Literals.makeList(fvals);
-    },
-    reduceListOrTable: function(data, func, initVal, post) {
-        if(DataUtil.is1D(data)) {
-            return DataUtil.reduce(data,func, initVal, post);
-        }
-        if(DataUtil.is2D(data)) {
-            return DataUtil.reduceAllColumns(data, func, initVal, post);
-        }
-    },
-    numberArrayToLiteral: function(arr) {
-        return Literals.makeList(arr.map(function(v){ return Literals.makeNumber(v)}));
-    }
-};
-
+var DataUtil = require('../src/DataUtil');
 function regSimple(ctx,fun) {
     fun.kind = "function";
     fun.type = "simple";
@@ -153,19 +98,39 @@ function Histogram(list, bucketCount) {
     return DataUtil.numberArrayToLiteral(buckets);
 }
 
+function SplitUnique(table, tcol) {
+    var outputs = {};
+    for(var i=0; i<table.length(); i++) {
+        var row = table.item(i);
+        var col = row.itemByKey(tcol);
+        var key = col.getString();
+        if(!outputs.hasOwnProperty(key)) {
+            outputs[key] = Literals.makeList([]);
+        }
+        outputs[key]._value.push(row);
+    }
+    console.log('Split unique',outputs);
+    return Literals.makeList(Object.keys(outputs).map(function(key) {
+        var value = outputs[key];
+        return Literals.makeKeyValue(key, value);
+    }));
+}
+
+
 exports.makeDefaultFunctions = function(ctx) {
 
     var sym = Symbols.make("PI");
     sym.update(Literals.makeNumber(Math.PI));
     ctx.register(sym);
 
-    regSimple(ctx, Extendo(BaseValue, { name:"Min",         fun: Min  }));
-    regSimple(ctx, Extendo(BaseValue, { name:"Max",         fun: Max  }));
-    regSimple(ctx, Extendo(BaseValue, { name:"Mean",        fun: Mean }));
-    regSimple(ctx, Extendo(BaseValue, { name:"Sum",         fun: Sum  }));
-    regSimple(ctx, Extendo(BaseValue, { name: "Unique",     fun: Unique }));
-    regSimple(ctx, Extendo(BaseValue, { name: "Histogram",  fun: Histogram }));
+    regSimple(ctx, Extendo(BaseValue, { name: "Min",         fun: Min  }));
+    regSimple(ctx, Extendo(BaseValue, { name: "Max",         fun: Max  }));
+    regSimple(ctx, Extendo(BaseValue, { name: "Mean",        fun: Mean }));
+    regSimple(ctx, Extendo(BaseValue, { name: "Sum",         fun: Sum  }));
+    regSimple(ctx, Extendo(BaseValue, { name: "Unique",      fun: Unique }));
+    regSimple(ctx, Extendo(BaseValue, { name: "Histogram",   fun: Histogram }));
 
+    regSimple(ctx, Extendo(BaseValue, { name: "SplitUnique", fun: SplitUnique }));
 
     regSimple(ctx,{
         name:'setColumnFormat',

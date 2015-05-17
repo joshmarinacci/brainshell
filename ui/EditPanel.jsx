@@ -7,6 +7,7 @@ var Context = require('../src/Context');
 var ometajs = require('ometa-js');
 var Parser = require('../parser_compiled.js').Parser;
 var DocsStore = require('./DocsStore');
+var TableOutput = require('./TableOutput.jsx');
 
 function ParseExpression(str) {
     console.log("parsing expression",str);
@@ -144,35 +145,6 @@ module.exports = EditPanel;
 
 
 
-var TableOutput = React.createClass({
-    componentDidMount: function() { },
-    renderRow: function(row, infos, count) {
-        var cols = infos.map(function(info,i){
-            return <td key={'cell_'+count+'_'+i}>{info.print(row)}</td>
-        });
-        return <tr key={'rowx_'+count}><td className='row-header' key={'cell_head'}>{count+1}</td>{cols}</tr>;
-    },
-    render: function() {
-        //list
-        var infos = this.props.data.getColumnInfos();
-        var itr = this.props.data.getIterator();
-        var rows = [];
-        var count = 0;
-        while(itr.hasNext()) {
-            rows.push(this.renderRow(itr.next(),infos,count));
-            count++;
-        }
-
-        var headers = infos.map(function(info) {
-            return <th>{info.title()}</th>;
-        });
-
-        return <div className='grow scroll result'><table className='grow'>
-            <thead><th className='row-header'>#</th>{headers}</thead>
-            <tbody>{rows}</tbody>
-        </table></div>
-    }
-});
 
 
 var SChart = React.createClass({
