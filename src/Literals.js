@@ -58,7 +58,7 @@ function NumberLiteral(num,unit) {
         if(this._unit) {
             us = ' ' + this._unit.toString();
         }
-        return 'LITERAL ' + this._value + us;
+        return 'LITERAL NUMBER ' + this._value + us;
     }
 }
 util.inherits(NumberLiteral, LiteralBase);
@@ -72,7 +72,7 @@ function StringLiteral(str) {
         return this._value;
     };
     this.toString = function() {
-        return 'LITERAL ' + this._value;
+        return 'LITERAL STRING ' + this._value;
     };
     this.toCode = function() {
         return "'"+this._value+"'";
@@ -80,6 +80,22 @@ function StringLiteral(str) {
 }
 util.inherits(StringLiteral, LiteralBase);
 
+function DateLiteral(date) {
+    LiteralBase.call(this);
+    this.kind = 'literal';
+    this.type = 'date';
+    this._value = date;
+    this.getDate = function() {
+        return this._value;
+    };
+    this.toString = function() {
+        return 'LITERAL DATE ' + this._value.toString();
+    };
+    this.toCode = function() {
+        return "'"+this._value.toISOString()+"'";
+    };
+}
+util.inherits(DateLiteral, LiteralBase);
 
 
 
@@ -239,6 +255,9 @@ var Literal = {
     },
     makeKeyValue: function(key,value) {
         return new KeyValuePair(key,value);
+    },
+    makeDate: function(date) {
+        return new DateLiteral(date);
     }
 };
 

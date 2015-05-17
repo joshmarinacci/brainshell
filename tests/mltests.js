@@ -9,6 +9,8 @@ var ometajs = require('ometa-js');
 var Parser = require('../parser_compiled.js').Parser;
 var DefaultFunctions = require('../ui/DefaultFunctions');
 var Context = require('../src/Context');
+var Symbols = require('../src/Symbols');
+var moment  = require('moment');
 var ctx = Context.global();
 
 DefaultFunctions.makeDefaultFunctions(ctx);
@@ -189,3 +191,93 @@ test('histogram table', function(t){
     }).done();
 });
 */
+
+
+//var data = NDJSON(‘events.json’,100);
+test('load ND JSON data', function(t) {
+    var str = "NDJSON('events.json',count:100)";
+    Parser.matchAll(str, 'start').value(ctx).then(function(v) {
+        t.equal(v.length(),100);
+        var first = v.item(0);
+        t.end();
+    }).done();
+});
+
+//var startDate = Date(month:4, day:1) // may 1st
+test('date create', function(t) {
+    var str = "Date(month:3, day:1)";
+    Parser.matchAll(str, 'start').value(ctx).then(function(v){
+        t.equal(v.type,'date','type is date');
+        t.equal(v.getDate().month(),3,'month is april/3');
+        t.end();
+    }).done();
+});
+
+//var endDate = Date(month:’may’, day:10) // may 10th
+test('date create 2', function(t) {
+    var str = "Date(month:'june', day:19)";
+    Parser.matchAll(str, 'start').value(ctx).then(function(v){
+        t.equal(v.type,'date','type is date');
+        t.equal(v.getDate().month(),5,'month is june/3');
+        t.end();
+    }).done();
+});
+
+
+
+test('set column format for timestamps', function(t) {
+    //var str = "[ Date(month:'june', day:19), Date(month:'june', day:20), Date(month:'june', day:21) ]";
+    var str = "setColumnFormat([ [ts:'1429041449644', event:1], [ts:'1429041449645', event:2], [ts:'1429042668312', event:3], [ts:'1431898583000',event:4] ], 'ts', type:'date', parsePattern:'x')";
+    Parser.matchAll(str, 'start').value(ctx).then(function(v){
+        var it = v.getIterator();
+        var cis = v.getColumnInfos();
+        while(it.hasNext()) {
+            var row = it.next();
+            console.log("row = ", row.toString());
+            cis.forEach(function(ci) {
+                console.log("column ", ci.title(), '=', ci.print(row));
+            });
+        }
+        t.end();
+    }).done();
+});
+
+//var d2 = FilterByDateRange(data,column:’timestamp’,start:startDate, end:endDate) // filter by timestamp column
+test('filter by date range', function(t) {
+    var sym = Symbols.make('data');
+    var rows = [];
+    for(var i=0; i<10; i++) {
+        var mom = moment();
+        mom.date(i+1);
+        console.log("moment = ", mom.toString());
+        var row = Literals.makeList([
+            Literals.makeKeyValue('timestamp',Literals.makeDate(mom)),
+            Literals.makeKeyValue('event',Literals.makeNumber(i))
+        ]);
+        rows.push(row);
+    }
+    sym.update(Literals.makeList(rows));
+    ctx.register(sym);
+    var str = "FilterByDateRange(data, 'timestamp', start:Date(month:'may', day:3), end:Date(month:'may', day:7) )";
+    Parser.matchAll(str, 'start').value(ctx).then(function(v){
+        var it = v.getIterator();
+        var cis = v.getColumnInfos();
+        while(it.hasNext()) {
+            var row = it.next();
+            console.log("row = ", row.toString());
+            cis.forEach(function(ci) {
+                console.log("column ", ci.title(), '=', ci.print(row));
+            });
+        }
+        t.end();
+    }).done();
+});
+
+
+
+//TChart(d2, xid:’timestamp’) // charts into 1 hour buckets
+//var d3 = Unique(d2,column:’Publisher’)
+//list of unique values
+//var d4 = SplitUnique(d2,column:’Publisher’)
+//TChart(d4, xid:’timestamp’) // makes three charts into 1 hour buckets
+

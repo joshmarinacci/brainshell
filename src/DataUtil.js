@@ -1,8 +1,9 @@
 /**
  * Created by josh on 5/16/15.
  */
+var Literals = require('./Literals');
 
-module.exports = {
+var DataUtil = {
     is1D: function(data) {
         var first = data._value[0];
         if(first.isNumber()) return true;
@@ -70,3 +71,5 @@ module.exports = {
     }
 };
 
+
+module.exports = DataUtil;

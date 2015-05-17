@@ -117,6 +117,58 @@ function SplitUnique(table, tcol) {
 }
 
 
+function NDJSON(filename){
+    return utils.invokeService("NDJSON",[filename]).then(function(rows) {
+        return Literals.makeList(rows.map(function(row) {
+            var names = ['ID','Timestamp','Publisher','InformationType','InformationFormat'];
+            var vals = names.map(function(name) {
+                return Literals.makeKeyValue(name, Literals.makeString(row[name]));
+            });
+            return Literals.makeList(vals);
+        }));
+    });
+}
+
+function MakeDate(month, day) {
+    console.log("making a date", month.getValue().toString(), day.getValue().toString());
+    var mval = month.getValue()._value;
+    var dval = day.getValue()._value;
+    //console.log("mval = ", mval);
+    //console.log('dval = ', dval);
+    var date = moment();
+    date.month(mval);
+    date.date(dval);
+    //console.log('date = ', date.toString());
+    return Literals.makeDate(date);
+}
+
+function FilterByDateRange(data, column, start, end) {
+    console.log('start is ', start.getValue().type);
+    function CustomListIterator() {
+        this.index = 0;
+        this.hasNext = function() {
+            return (this.index < 5);
+        };
+        this.next = function() {
+            console.log("index is ", this.index);
+            var row = data.item(this.index);
+            this.index++;
+            return row;
+        }
+    }
+
+    function ListWrapper() {
+        this.type = 'list-wrapper';
+        this.getIterator = function() {
+            return new CustomListIterator();
+        };
+        this.getColumnInfos = function() {
+            return data.getColumnInfos();
+        }
+    }
+    return new ListWrapper();
+}
+
 exports.makeDefaultFunctions = function(ctx) {
 
     var sym = Symbols.make("PI");
@@ -131,6 +183,9 @@ exports.makeDefaultFunctions = function(ctx) {
     regSimple(ctx, Extendo(BaseValue, { name: "Histogram",   fun: Histogram }));
 
     regSimple(ctx, Extendo(BaseValue, { name: "SplitUnique", fun: SplitUnique }));
+    regSimple(ctx, Extendo(BaseValue, { name: "NDJSON",      fun: NDJSON }));
+    regSimple(ctx, Extendo(BaseValue, { name: "Date",        fun: MakeDate }));
+    regSimple(ctx, Extendo(BaseValue, { name: "FilterByDateRange", fun: FilterByDateRange }));
 
     regSimple(ctx,{
         name:'setColumnFormat',

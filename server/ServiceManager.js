@@ -99,10 +99,33 @@ function EarthquakeHistory() {
     });
 }
 
+var ndjson = require('ndjson')
+
+function NDJSON() {
+    return Q.promise(function(resolve, reject, notify) {
+        var filename = "events.json";
+        var count = 100;
+        var stream = fs.createReadStream(filename);
+        var data = [];
+        var going = true;
+        stream.pipe(ndjson.parse()).on('data',function(row){
+            if(!going) return;
+            count--;
+            data.push(row);
+            if(count <= 0) {
+                resolve(data);
+                going = false;
+                stream.close();
+            }
+        });
+    });
+}
+
 var services = {
     loadCSV: loadCSV,
     StockHistory: StockHistory,
     EarthquakeHistory: EarthquakeHistory,
+    NDJSON: NDJSON
 };
 
 exports.invoke = function(id, args) {
