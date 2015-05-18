@@ -45,7 +45,7 @@ exports.POSTJSON = function(url, data) {
                 var payload = JSON.parse(xml.responseText);
                 resolve(payload);
             } else {
-                reject(xml.status);
+                reject(xml);
             }
         };
         xml.open('POST',url);

@@ -122,6 +122,21 @@ var EditPanel = React.createClass({
     },
     renderError: function(err) {
         if(!err || err == null) return (<div className='error hidden'></div>);
+        if(err.status == 500) {
+            console.log("remote error");
+            console.log(err);
+            try {
+                var info = JSON.parse(err.responseText);
+                console.log("info =", info);
+                console.log('error info = ', info.error);
+                if(info.error.code == 'ENOENT') {
+                    return <div className='error'>Cannot read file "{info.error.path}"</div>
+                }
+            } catch (e) {
+                console.log('more errors!');
+            }
+
+        }
         return (<div className='error'>{err.toString()}</div>);
     },
     render: function() {

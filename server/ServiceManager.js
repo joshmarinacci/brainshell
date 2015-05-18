@@ -9,6 +9,7 @@ var fs = require('fs');
 var es = require("event-stream");
 var moment = require('moment');
 var JSONStream = require("JSONStream");
+var ndjson = require('ndjson')
 
 function loadCSV(file) {
     console.log("invoking load CSV on file",file);
@@ -99,25 +100,34 @@ function EarthquakeHistory() {
     });
 }
 
-var ndjson = require('ndjson')
 
 function NDJSON() {
     return Q.promise(function(resolve, reject, notify) {
         var filename = "events.json";
         var count = 100;
-        var stream = fs.createReadStream(filename);
-        var data = [];
-        var going = true;
-        stream.pipe(ndjson.parse()).on('data',function(row){
-            if(!going) return;
-            count--;
-            data.push(row);
-            if(count <= 0) {
-                resolve(data);
-                going = false;
-                stream.close();
-            }
-        });
+        try {
+            var stream = fs.createReadStream(filename);
+            var data = [];
+            var going = true;
+            stream
+                .on('error', function(err) {
+                    reject(err);
+                })
+                .pipe(ndjson.parse())
+                .on('data', function (row) {
+                    if (!going) return;
+                    count--;
+                    data.push(row);
+                    if (count <= 0) {
+                        resolve(data);
+                        going = false;
+                        stream.close();
+                    }
+                })
+            ;
+        } catch (err) {
+            reject(err);
+        }
     });
 }
 
