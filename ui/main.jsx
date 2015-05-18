@@ -126,7 +126,7 @@ var MainView = React.createClass({
             var docid = this.state.selectedDoc._id;
             var title = doc.title;
             var panels = doc.expressions.map(function (expr, i) {
-                return <EditPanel key={docid+i} expr={expr} onChange={self.contentChanged} doc={doc} index={i}/>
+                return <EditPanel key={expr.id} expr={expr} onChange={self.contentChanged} doc={doc} index={i}/>
             });
         }
         return(

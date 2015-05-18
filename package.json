@@ -8,9 +8,10 @@
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "node tools/compile.js src/parser.ometajs > parser_compiled.js",
+    "build-parser": "node tools/compile.js src/parser.ometajs > parser_compiled.js",
     "server": "node server/server.js",
-    "watch": "watchify --transform reactify ui/main.jsx node_modules/appy-style/react/CustomList.jsx -o ui/bundle.js --debug --verbose "
+    "build-ui": "browserify --transform reactify ui/main.jsx node_modules/appy-style/react/CustomList.jsx -o ui/bundle.js --debug --verbose ",
+    "watch-ui": "watchify --transform reactify ui/main.jsx node_modules/appy-style/react/CustomList.jsx -o ui/bundle.js --debug --verbose "
   },
   "repository": {
     "type": "git",

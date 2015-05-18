@@ -47,6 +47,7 @@ var EditPanel = React.createClass({
         this.setRaw(this.refs.text.getDOMNode().value);
     },
     doEval: function() {
+        if(this.props.expr.type !== 'code') return;
         var self = this;
         try {
             var expr = ParseExpression(this.state.raw);
@@ -85,8 +86,11 @@ var EditPanel = React.createClass({
             error:e
         });
     },
-    doAppend: function() {
+    doAppendExpression: function() {
         DocsStore.insertExpressionAfter(this.props.doc, this.props.expr, this.props.index);
+    },
+    doAppendText: function() {
+        DocsStore.insertPlaintextAfter(this.props.doc, this.props.expr, this.props.index);
     },
     keyDown: function(e) {
         if(e.ctrlKey && e.key == 'Enter') {
@@ -120,16 +124,28 @@ var EditPanel = React.createClass({
     render: function() {
         var res = this.renderResult(this.state.result);
         var err = this.renderError(this.state.error);
-
-        return (<div className="vbox edit-panel">
-            <header>
+        if(this.props.expr.type == 'code') {
+            var toolbar =
                 <div className='group'>
                     <button>move</button>
                     <button onClick={this.doEval}>eval</button>
                     <button>delete</button>
-                    <button onClick={this.doAppend}>append</button>
+                    <button onClick={this.doAppendExpression}>+ expr</button>
+                    <button onClick={this.doAppendText}>+ text</button>
+                </div>;
+            var resout = <div className="results">{res}</div>
+        } else {
+            var toolbar =
+                <div className='group'>
+                    <button>move</button>
+                    <button>delete</button>
+                    <button onClick={this.doAppendExpression}>+ expr</button>
+                    <button onClick={this.doAppendText}>+ text</button>
                 </div>
-            </header>
+            var resout = "";
+        }
+        return (<div className="vbox edit-panel">
+            <header>{toolbar}</header>
             <textarea
                 ref='text'
                 className=""
@@ -139,7 +155,7 @@ var EditPanel = React.createClass({
                 onKeyDown={this.keyDown}
                 ></textarea>
             {err}
-            <div className="results">{res}</div>
+            {resout}
         </div>)
     }
 });

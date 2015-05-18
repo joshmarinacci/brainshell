@@ -79,6 +79,18 @@ var DocsStore = {
         doc.expressions.splice(index+1,0,exp);
         console.log("inserted at ", index+1);
         this.notify('update');
+    },
+    insertPlaintextAfter: function(doc,expr,index) {
+        console.log("doc = ",doc);
+        console.log("inserting pain text after expression",expr,index);
+        var exp = {
+            type:'plaintext',
+            content:'i have something to say',
+            id:utils.makeId('plaintext')
+        };
+        doc.expressions.splice(index+1,0,exp);
+        console.log("inserted at ", index+1);
+        this.notify('update');
     }
 };
 
