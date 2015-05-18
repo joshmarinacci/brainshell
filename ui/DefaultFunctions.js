@@ -130,7 +130,7 @@ function NDJSON(filename){
 }
 
 function MakeDate(month, day) {
-    console.log("making a date", month.getValue().toString(), day.getValue().toString());
+    //console.log("making a date", month.getValue().toString(), day.getValue().toString());
     var mval = month.getValue()._value;
     var dval = day.getValue()._value;
     //console.log("mval = ", mval);
@@ -143,14 +143,14 @@ function MakeDate(month, day) {
 }
 
 function FilterByDateRange(data, column, start, end) {
-    console.log('start is ', start.getValue().type);
+    //console.log('start is ', start.getValue().type);
     function CustomListIterator() {
         this.index = 0;
         this.hasNext = function() {
             return (this.index < 5);
         };
         this.next = function() {
-            console.log("index is ", this.index);
+            //console.log("index is ", this.index);
             var row = data.item(this.index);
             this.index++;
             return row;

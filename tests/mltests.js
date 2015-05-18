@@ -229,14 +229,15 @@ test('set column format for timestamps', function(t) {
     //var str = "[ Date(month:'june', day:19), Date(month:'june', day:20), Date(month:'june', day:21) ]";
     var str = "setColumnFormat([ [ts:'1429041449644', event:1], [ts:'1429041449645', event:2], [ts:'1429042668312', event:3], [ts:'1431898583000',event:4] ], 'ts', type:'date', parsePattern:'x')";
     Parser.matchAll(str, 'start').value(ctx).then(function(v){
+        //t.equal(v.length(),3);
         var it = v.getIterator();
-        var cis = v.getColumnInfos();
+        //var cis = v.getColumnInfos();
         while(it.hasNext()) {
             var row = it.next();
-            console.log("row = ", row.toString());
-            cis.forEach(function(ci) {
-                console.log("column ", ci.title(), '=', ci.print(row));
-            });
+            //console.log("row = ", row.toString());
+            //cis.forEach(function(ci) {
+            //    console.log("column ", ci.title(), '=', ci.print(row));
+            //});
         }
         t.end();
     }).done();
@@ -249,7 +250,7 @@ test('filter by date range', function(t) {
     for(var i=0; i<10; i++) {
         var mom = moment();
         mom.date(i+1);
-        console.log("moment = ", mom.toString());
+        //console.log("moment = ", mom.toString());
         var row = Literals.makeList([
             Literals.makeKeyValue('timestamp',Literals.makeDate(mom)),
             Literals.makeKeyValue('event',Literals.makeNumber(i))
@@ -264,16 +265,26 @@ test('filter by date range', function(t) {
         var cis = v.getColumnInfos();
         while(it.hasNext()) {
             var row = it.next();
-            console.log("row = ", row.toString());
+            //console.log("row = ", row.toString());
             cis.forEach(function(ci) {
-                console.log("column ", ci.title(), '=', ci.print(row));
+                //console.log("column ", ci.title(), '=', ci.print(row));
             });
         }
         t.end();
     }).done();
 });
 
-
+test('function in list literal', function(t) {
+    var str = "[9, 4+5, Sum([4,5])]";
+    Parser.matchAll(str, 'start').value(ctx).then(function(v) {
+        //console.log("v = ", v.toString());
+        t.equal(v.length(),3);
+        t.equal(v.item(0).getNumber(),9);
+        t.equal(v.item(1).getNumber(),9);
+        t.equal(v.item(2).getNumber(),9);
+        t.end();
+    });
+});
 
 //TChart(d2, xid:’timestamp’) // charts into 1 hour buckets
 //var d3 = Unique(d2,column:’Publisher’)

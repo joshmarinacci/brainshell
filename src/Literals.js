@@ -136,6 +136,16 @@ function ListLiteral(list) {
     this.toString = function() {
         return 'LITERAL LIST' + this._value;
     };
+
+    this.value = function() {
+        var proms = this._value.map(function(v) {
+            return v.value();
+        });
+        return Q.all(proms).then(function(arr) {
+            return new ListLiteral(arr);
+        });
+    };
+
     this.length = function() {
         return this._value.length;
     };
