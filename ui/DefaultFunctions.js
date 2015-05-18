@@ -118,15 +118,47 @@ function SplitUnique(table, tcol) {
 }
 
 
+function ArrayIterator(data) {
+    this.index = 0;
+    this.hasNext = function() {
+        return (this.index < data.length);
+    };
+    this.next = function() {
+        var row = data[this.index];
+        this.index++;
+        return row;
+    }
+}
+
 function NDJSON(filename, len){
     return utils.invokeService("NDJSON",[filename,len]).then(function(rows) {
-        return Literals.makeList(rows.map(function(row) {
-            var names = ['ID','Timestamp','Publisher','InformationType','InformationFormat'];
-            var vals = names.map(function(name) {
-                return Literals.makeKeyValue(name, Literals.makeString(row[name]));
-            });
-            return Literals.makeList(vals);
-        }));
+        var first = rows[0];
+        //console.log("got some rows. first is ",first);
+        var cinfos = Object.keys(first).map(function(key) {
+            return {
+                id:function() { return key; },
+                title: function() { return this.id()+""; },
+                type: function() { return 'string'; },
+                getValue: function(row) { return row[key]; },
+                print: function(row) {
+                    var val = this.getValue(row);
+                    if(!val) return "";
+                    if(val.length > 80) {
+                        return val.substring(0,80)+'...';
+                    }
+                    return ""+val;
+                }
+            }
+        });
+        return {
+            type:'list-wrapper',
+            getIterator: function() {
+                return new ArrayIterator(rows);
+            },
+            getColumnInfos: function() {
+                return cinfos;
+            }
+        };
     });
 }
 
@@ -267,6 +299,7 @@ exports.makeDefaultFunctions = function(ctx) {
                             break;
                         }
                     }
+                    var oldInfo = infos[index];
                     var newInfo = new StdColumnInfo(key,options.type);
                     if(options.type == 'number') {
                         newInfo.getValue = function (row) {
@@ -275,7 +308,7 @@ exports.makeDefaultFunctions = function(ctx) {
                     }
                     if(options.type == 'date') {
                         newInfo.getValue = function(row) {
-                            return  moment(row.itemByKey(this.id()), options.parsePattern);
+                            return  moment(oldInfo.getValue(row), options.parsePattern);
                         };
                         newInfo.print = function(row) {
                             return this.getValue(row).format(options.printPattern);

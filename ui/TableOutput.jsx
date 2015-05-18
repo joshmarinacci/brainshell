@@ -14,9 +14,17 @@ module.exports = React.createClass({
         var itr = data.getIterator();
         var rows = [];
         var count = 0;
+        var early = false;
         while(itr.hasNext()) {
             rows.push(this.renderRow(itr.next(),infos,count));
             count++;
+            if(count > 100) {
+                early = true;
+                break;
+            }
+        }
+        if(early) {
+            name += " ... plus more";
         }
 
         var headers = infos.map(function(info) {
@@ -48,6 +56,6 @@ module.exports = React.createClass({
             }
             return <div className='grow scroll result'>{output}</div>;
         }
-        return <div className='grow scroll result'>{this.renderTable(this.props.data),'result'}</div>;
+        return <div className='grow scroll result'>{this.renderTable(this.props.data,'result')}</div>;
     }
 });

@@ -195,10 +195,19 @@ test('histogram table', function(t){
 
 //var data = NDJSON(‘events.json’,100);
 test('load ND JSON data', function(t) {
-    var str = "NDJSON('events.json',count:100)";
+    var str = "NDJSON('events.json',20000)";
     Parser.matchAll(str, 'start').value(ctx).then(function(v) {
-        t.equal(v.length(),100);
-        var first = v.item(0);
+        var count = 0;
+        var it = v.getIterator();
+        var cinfos = v.getColumnInfos();
+        var tsinfo = cinfos.filter(function(cinfo) { return cinfo.id() == 'Timestamp'})[0];
+        while(it.hasNext()) {
+            var val = it.next();
+            //console.log('timestamp = ',tsinfo.getValue(val));
+            count++;
+        }
+        console.log('final count = ', count);
+        t.equal(count,20000);
         t.end();
     }).done();
 });
@@ -293,7 +302,7 @@ test('function in list literal', function(t) {
         t.end();
     });
 });
-
+/*
 // BucketByDateTime(data, column:'timestamp', by:'weekday')
 test('BucketByDatetime', function(t) {
     var sym = Symbols.make('data');
@@ -310,7 +319,7 @@ test('BucketByDatetime', function(t) {
         t.end();
     }).done();
 });
-
+*/
 
 
 //TChart(d2, xaxis:’timestamp’) // charts into 1 hour buckets
