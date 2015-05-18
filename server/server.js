@@ -76,7 +76,7 @@ app.post('/service/:id',function(req,res) {
             res.send(result);
         }).fail(function(err) {
             console.log("an error happened",err);
-            res.status(500).send({status:'error', error:err});
+            res.status(500).send({status:'error', error:err, message:err.message});
         }).done();
 });
 

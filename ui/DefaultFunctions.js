@@ -100,9 +100,10 @@ function Histogram(list, bucketCount) {
 
 function SplitUnique(table, tcol) {
     var outputs = {};
-    for(var i=0; i<table.length(); i++) {
-        var row = table.item(i);
-        var col = row.itemByKey(tcol);
+    var it = table.getIterator();
+    while(it.hasNext()) {
+        var row = it.next();
+        var col = row.itemByKey(tcol.getString());
         var key = col.getString();
         if(!outputs.hasOwnProperty(key)) {
             outputs[key] = Literals.makeList([]);
@@ -117,8 +118,8 @@ function SplitUnique(table, tcol) {
 }
 
 
-function NDJSON(filename){
-    return utils.invokeService("NDJSON",[filename]).then(function(rows) {
+function NDJSON(filename, len){
+    return utils.invokeService("NDJSON",[filename,len]).then(function(rows) {
         return Literals.makeList(rows.map(function(row) {
             var names = ['ID','Timestamp','Publisher','InformationType','InformationFormat'];
             var vals = names.map(function(name) {
@@ -293,7 +294,7 @@ exports.makeDefaultFunctions = function(ctx) {
                 {
                     type:type,
                     parsePattern:parsePattern,
-                    printPattern: 'MMMM DD, YYYY'
+                    printPattern: 'MMM DD YYYY, hh:mm'
                 });
         }
     });
@@ -378,6 +379,8 @@ exports.makeDefaultFunctions = function(ctx) {
     regSimple(ctx, Extendo(BaseValue,{
         name:'BarChart',
         fun: function(data, xaxis, yaxis) {
+            if(!xaxis) throw Error("missing parameter xaxis");
+            if(!yaxis) throw Error("missing parameter yaxis");
             var obj = Literals.makeEmpty();
             obj.data = data;
             obj.type = 'barchart';

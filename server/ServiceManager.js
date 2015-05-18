@@ -101,10 +101,14 @@ function EarthquakeHistory() {
 }
 
 
-function NDJSON() {
+function NDJSON(filenameArg,len) {
     return Q.promise(function(resolve, reject, notify) {
+        if(!filenameArg || filenameArg == null) return reject(new Error('missing argument filename'));
         var filename = "events.json";
         var count = 100;
+        if(len && len.type == 'numeric') {
+            count = len._value;
+        }
         try {
             var stream = fs.createReadStream(filename);
             var data = [];

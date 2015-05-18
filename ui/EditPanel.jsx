@@ -132,6 +132,9 @@ var EditPanel = React.createClass({
                 if(info.error.code == 'ENOENT') {
                     return <div className='error'>Cannot read file "{info.error.path}"</div>
                 }
+                if(info.message) {
+                    return <div className='error'>{info.message}</div>
+                }
             } catch (e) {
                 console.log('more errors!');
             }
