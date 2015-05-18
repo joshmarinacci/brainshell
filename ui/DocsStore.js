@@ -91,6 +91,11 @@ var DocsStore = {
         doc.expressions.splice(index+1,0,exp);
         console.log("inserted at ", index+1);
         this.notify('update');
+    },
+    deleteExpression: function(doc, expr, index) {
+        console.log('deleting expr from doc,. index = ',index);
+        doc.expressions.splice(index,1);
+        this.notify('delete');
     }
 };
 

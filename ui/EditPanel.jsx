@@ -92,6 +92,9 @@ var EditPanel = React.createClass({
     doAppendText: function() {
         DocsStore.insertPlaintextAfter(this.props.doc, this.props.expr, this.props.index);
     },
+    doDeleteExpression: function() {
+        DocsStore.deleteExpression(this.props.doc, this.props.expr, this.props.index);
+    },
     keyDown: function(e) {
         if(e.ctrlKey && e.key == 'Enter') {
             this.doEval();
@@ -129,7 +132,7 @@ var EditPanel = React.createClass({
                 <div className='group'>
                     <button>move</button>
                     <button onClick={this.doEval}>eval</button>
-                    <button>delete</button>
+                    <button onClick={this.doDeleteExpression}>delete</button>
                     <button onClick={this.doAppendExpression}>+ expr</button>
                     <button onClick={this.doAppendText}>+ text</button>
                 </div>;
@@ -138,7 +141,7 @@ var EditPanel = React.createClass({
             var toolbar =
                 <div className='group'>
                     <button>move</button>
-                    <button>delete</button>
+                    <button onClick={this.doDeleteExpression}>delete</button>
                     <button onClick={this.doAppendExpression}>+ expr</button>
                     <button onClick={this.doAppendText}>+ text</button>
                 </div>
