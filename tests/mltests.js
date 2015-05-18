@@ -243,13 +243,15 @@ test('set column format for timestamps', function(t) {
     }).done();
 });
 
-//var d2 = FilterByDateRange(data,column:’timestamp’,start:startDate, end:endDate) // filter by timestamp column
-test('filter by date range', function(t) {
-    var sym = Symbols.make('data');
+//
+function makeTimestampData(count,month, date, hour, minute) {
     var rows = [];
-    for(var i=0; i<10; i++) {
+    for(var i=0; i<count; i++) {
         var mom = moment();
-        mom.date(i+1);
+        mom.date(i*date);
+        mom.month(i*month);
+        mom.hour(i*hour);
+        mom.minute(i*minute);
         //console.log("moment = ", mom.toString());
         var row = Literals.makeList([
             Literals.makeKeyValue('timestamp',Literals.makeDate(mom)),
@@ -257,7 +259,13 @@ test('filter by date range', function(t) {
         ]);
         rows.push(row);
     }
-    sym.update(Literals.makeList(rows));
+    return rows;
+}
+
+//var d2 = FilterByDateRange(data,column:’timestamp’,start:startDate, end:endDate) // filter by timestamp column
+test('filter by date range', function(t) {
+    var sym = Symbols.make('data');
+    sym.update(Literals.makeList(makeTimestampData(100,0,0,0,1)));
     ctx.register(sym);
     var str = "FilterByDateRange(data, 'timestamp', start:Date(month:'may', day:3), end:Date(month:'may', day:7) )";
     Parser.matchAll(str, 'start').value(ctx).then(function(v){
@@ -286,7 +294,27 @@ test('function in list literal', function(t) {
     });
 });
 
-//TChart(d2, xid:’timestamp’) // charts into 1 hour buckets
+// BucketByDateTime(data, column:'timestamp', by:'weekday')
+test('BucketByDatetime', function(t) {
+    var sym = Symbols.make('data');
+    sym.update(Literals.makeList(makeTimestampData(100,0,0,1,0)));
+    ctx.register(sym);
+    var str = "BucketByDateTime(data, column:'timestamp', by:'weekday')";
+    Parser.matchAll(str, 'start').value(ctx).then(function(v){
+        console.log("got output count",v.toString());
+        var it = v.getIterator();
+        while(it.hasNext()) {
+            var val = it.next();
+            console.log('val = ', val.toString());
+        }
+        t.end();
+    }).done();
+});
+
+
+
+//TChart(d2, xaxis:’timestamp’) // charts into 1 hour buckets
+
 //var d3 = Unique(d2,column:’Publisher’)
 //list of unique values
 //var d4 = SplitUnique(d2,column:’Publisher’)

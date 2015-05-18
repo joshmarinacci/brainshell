@@ -4,18 +4,22 @@
 var Literals = require('./Literals');
 
 var DataUtil = {
+    getFirstItem: function(data) {
+        var it = data.getIterator();
+        return it.next();
+    },
     is1D: function(data) {
-        var first = data._value[0];
+        var first = this.getFirstItem(data);
         if(first.isNumber()) return true;
         return false;
     },
     is2D: function(data) {
-        var first = data.item(0);
+        var first = this.getFirstItem(data);
         if(first.isList()) return true;
         return false;
     },
     is3D: function(data) {
-        var first = data.item(0);
+        var first = this.getFirstItem(data);
         console.log("first in 3d is", first.toString());
         if(first.type == 'pair') {
             var val = first.getValue();

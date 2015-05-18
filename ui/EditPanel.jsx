@@ -8,6 +8,7 @@ var ometajs = require('ometa-js');
 var Parser = require('../parser_compiled.js').Parser;
 var DocsStore = require('./DocsStore');
 var TableOutput = require('./TableOutput.jsx');
+var BarChart = require('./BarChart.jsx');
 
 function ParseExpression(str) {
     console.log("parsing expression",str);
@@ -101,6 +102,9 @@ var EditPanel = React.createClass({
         if(res.type == 'schart') {
             return <SChart data={res}/>
         }
+        if(res.type == 'barchart') {
+            return <BarChart data={res}/>
+        }
         if(res.type == 'list') {
             return <TableOutput data={res}/>
         }
@@ -142,8 +146,6 @@ var EditPanel = React.createClass({
 
 
 module.exports = EditPanel;
-
-
 
 
 

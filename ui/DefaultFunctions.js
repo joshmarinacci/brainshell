@@ -169,6 +169,37 @@ function FilterByDateRange(data, column, start, end) {
     return new ListWrapper();
 }
 
+function BucketByDateTime(data, column, byArg) {
+    var col = column.getValue().getString();
+    var by  = byArg.getValue().getString();
+    console.log('column = ', col, by);
+    var it = data.getIterator();
+    var cinfos = data.getColumnInfos();
+    var cinfo = cinfos.filter(function(cinfo) { return cinfo.id() == col})[0];
+    console.log("cinfo = ", cinfo.id());
+    var bucket_map   = {};
+    while(it.hasNext()) {
+        var row = it.next();
+        var ts = cinfo.getValue(row);
+        //console.log('timestamp = ', ts);
+        if(by == 'weekday') var key = ts.day();
+        if(by == 'hour')    var key = ts.hour();
+        if(by == 'minute')    var key = ts.minute();
+        if(!bucket_map.hasOwnProperty(key)) {
+            bucket_map[key] = 0;
+        }
+        bucket_map[key]++;
+    }
+    console.log('bucket_map', bucket_map)
+    return Literals.makeList(Object.keys(bucket_map).map(function(key) {
+        var val = bucket_map[key];
+        return Literals.makeList([
+            Literals.makeKeyValue(by,Literals.makeNumber(key)),
+            Literals.makeKeyValue('count',Literals.makeNumber(val))
+            ]);
+    }));
+}
+
 exports.makeDefaultFunctions = function(ctx) {
 
     var sym = Symbols.make("PI");
@@ -186,6 +217,7 @@ exports.makeDefaultFunctions = function(ctx) {
     regSimple(ctx, Extendo(BaseValue, { name: "NDJSON",      fun: NDJSON }));
     regSimple(ctx, Extendo(BaseValue, { name: "Date",        fun: MakeDate }));
     regSimple(ctx, Extendo(BaseValue, { name: "FilterByDateRange", fun: FilterByDateRange }));
+    regSimple(ctx, Extendo(BaseValue, { name: "BucketByDateTime",  fun: BucketByDateTime }));
 
     regSimple(ctx,{
         name:'setColumnFormat',
@@ -339,6 +371,18 @@ exports.makeDefaultFunctions = function(ctx) {
             var obj = Literals.makeEmpty();
             obj.data = data;
             obj.type = 'schart';
+            return obj;
+        }
+    }));
+
+    regSimple(ctx, Extendo(BaseValue,{
+        name:'BarChart',
+        fun: function(data, xaxis, yaxis) {
+            var obj = Literals.makeEmpty();
+            obj.data = data;
+            obj.type = 'barchart';
+            obj.xaxis = xaxis;
+            obj.yaxis = yaxis;
             return obj;
         }
     }));
