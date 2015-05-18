@@ -72,6 +72,19 @@ var DataUtil = {
     },
     numberArrayToLiteral: function(arr) {
         return Literals.makeList(arr.map(function(v){ return Literals.makeNumber(v)}));
+    },
+    makeStringColumnInfo: function(key) {
+        return {
+            id:function() { return key; },
+            title: function() { return this.id()+""; },
+            type: function() { return 'string'; },
+            getValue: function(row) { return row[key]; },
+            print: function(row) { return ""+this.getValue(row); }
+        }
+    },
+    findColumnInfoFor: function(data, name) {
+        var cinfos = data.getColumnInfos();
+        return cinfos.filter(function(cinfo) { return cinfo.id() == name})[0];
     }
 };
 

@@ -110,7 +110,6 @@ function SplitUnique(table, tcol) {
         }
         outputs[key]._value.push(row);
     }
-    console.log('Split unique',outputs);
     return Literals.makeList(Object.keys(outputs).map(function(key) {
         var value = outputs[key];
         return Literals.makeKeyValue(key, value);
@@ -135,20 +134,16 @@ function NDJSON(filename, len){
         var first = rows[0];
         //console.log("got some rows. first is ",first);
         var cinfos = Object.keys(first).map(function(key) {
-            return {
-                id:function() { return key; },
-                title: function() { return this.id()+""; },
-                type: function() { return 'string'; },
-                getValue: function(row) { return row[key]; },
-                print: function(row) {
-                    var val = this.getValue(row);
-                    if(!val) return "";
-                    if(val.length > 80) {
-                        return val.substring(0,80)+'...';
-                    }
-                    return ""+val;
+            var info = DataUtil.makeStringColumnInfo(key);
+            info.print = function(row) {
+                var val = this.getValue(row);
+                if(!val) return "";
+                if(val.length > 80) {
+                    return val.substring(0,80)+'...';
                 }
+                return ""+val;
             }
+            return info;
         });
         return {
             type:'list-wrapper',
@@ -205,16 +200,12 @@ function FilterByDateRange(data, column, start, end) {
 function BucketByDateTime(data, column, byArg) {
     var col = column.getValue().getString();
     var by  = byArg.getValue().getString();
-    console.log('column = ', col, by);
     var it = data.getIterator();
-    var cinfos = data.getColumnInfos();
-    var cinfo = cinfos.filter(function(cinfo) { return cinfo.id() == col})[0];
-    console.log("cinfo = ", cinfo.id());
+    var cinfo = DataUtil.findColumnInfoFor(data,col);
     var bucket_map   = {};
     while(it.hasNext()) {
         var row = it.next();
         var ts = cinfo.getValue(row);
-        //console.log('timestamp = ', ts);
         if(by == 'weekday') var key = ts.day();
         if(by == 'hour')    var key = ts.hour();
         if(by == 'minute')    var key = ts.minute();
@@ -223,7 +214,6 @@ function BucketByDateTime(data, column, byArg) {
         }
         bucket_map[key]++;
     }
-    console.log('bucket_map', bucket_map)
     return Literals.makeList(Object.keys(bucket_map).map(function(key) {
         var val = bucket_map[key];
         return Literals.makeList([
