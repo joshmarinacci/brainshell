@@ -145,36 +145,39 @@ var EditPanel = React.createClass({
     render: function() {
         var res = this.renderResult(this.state.result);
         var err = this.renderError(this.state.error);
+        var sidebar =
+            <div className='vbox'>
+                <button className='fa fa-sort-up'></button>
+                <button onClick={this.doDeleteExpression} className='fa fa-remove'></button>
+                <button className='fa fa-sort-down'></button>
+            </div>;
         if(this.props.expr.type == 'code') {
-            var toolbar =
-                <div className='group'>
-                    <button>move</button>
+            var toolbar = <div className='vbox'>
                     <button onClick={this.doEval}>eval</button>
-                    <button onClick={this.doDeleteExpression}>delete</button>
-                    <button onClick={this.doAppendExpression}>+ expr</button>
-                    <button onClick={this.doAppendText}>+ text</button>
-                </div>;
-            var resout = <div className="results">{res}</div>
-        } else {
-            var toolbar =
-                <div className='group'>
-                    <button>move</button>
-                    <button onClick={this.doDeleteExpression}>delete</button>
                     <button onClick={this.doAppendExpression}>+ expr</button>
                     <button onClick={this.doAppendText}>+ text</button>
                 </div>
+            var resout = <div className="results">{res}</div>
+        } else {
+            var toolbar = <div className='vbox'>
+                <button onClick={this.doAppendExpression}>+ expr</button>
+                <button onClick={this.doAppendText}>+ text</button>
+            </div>
             var resout = "";
         }
         return (<div className="vbox edit-panel">
-            <header>{toolbar}</header>
-            <textarea
-                ref='text'
-                className=""
-                rows={this.state.rows}
-                value={this.state.raw}
-                onChange={this.changed}
-                onKeyDown={this.keyDown}
-                ></textarea>
+                <div className='hbox'>
+                    <div className='vbox'>{sidebar}</div>
+                    <textarea
+                        ref='text'
+                        className="grow"
+                        rows={this.state.rows}
+                        value={this.state.raw}
+                        onChange={this.changed}
+                        onKeyDown={this.keyDown}
+                        ></textarea>
+                    <div className='vbox'>{toolbar}</div>
+                </div>
             {err}
             {resout}
         </div>)

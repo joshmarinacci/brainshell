@@ -1,4 +1,5 @@
 var React = require('react');
+var DataUtil = require('../src/DataUtil');
 
 var BarChart = React.createClass({
     componentDidMount: function() {
@@ -10,7 +11,6 @@ var BarChart = React.createClass({
     drawCanvas: function(data, xaxisDef, yaxisDef) {
         var xaxis = xaxisDef.getValue().getString();
         var yaxis = yaxisDef.getValue().getString();
-        console.log('axis def = ', xaxis, yaxis);
         var can = this.refs.canvas.getDOMNode();
         var g = can.getContext('2d');
         var w = 500;
@@ -19,10 +19,8 @@ var BarChart = React.createClass({
         g.fillRect(0,0,w,h);
 
         var cinfos = data.getColumnInfos();
-        //console.log('cinfios = ', cinfos);
-        var xinfo = cinfos.filter(function(cinfo) { return cinfo.id() == xaxis})[0];
-        var yinfo = cinfos.filter(function(cinfo) { return cinfo.id() == yaxis})[0];
-        //console.log('infos = ', xinfo.id(), yinfo.id());
+        var xinfo = DataUtil.findColumnInfoFor(data,xaxis);
+        var yinfo = DataUtil.findColumnInfoFor(data,yaxis);
 
         var min = 0;
         var max = 10;
@@ -35,7 +33,6 @@ var BarChart = React.createClass({
             max = Math.max(max,val);
             count++;
         }
-        console.log("max/min/count",max,min,count);
 
         var x = 0;
         var bw = w/count;
@@ -55,7 +52,6 @@ var BarChart = React.createClass({
         }
     },
     render: function() {
-        console.log('this is a bar chart', this.props.data);
         return <div>barchart:<br/><canvas ref='canvas' width='500' height='250'></canvas></div>
     }
 });
