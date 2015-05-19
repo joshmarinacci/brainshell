@@ -222,6 +222,20 @@ test('NDJSON => setColumnFormat', function(t) {
     }).done();
 });
 
+test('NDJSON => UseColumns', function(t) {
+    var str = "NDJSON('events.json',100)";
+    Parser.matchAll(str, 'start').value(ctx).then(function(v) {
+        var cinfos = v.getColumnInfos();
+        t.equal(cinfos.length,14);
+
+        Parser.matchAll(str+" => UseColumns(exclude:'Timestamp')", 'start').value(ctx).then(function(v) {
+            var cinfos = v.getColumnInfos();
+            t.equal(cinfos.length,13);
+            t.end();
+        }).done();
+    }).done();
+});
+
 //var startDate = Date(month:4, day:1) // may 1st
 test('date create', function(t) {
     var str = "Date(month:3, day:1)";
