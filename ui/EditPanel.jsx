@@ -23,34 +23,20 @@ var EditPanel = React.createClass({
         return {
             evaluated: false,
             result: ".",
-            raw: 'nothing',
-            rows:1,
             error:null,
+            resultVisible:true,
         }
-    },
-    setRaw: function(content) {
-        var lines = content.split('\n').length;
-        this.setState({
-            raw: content,
-            rows:lines
-        });
-    },
-    componentDidMount: function() {
-        this.setRaw(this.props.expr.content);
     },
     componentWillUnmount: function() {
         if(this.expr && this.cb) {
             this.expr.removeListener(this.cb);
         }
     },
-    changed: function() {
-        this.setRaw(this.refs.text.getDOMNode().value);
-    },
-    doEval: function() {
+    doEval: function(raw) {
         if(this.props.expr.type !== 'code') return;
         var self = this;
         try {
-            var expr = ParseExpression(this.state.raw);
+            var expr = ParseExpression(raw);
         } catch (err) {
             this.setError(err);
             return;
@@ -69,7 +55,7 @@ var EditPanel = React.createClass({
             });
         }
         expr.value(Context.global()).then(function(v) {
-            self.props.onChange(self.props.expr,self.state.raw);
+            self.props.onChange(self.props.expr,raw);
             self.setResult(v);
             self.setError(null);
         },function(err) {
@@ -95,12 +81,10 @@ var EditPanel = React.createClass({
     doDeleteExpression: function() {
         DocsStore.deleteExpression(this.props.doc, this.props.expr, this.props.index);
     },
-    keyDown: function(e) {
-        if(e.ctrlKey && e.key == 'Enter') {
-            this.doEval();
-            e.preventDefault();
-            e.stopPropagation();
-        }
+    toggleResult: function() {
+        this.setState({
+            resultVisible:!this.state.resultVisible
+        });
     },
     renderResult: function(res) {
         if(res == null) return "null";
@@ -150,32 +134,29 @@ var EditPanel = React.createClass({
                 <button className='fa fa-sort-up'></button>
                 <button onClick={this.doDeleteExpression} className='fa fa-remove'></button>
                 <button className='fa fa-sort-down'></button>
+                <button onClick={this.toggleResult} className='fa fa-caret-square-o-right'></button>
             </div>;
+        var resout = <div className='hidden'></div>;
+
         if(this.props.expr.type == 'code') {
             var toolbar = <div className='vbox'>
                     <button onClick={this.doEval}>eval</button>
                     <button onClick={this.doAppendExpression}>+ expr</button>
                     <button onClick={this.doAppendText}>+ text</button>
                 </div>
-            var resout = <div className="results">{res}</div>
+            if(this.state.resultVisible === true) {
+                var resout = <div className="results">{res}</div>
+            }
         } else {
             var toolbar = <div className='vbox'>
                 <button onClick={this.doAppendExpression}>+ expr</button>
                 <button onClick={this.doAppendText}>+ text</button>
             </div>
-            var resout = "";
         }
         return (<div className="vbox edit-panel">
                 <div className='hbox'>
                     <div className='vbox'>{sidebar}</div>
-                    <textarea
-                        ref='text'
-                        className="grow"
-                        rows={this.state.rows}
-                        value={this.state.raw}
-                        onChange={this.changed}
-                        onKeyDown={this.keyDown}
-                        ></textarea>
+                    <CodeTextArea content={this.props.expr.content} doEval={this.doEval}/>
                     <div className='vbox'>{toolbar}</div>
                 </div>
             {err}
@@ -188,6 +169,46 @@ var EditPanel = React.createClass({
 module.exports = EditPanel;
 
 
+var CodeTextArea = React.createClass({
+    getInitialState: function() {
+        return {
+            raw:'nothing',
+            rows:1
+        }
+    },
+    setRaw: function(content) {
+        var lines = content.split('\n').length;
+        this.setState({
+            raw: content,
+            rows:lines
+        });
+    },
+
+    componentDidMount: function() {
+        this.setRaw(this.props.content);
+    },
+
+    changed: function() {
+        this.setRaw(this.refs.text.getDOMNode().value);
+    },
+    keyDown: function(e) {
+        if(e.ctrlKey && e.key == 'Enter') {
+            this.props.doEval(this.state.raw);
+            e.preventDefault();
+            e.stopPropagation();
+        }
+    },
+    render: function() {
+        return <textarea
+            ref='text'
+            className="grow"
+            rows={this.state.rows}
+            value={this.state.raw}
+            onChange={this.changed}
+            onKeyDown={this.keyDown}
+            ></textarea>
+    }
+});
 
 var SChart = React.createClass({
     componentDidMount: function() {
