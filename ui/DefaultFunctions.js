@@ -152,6 +152,15 @@ function NDJSON(filename, len){
             },
             getColumnInfos: function() {
                 return cinfos;
+            },
+            value : function() {
+                var self = this;
+                return Q.fcall(function() {
+                    return self;
+                });
+            },
+            toString: function() {
+                return "NDJSON LIST RESULTS";
             }
         };
     });
