@@ -250,6 +250,12 @@ function FilterByDateRange(data, column, start, end) {
 }
 
 function BucketByDateTime(data, column, byArg) {
+    if(!column || column.getKey() !== 'column') {
+        throw new Error("'column' parameter is missing");
+    }
+    if(!byArg || byArg.getKey() !== 'by') {
+        throw new Error("'by' parameter is missing");
+    }
     var col = column.getValue().getString();
     var by  = byArg.getValue().getString();
     var it = data.getIterator();
@@ -275,6 +281,59 @@ function BucketByDateTime(data, column, byArg) {
     }));
 }
 
+var FuncUtils = {
+    getArgs: function(args) {
+        return Array.prototype.slice.call(args);
+    }
+}
+function UseColumns(data) {
+    var args = FuncUtils.getArgs(arguments);
+    args.shift(); //take out data first
+    return {
+        type:'list-wrapper',
+        getIterator: function() {
+            return data.getIterator();
+        },
+        getColumnInfos: function() {
+            var cinfos = data.getColumnInfos().slice();
+            var first = args[0];
+            if(first.getKey() == 'exclude') {
+                args.forEach(function(arg) {
+                    cinfos = cinfos.filter(function(info) {
+                        return info.id() != arg.getValue().getString();
+                    })
+                });
+                return cinfos;
+            }
+            if(first.getKey() == 'include') {
+                var collect = [];
+                args.forEach(function(arg) {
+                    cinfos.forEach(function(info) {
+                        if(info.id() == arg.getValue().getString()) collect.push(info)
+                    })
+                });
+                return collect;
+            }
+            throw new Error("can't do this! UseColumns but not exclude or include");
+        },
+        value : function() {
+            var self = this;
+            return Q.fcall(function() {
+                return self;
+            });
+        },
+        toString: function() {
+            return "UseColumns results";
+        }
+    };
+}
+
+/*
+ NDJSON('events.json',100)
+ => UseColumns(include:'Timestamp', include:'Publisher')
+ => setColumnFormat('Timestamp',type:'date', parsePattern:'x')
+ => BucketByDateTime()
+ */
 exports.makeDefaultFunctions = function(ctx) {
 
     var sym = Symbols.make("PI");
@@ -293,6 +352,7 @@ exports.makeDefaultFunctions = function(ctx) {
     regSimple(ctx, Extendo(BaseValue, { name: "Date",        fun: MakeDate, doc:DateDoc }));
     regSimple(ctx, Extendo(BaseValue, { name: "FilterByDateRange", fun: FilterByDateRange }));
     regSimple(ctx, Extendo(BaseValue, { name: "BucketByDateTime",  fun: BucketByDateTime }));
+    regSimple(ctx, Extendo(BaseValue, { name: "UseColumns",  fun: UseColumns }));
 
     regSimple(ctx,{
         name:'setColumnFormat',
@@ -363,7 +423,13 @@ exports.makeDefaultFunctions = function(ctx) {
                     }
                     infos[index] = newInfo;
                     return infos;
-                }
+                };
+                this.value = function() {
+                    var self = this;
+                    return Q.fcall(function() {
+                        return self;
+                    });
+                };
             }
             return new setColumnFormat(data, column,
                 {

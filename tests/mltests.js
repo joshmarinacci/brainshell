@@ -225,13 +225,13 @@ test('NDJSON => setColumnFormat', function(t) {
 test('NDJSON => UseColumns', function(t) {
     var str = "NDJSON('events.json',100)";
     Parser.matchAll(str, 'start').value(ctx).then(function(v) {
-        var cinfos = v.getColumnInfos();
-        t.equal(cinfos.length,14);
-
+        t.equal(v.getColumnInfos().length,14);
         Parser.matchAll(str+" => UseColumns(exclude:'Timestamp')", 'start').value(ctx).then(function(v) {
-            var cinfos = v.getColumnInfos();
-            t.equal(cinfos.length,13);
-            t.end();
+            t.equal(v.getColumnInfos().length,13);
+            Parser.matchAll(str+" => UseColumns(include:'Timestamp', include:'Publisher')",'start').value(ctx).then(function(v){
+                t.equal(v.getColumnInfos().length,2);
+                t.end();
+            }).done();
         }).done();
     }).done();
 });
