@@ -146,6 +146,14 @@ var MainView = React.createClass({
                             {panels}
                         </div>
                     </div>
+                    <div className="vbox" id="help-pane">
+                        <header>Documentation</header>
+                        <div className='group hidden'>
+                            <input type="search" className='grow'/>
+                            <button className="fa fa-search"></button>
+                        </div>
+                        <SymbolsPanel items={Context.global().listSymbols()}/>
+                    </div>
                 </div>
             </div>
            );
@@ -170,12 +178,4 @@ DocsStore.init();
  </header>
 
 
- <div className="vbox" id="help-pane">
- <header>Symbols</header>
- <div className='group hidden'>
- <input type="search" className='grow'/>
- <button className="fa fa-search"></button>
- </div>
- <SymbolsPanel items={Context.global().listSymbols()}/>
- </div>
  */

@@ -49,9 +49,36 @@ function MinFunc(a,b) {  return Math.min(a,b);  }
 function MaxFunc(a,b) {  return Math.max(a,b);  }
 function SumFunc(a,b) {  return a+b;            }
 
+var MinDoc = {
+    short: "Returns the minimum value of a list or table",
+    examples: [
+        "Min([1,2,3,4,5])  returns 1"
+    ]
+};
 function Min(data)  { return DataUtil.reduceListOrTable(data, MinFunc, Number.MAX_VALUE); };
+
+var MaxDoc = {
+    short: "Returns the maximum value of a list or table",
+    long: "Returns the maximum value of a list or table. If called on a list"+
+    "Max returns one value. If called on a table, Max will calculate the maximum for each"+
+    "column of the table.",
+    examples: [
+        "Max([1,2,3,4,5])  returns 5",
+        "Max([  [1,2], [5,4], [3,8] ]) returns [5,8]"
+    ]
+};
 function Max(data)  { return DataUtil.reduceListOrTable(data, MaxFunc, -Number.MAX_VALUE); }
+
+var SumDoc = {
+    short: "Returns the sum of a list or columns of a table",
+    examples: [
+        "Sum([1,2,3]) => 6",
+        "Sum([ [x:1, y:1], [x:2, y:4] ]) => [x:3, y:5]"
+    ]
+}
 function Sum(data)  { return DataUtil.reduceListOrTable(data, SumFunc, 0); }
+
+
 function Mean(data) {
     return DataUtil.reduceListOrTable(data, SumFunc, 0, function (data, val, cinfo) {
         if (cinfo) {
@@ -129,6 +156,14 @@ function ArrayIterator(data) {
     }
 }
 
+var NDJSONDoc = {
+    short: "Loads a newline delimited JSON document, with an optional line count. Default is 100 lines",
+    examples: [
+        "NDJSON('events.json') => first 100 lines of the table",
+        "NDJSON('events.json',200) => first 200 lines of the table"
+    ]
+}
+
 function NDJSON(filename, len){
     return utils.invokeService("NDJSON",[filename,len]).then(function(rows) {
         var first = rows[0];
@@ -165,6 +200,14 @@ function NDJSON(filename, len){
         };
     });
 }
+
+var DateDoc = {
+    short: "Creates a new date object",
+    examples: [
+        "Date( month: 'May', day:5) => May 5th 2015",
+        "Date( month: 5, day:5) => May 5th 2015"
+    ]
+};
 
 function MakeDate(month, day) {
     //console.log("making a date", month.getValue().toString(), day.getValue().toString());
@@ -238,16 +281,16 @@ exports.makeDefaultFunctions = function(ctx) {
     sym.update(Literals.makeNumber(Math.PI));
     ctx.register(sym);
 
-    regSimple(ctx, Extendo(BaseValue, { name: "Min",         fun: Min  }));
-    regSimple(ctx, Extendo(BaseValue, { name: "Max",         fun: Max  }));
+    regSimple(ctx, Extendo(BaseValue, { name: "Min",         fun: Min, doc:MinDoc  }));
+    regSimple(ctx, Extendo(BaseValue, { name: "Max",         fun: Max, doc:MaxDoc  }));
     regSimple(ctx, Extendo(BaseValue, { name: "Mean",        fun: Mean }));
-    regSimple(ctx, Extendo(BaseValue, { name: "Sum",         fun: Sum  }));
+    regSimple(ctx, Extendo(BaseValue, { name: "Sum",         fun: Sum, doc:SumDoc  }));
     regSimple(ctx, Extendo(BaseValue, { name: "Unique",      fun: Unique }));
     regSimple(ctx, Extendo(BaseValue, { name: "Histogram",   fun: Histogram }));
 
     regSimple(ctx, Extendo(BaseValue, { name: "SplitUnique", fun: SplitUnique }));
-    regSimple(ctx, Extendo(BaseValue, { name: "NDJSON",      fun: NDJSON }));
-    regSimple(ctx, Extendo(BaseValue, { name: "Date",        fun: MakeDate }));
+    regSimple(ctx, Extendo(BaseValue, { name: "NDJSON",      fun: NDJSON, doc:NDJSONDoc }));
+    regSimple(ctx, Extendo(BaseValue, { name: "Date",        fun: MakeDate, doc:DateDoc }));
     regSimple(ctx, Extendo(BaseValue, { name: "FilterByDateRange", fun: FilterByDateRange }));
     regSimple(ctx, Extendo(BaseValue, { name: "BucketByDateTime",  fun: BucketByDateTime }));
 
