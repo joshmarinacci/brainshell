@@ -207,6 +207,12 @@ function FilterByDateRange(data, column, start, end) {
 }
 
 function BucketByDateTime(data, column, byArg) {
+    if(!column || column.getKey() !== 'column') {
+        throw new Error("'column' parameter is missing");
+    }
+    if(!byArg || byArg.getKey() !== 'by') {
+        throw new Error("'by' parameter is missing");
+    }
     var col = column.getValue().getString();
     var by  = byArg.getValue().getString();
     var it = data.getIterator();
@@ -232,8 +238,14 @@ function BucketByDateTime(data, column, byArg) {
     }));
 }
 
-function UseColumns(data, arg, arg2) {
-    var target = arg.getValue().getString();
+var FuncUtils = {
+    getArgs: function(args) {
+        return Array.prototype.slice.call(args);
+    }
+}
+function UseColumns(data) {
+    var args = FuncUtils.getArgs(arguments);
+    args.shift(); //take out data first
     return {
         type:'list-wrapper',
         getIterator: function() {
@@ -241,14 +253,23 @@ function UseColumns(data, arg, arg2) {
         },
         getColumnInfos: function() {
             var cinfos = data.getColumnInfos().slice();
-            var found = -1;
-            cinfos.forEach(function(info,i) {  if(info.id() == target) found = i;  });
-            if(arg.getKey() == 'exclude') {
-                cinfos.splice(found,1);
+            var first = args[0];
+            if(first.getKey() == 'exclude') {
+                args.forEach(function(arg) {
+                    cinfos = cinfos.filter(function(info) {
+                        return info.id() != arg.getValue().getString();
+                    })
+                });
                 return cinfos;
             }
-            if(arg.getKey() == 'include') {
-                return [cinfos[found]];
+            if(first.getKey() == 'include') {
+                var collect = [];
+                args.forEach(function(arg) {
+                    cinfos.forEach(function(info) {
+                        if(info.id() == arg.getValue().getString()) collect.push(info)
+                    })
+                });
+                return collect;
             }
             throw new Error("can't do this! UseColumns but not exclude or include");
         },
@@ -264,6 +285,12 @@ function UseColumns(data, arg, arg2) {
     };
 }
 
+/*
+ NDJSON('events.json',100)
+ => UseColumns(include:'Timestamp', include:'Publisher')
+ => setColumnFormat('Timestamp',type:'date', parsePattern:'x')
+ => BucketByDateTime()
+ */
 exports.makeDefaultFunctions = function(ctx) {
 
     var sym = Symbols.make("PI");
@@ -353,7 +380,13 @@ exports.makeDefaultFunctions = function(ctx) {
                     }
                     infos[index] = newInfo;
                     return infos;
-                }
+                };
+                this.value = function() {
+                    var self = this;
+                    return Q.fcall(function() {
+                        return self;
+                    });
+                };
             }
             return new setColumnFormat(data, column,
                 {

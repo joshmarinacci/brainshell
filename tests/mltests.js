@@ -228,8 +228,8 @@ test('NDJSON => UseColumns', function(t) {
         t.equal(v.getColumnInfos().length,14);
         Parser.matchAll(str+" => UseColumns(exclude:'Timestamp')", 'start').value(ctx).then(function(v) {
             t.equal(v.getColumnInfos().length,13);
-            Parser.matchAll(str+" => UseColumns(include:'Timestamp', include:'Foo')",'start').value(ctx).then(function(v){
-                t.equal(v.getColumnInfos().length,1);
+            Parser.matchAll(str+" => UseColumns(include:'Timestamp', include:'Publisher')",'start').value(ctx).then(function(v){
+                t.equal(v.getColumnInfos().length,2);
                 t.end();
             }).done();
         }).done();
