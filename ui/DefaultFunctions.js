@@ -232,6 +232,38 @@ function BucketByDateTime(data, column, byArg) {
     }));
 }
 
+function UseColumns(data, arg, arg2) {
+    var target = arg.getValue().getString();
+    return {
+        type:'list-wrapper',
+        getIterator: function() {
+            return data.getIterator();
+        },
+        getColumnInfos: function() {
+            var cinfos = data.getColumnInfos().slice();
+            var found = -1;
+            cinfos.forEach(function(info,i) {  if(info.id() == target) found = i;  });
+            if(arg.getKey() == 'exclude') {
+                cinfos.splice(found,1);
+                return cinfos;
+            }
+            if(arg.getKey() == 'include') {
+                return [cinfos[found]];
+            }
+            throw new Error("can't do this! UseColumns but not exclude or include");
+        },
+        value : function() {
+            var self = this;
+            return Q.fcall(function() {
+                return self;
+            });
+        },
+        toString: function() {
+            return "UseColumns results";
+        }
+    };
+}
+
 exports.makeDefaultFunctions = function(ctx) {
 
     var sym = Symbols.make("PI");
@@ -250,6 +282,7 @@ exports.makeDefaultFunctions = function(ctx) {
     regSimple(ctx, Extendo(BaseValue, { name: "Date",        fun: MakeDate }));
     regSimple(ctx, Extendo(BaseValue, { name: "FilterByDateRange", fun: FilterByDateRange }));
     regSimple(ctx, Extendo(BaseValue, { name: "BucketByDateTime",  fun: BucketByDateTime }));
+    regSimple(ctx, Extendo(BaseValue, { name: "UseColumns",  fun: UseColumns }));
 
     regSimple(ctx,{
         name:'setColumnFormat',
