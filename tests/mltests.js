@@ -11,6 +11,7 @@ var DefaultFunctions = require('../ui/DefaultFunctions');
 var Context = require('../src/Context');
 var Symbols = require('../src/Symbols');
 var moment  = require('moment');
+var DataUtil = require('../src/DataUtil');
 var ctx = Context.global();
 
 DefaultFunctions.makeDefaultFunctions(ctx);
@@ -104,14 +105,6 @@ test('Unique(list)', function(t) {
 
 
 /*
-
-function objectTableToLiteral(js) {
-    return Literals.makeList(js.map(function(row) {
-        return Literals.makeList(Object.keys(row).map(function(col) {
-            return Literals.makeKeyValue(col, Literals.makeString(row[col]));
-        }));
-    }));
-}
 
 function SplitUnique(table, tcol) {
     var outputs = {};
@@ -208,6 +201,23 @@ test('load ND JSON data', function(t) {
         }
         console.log('final count = ', count);
         t.equal(count,20000);
+        t.end();
+    }).done();
+});
+
+
+test('NDJSON => setColumnFormat', function(t) {
+    var str = "NDJSON('events.json',100) => setColumnFormat('Timestamp', type:'date', parsePattern:'x')";
+    Parser.matchAll(str, 'start').value(ctx).then(function(v) {
+        var it = v.getIterator();
+        var tsinfo = DataUtil.findColumnInfoFor(v,'Timestamp');
+        t.equal(tsinfo.getValue(it.next()).isValid(),true,'valid moment');
+        var count = 1;
+        while(it.hasNext()) {
+            var val = it.next();
+            count++;
+        }
+        t.equal(count,100);
         t.end();
     }).done();
 });
