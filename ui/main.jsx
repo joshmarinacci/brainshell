@@ -146,7 +146,7 @@ var MainView = React.createClass({
                             {panels}
                         </div>
                     </div>
-                    <div className="vbox" id="help-pane">
+                    <div className="vbox scroll" id="help-pane">
                         <header>Documentation</header>
                         <div className='group hidden'>
                             <input type="search" className='grow'/>

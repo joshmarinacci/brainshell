@@ -286,6 +286,14 @@ var FuncUtils = {
         return Array.prototype.slice.call(args);
     }
 }
+
+var UseColumnsDoc = {
+    short:"add or remove columns from a table",
+    examples:[
+        "UseColumns(data,exclude:'Timestamp')  remove timestamp column, keep the rest",
+        "UseColumns(data,include:'Timestamp')  keep timestamp column, remove the rest"
+    ]
+};
 function UseColumns(data) {
     var args = FuncUtils.getArgs(arguments);
     args.shift(); //take out data first
@@ -328,6 +336,26 @@ function UseColumns(data) {
     };
 }
 
+var SetColumnFormatDoc = {
+    short:"set formatting on a column in a table",
+    examples:[
+        "setColumnFormat(table, 'timestamp', type:'date', parsePattern:'x')  set 'timestamp' column to be a date",
+        "setColumnFormat(table, 'ending', type:'date', parsePattern:'MM dd yyyy')  set 'ending' column to be a date"
+    ]
+};
+
+var BarChartDoc = {
+    short:'draw a barchart from data',
+    arguments:[
+        "data: bars are drawn in row order",
+        "xaxis: column to use to label the bars",
+        "yaxis: column to use for the bar heights"
+    ],
+    examples:[
+        "BarChart( [ [fruit:'banana',count:1], [fruit:'apple',count:2], [fruit:'pear',count:3] ], xaxis:'fruit', yaxis:'y')"
+    ]
+};
+
 /*
  NDJSON('events.json',100)
  => UseColumns(include:'Timestamp', include:'Publisher')
@@ -352,10 +380,11 @@ exports.makeDefaultFunctions = function(ctx) {
     regSimple(ctx, Extendo(BaseValue, { name: "Date",        fun: MakeDate, doc:DateDoc }));
     regSimple(ctx, Extendo(BaseValue, { name: "FilterByDateRange", fun: FilterByDateRange }));
     regSimple(ctx, Extendo(BaseValue, { name: "BucketByDateTime",  fun: BucketByDateTime }));
-    regSimple(ctx, Extendo(BaseValue, { name: "UseColumns",  fun: UseColumns }));
+    regSimple(ctx, Extendo(BaseValue, { name: "UseColumns",  fun: UseColumns, doc:UseColumnsDoc }));
 
     regSimple(ctx,{
         name:'setColumnFormat',
+        doc:SetColumnFormatDoc,
         fun: function(data, columnArg, typeArg, parseArg, patternArg) {
             var column = columnArg._value;
             //console.log('column is',column);
@@ -519,6 +548,7 @@ exports.makeDefaultFunctions = function(ctx) {
 
     regSimple(ctx, Extendo(BaseValue,{
         name:'BarChart',
+        doc:BarChartDoc,
         fun: function(data, xaxis, yaxis) {
             if(!xaxis) throw Error("missing parameter xaxis");
             if(!yaxis) throw Error("missing parameter yaxis");
@@ -585,8 +615,17 @@ exports.makeDefaultFunctions = function(ctx) {
         }
     }));
 
+    var StockHistoryDoc = {
+        short:'fetch full history of a stock symbol',
+        examples:[
+            "StockHistory('NNOK')",
+            "StockHistory('AAPL')"
+        ]
+    };
+
     regSimple(ctx, Extendo(BaseValue, {
         name:"StockHistory",
+        doc:StockHistoryDoc,
         init: function() {
             this._cbs=[];
         },
