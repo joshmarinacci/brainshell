@@ -12,7 +12,8 @@ var Symbol = {
             kind:'symbol',
             type:'symbol',
             _name:name,
-            name: function() { return this._name; },
+            //name: function() { return this._name; },
+            name:name,
             _value:null,
             _cb: function() {
                 this.notify();

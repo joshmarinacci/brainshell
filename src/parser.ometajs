@@ -108,7 +108,7 @@ export ometa Parser {
     //funcall   = symbol:s '(' arg:e ')' -> deps.Funcall(s,[e]),
     //funcall   = symbol:s '(' symbol:a1 ',' symbol:a2 ')' -> Funcall(s,[a1,a2]),
     //funcall   = symbol:s '(' symbol:a1 ',' strlit:a2 ')' -> Funcall(s,[a1,a2]),
-    assign    = symbol:s sp leftarrow (expr | strlit | funcall):e  -> Expressions.makeAssignment(s,e),
+    assign    = symbol:s sp leftarrow sp expr:e  -> Expressions.makeAssignment(s,e),
     //assign      = newsymbol:s sp leftarrow sp (funcall | expr):e -> deps.Assignment(s,e),
     //start     =  assign | strlit | funcall | expr | numlit
     start       = assign | expr

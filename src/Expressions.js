@@ -148,7 +148,7 @@ var Expressions = {
                 return symbol.value();
             },
             toCode: function() {
-                return symbol.name() + ' <= ' + expr.toCode();
+                return symbol.name + ' <= ' + expr.toCode();
             }
         };
         fcall.init();
@@ -164,6 +164,7 @@ var Expressions = {
             return a.value().then(function(val) {
                 b.arguments.indexed.unshift(val);
                 return b.value().then(function(val2) {
+                    b.arguments.indexed.shift();
                     return val2;
                 });
             });

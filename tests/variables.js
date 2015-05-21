@@ -205,20 +205,63 @@ test("symbol with spaces", function(t) {
     //var sym = Symbols.make('ffz');
     //sym.update(Literals.makeNumber(1));
     //ctx.register(sym);
-    parse("cats=9").value(ctx).then(function(v) {
-        t.equal(v._value,9);
+    t.plan(4);
+    parse("cats1=1").value(ctx).then(function(v) {
+        ctx.lookup('cats1').value(ctx).then(function(v){
+            t.equal(v.getNumber(),1,'cats1 = 1');
+        }).done();
     }).done();
-    parse("cats =9").value(ctx).then(function(v) {
-        t.equal(v._value,9);
+    parse("cats2 =2").value(ctx).then(function(v) {
+        ctx.lookup('cats2').value(ctx).then(function(v){
+            t.equal(v.getNumber(),2,'cats2 = 2');
+        }).done();
     }).done();
-    parse("cats= 9").value(ctx).then(function(v) {
-        t.equal(v._value,9);
+    parse("cats3 = 3").value(ctx).then(function(v) {
+        ctx.lookup('cats3').value(ctx).then(function(v){
+            t.equal(v.getNumber(),3,'cats3 = 3');
+        }).done();
     }).done();
-    parse("cats = 9").value(ctx).then(function(v) {
-        t.equal(v._value,9);
+    parse("cats4 = 4").value(ctx).then(function(v) {
+        ctx.lookup('cats4').value(ctx).then(function(v){
+            t.equal(v.getNumber(),4,'cats4 = 4');
+        }).done();
     }).done();
-    t.end();
-})
+});
+
+test("assignment from arithmetic", function(t) {
+    var str = "scalar1 = 4+5";
+    parse(str).value(ctx).then(function(v) {
+        var bvar = ctx.lookup("scalar1");
+        bvar.value(ctx).then(function(v){
+            t.equal(v.getNumber(),9);
+            t.end();
+        });
+    }).done();
+});
+
+test("plain assignment", function(t) {
+    var str1 = "scalar2 = simplesum(1,2,3)";
+    parse(str1).value(ctx).then(function(v) {
+        var sumval = ctx.lookup("scalar2");
+        sumval.value(ctx).then(function(v){
+            t.equal(v.getNumber(),6);
+            t.end();
+        });
+    }).done();
+});
+
+
+test("assignment from pipe", function(t) {
+    var str1 = "sumval2 = (simplesum(1,2,3) => simplesum(6))";
+    var expr = parse(str1);
+    expr.value(ctx).then(function(v) {
+        var sumval = ctx.lookup("sumval2");
+        sumval.value(ctx).then(function(v){
+            t.equal(v.getNumber(),12);
+            t.end();
+        });
+    }).done();
+});
 
 
 function parse(str) {

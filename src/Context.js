@@ -4,7 +4,7 @@ var _global = new Context();
 function Context() {
     var registry = {}
     this.register = function(symbol) {
-        registry[symbol.name()] = symbol;
+        registry[symbol.name] = symbol;
     };
     this.lookup = function(name) {
         return registry[name];
