@@ -252,7 +252,7 @@ test("plain assignment", function(t) {
 
 
 test("assignment from pipe", function(t) {
-    var str1 = "sumval2 = (simplesum(1,2,3) => simplesum(6))";
+    var str1 = "sumval2 = simplesum(1,2,3) => simplesum(6)";
     var expr = parse(str1);
     expr.value(ctx).then(function(v) {
         var sumval = ctx.lookup("sumval2");
@@ -263,6 +263,30 @@ test("assignment from pipe", function(t) {
     }).done();
 });
 
+
+test("pipe number to assignment", function(t) {
+    var str1 = "4 => outvar1";
+    var expr = parse(str1);
+    expr.value(ctx).then(function(v) {
+        var sumval = ctx.lookup("outvar1");
+        sumval.value(ctx).then(function(v){
+            t.equal(v.getNumber(),4);
+            t.end();
+        });
+    }).done();
+});
+
+test("pipe expressions to assignment", function(t) {
+    var str1 = "simplesum(1,2,3) => simplesum(6) => outvar2";
+    var expr = parse(str1);
+    expr.value(ctx).then(function(v) {
+        var sumval = ctx.lookup("outvar2");
+        sumval.value(ctx).then(function(v){
+            t.equal(v.getNumber(),12);
+            t.end();
+        });
+    }).done();
+});
 
 function parse(str) {
     return Parser.matchAll(str,'start');

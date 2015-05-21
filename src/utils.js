@@ -8,7 +8,7 @@ var ServiceManager = require('../server/ServiceManager');
 
 exports.asCode = function asCode(obj) {
     if(obj.type == 'symbol') {
-        return obj.name();
+        return obj.name;
     }
     if(!obj.toCode) {
         console.log("WARNING. MISSING toCode on ", obj.toString(), obj);

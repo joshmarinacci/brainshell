@@ -44,7 +44,7 @@ var Expressions = {
             value: function(context) {
                 var self = this;
                 if(fun.type == 'pipeline') {
-                    return fun.evaluate(arr[0],arr[1]);
+                    return fun.evaluate(context, arr[0],arr[1]);
                 }
                 if(fun.type == 'symbol') {
                     return fun.value(context).then(function(v) {
@@ -144,7 +144,7 @@ var Expressions = {
             },
             value: function(context) {
                 symbol.update(expr);
-                context.register(symbol,expr);
+                context.register(symbol);
                 return symbol.value();
             },
             toCode: function() {
@@ -160,7 +160,14 @@ var Expressions = {
     Pipeline: {
         type:'pipeline',
         name:'=>',
-        evaluate: function(a,b) {
+        evaluate: function(context, a, b) {
+            //console.log("evaluating from ",a);
+            //console.log("evaluating to",b);
+            if(b.type == 'symbol') {
+                b.update(a);
+                context.register(b);
+                return b.value();
+            }
             return a.value().then(function(val) {
                 b.arguments.indexed.unshift(val);
                 return b.value().then(function(val2) {
