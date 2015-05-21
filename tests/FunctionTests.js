@@ -94,7 +94,6 @@ test("Test EarthquakeHistory", function(t) {
     }).done();
 });
 
-return;
 
 
 test("Test RandomWalk",function(t) {
@@ -158,7 +157,7 @@ test("Test Piped TakeFive", function(t) {
     });
 });
 
-
+return;
 
 test("Test Take Update", function(t) {
     var expr1 = Parser.matchAll('RandomWalk() => Take(3)','start');
