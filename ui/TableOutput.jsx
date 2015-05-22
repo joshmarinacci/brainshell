@@ -31,11 +31,16 @@ module.exports = React.createClass({
             return <th>{info.title()}</th>;
         });
 
-        return <table className='grow'>
-            <caption>{name}</caption>
-            <thead><th className='row-header'>#</th>{headers}</thead>
-            <tbody>{rows}</tbody>
-        </table>;
+        return  <div className='scrolltable'>
+                    <table className='scrolltable-header'>
+                        <thead><th className='row-header'>#</th>{headers}</thead>
+                    </table>
+                    <div className='scrolltable-body'>
+                        <table>
+                            <tbody>{rows}</tbody>
+                        </table>
+                    </div>
+                </div>
     },
     render: function() {
         var data = this.props.data;
@@ -56,6 +61,6 @@ module.exports = React.createClass({
             }
             return <div className='grow scroll result'>{output}</div>;
         }
-        return <div className='grow scroll result'>{this.renderTable(this.props.data,'result')}</div>;
+        return <div className='grow scroll result table-result'>{this.renderTable(this.props.data,'result')}</div>;
     }
 });

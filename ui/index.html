@@ -101,6 +101,38 @@
             -webkit-appearance: none;
         }
 
+
+
+        .table-result {
+            /*height: 200px;*/
+            height: 20em;
+            border: 1px solid #888;
+        }
+        .scrolltable {
+            overflow-x: scroll;
+            height: 100%;
+            display: flex;
+            display: -webkit-flex;
+            flex-direction: column;
+            -webkit-flex-direction: column;
+        }
+        .scrolltable > .scrolltable-header {
+        }
+        .scrolltable > .scrolltable-body {
+            /*noinspection CssInvalidPropertyValue*/
+            width: -webkit-fit-content;
+            overflow-y: scroll;
+            flex:1;
+            -webkit-flex: 1;
+        }
+        .scrolltable th, .scrolltable td {
+            min-width: 150px;
+        }
+
+        .scrolltable .row-header {
+            min-width: 2em;
+        }
+
     </style>
 </head>
 <body>
