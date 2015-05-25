@@ -20,7 +20,7 @@ var DataUtil = {
     },
     is3D: function(data) {
         var first = this.getFirstItem(data);
-        console.log("first in 3d is", first.toString());
+        //console.log("first in 3d is", first.toString());
         if(first.type == 'pair') {
             var val = first.getValue();
             if(val.type == 'list') {
