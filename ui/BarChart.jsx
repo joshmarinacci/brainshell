@@ -9,8 +9,6 @@ var BarChart = React.createClass({
         this.drawCanvas(newProps.data.data, newProps.data.xaxis, newProps.data.yaxis);
     },
     drawCanvas: function(data, xaxisDef, yaxisDef) {
-        var xaxis = xaxisDef.getValue().getString();
-        var yaxis = yaxisDef.getValue().getString();
         var can = this.refs.canvas.getDOMNode();
         var g = can.getContext('2d');
         var w = 500;
@@ -18,9 +16,33 @@ var BarChart = React.createClass({
         g.fillStyle = 'white';
         g.fillRect(0,0,w,h);
 
-        var cinfos = data.getColumnInfos();
-        var xinfo = DataUtil.findColumnInfoFor(data,xaxis);
-        var yinfo = DataUtil.findColumnInfoFor(data,yaxis);
+        if(!xaxisDef){
+            var xinfo = {
+                count:0,
+                print: function(row) {
+                    this.count++;
+                    return ""+this.count;
+                }
+            }
+        } else {
+            var xaxis = xaxisDef.getValue().getString();
+            var xinfo = DataUtil.findColumnInfoFor(data,xaxis);
+        }
+        if(!yaxisDef) {
+            var yinfo = {
+                getValue: function(row) {
+                    if(row.kind == 'literal') return row;
+                    return {
+                        getNumber: function() {
+                            return -1;
+                        }
+                    }
+                }
+            }
+        } else {
+            var yaxis = yaxisDef.getValue().getString();
+            var yinfo = DataUtil.findColumnInfoFor(data,yaxis);
+        }
 
         var min = 0;
         var max = 10;

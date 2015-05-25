@@ -117,19 +117,23 @@ var EditPanel = React.createClass({
         if(res == null) return "null";
         if(!res) return "";
         if(typeof res == 'string') return res;
-        if(res.type == 'schart') {
-            return <SChart data={res}/>
+        try {
+            if (res.type == 'schart') {
+                return <SChart data={res}/>
+            }
+            if (res.type == 'barchart') {
+                return <BarChart data={res}/>
+            }
+            if (res.type == 'list') {
+                return <TableOutput data={res}/>
+            }
+            if (res.type == 'list-wrapper') {
+                return <TableOutput data={res}/>
+            }
+            return <div>{res.toCode()}</div>
+        } catch (e) {
+            return <div>ERROR RENDERING {e}</div>
         }
-        if(res.type == 'barchart') {
-            return <BarChart data={res}/>
-        }
-        if(res.type == 'list') {
-            return <TableOutput data={res}/>
-        }
-        if(res.type == 'list-wrapper') {
-            return <TableOutput data={res}/>
-        }
-        return  <div>{res.toCode()}</div>
     },
     renderError: function(err) {
         if(!err || err == null) return (<div className='error hidden'></div>);

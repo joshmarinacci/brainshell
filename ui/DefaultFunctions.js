@@ -356,6 +356,16 @@ var BarChartDoc = {
     ]
 };
 
+var BarChart =  function(data, xaxis, yaxis) {
+    var obj = Literals.makeEmpty();
+    obj.data = data;
+    obj.type = 'barchart';
+    obj.xaxis = xaxis;
+    obj.yaxis = yaxis;
+    return obj;
+};
+
+
 /*
  NDJSON('events.json',100)
  => UseColumns(include:'Timestamp', include:'Publisher')
@@ -546,20 +556,7 @@ exports.makeDefaultFunctions = function(ctx) {
         }
     }));
 
-    regSimple(ctx, Extendo(BaseValue,{
-        name:'BarChart',
-        doc:BarChartDoc,
-        fun: function(data, xaxis, yaxis) {
-            if(!xaxis) throw Error("missing parameter xaxis");
-            if(!yaxis) throw Error("missing parameter yaxis");
-            var obj = Literals.makeEmpty();
-            obj.data = data;
-            obj.type = 'barchart';
-            obj.xaxis = xaxis;
-            obj.yaxis = yaxis;
-            return obj;
-        }
-    }));
+    regSimple(ctx, Extendo(BaseValue,{ name:'BarChart',  doc:BarChartDoc, fun: BarChart }));
 
     regSimple(ctx, Extendo(BaseValue,{
         name:'MakeList',
