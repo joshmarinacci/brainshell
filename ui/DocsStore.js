@@ -96,6 +96,17 @@ var DocsStore = {
         console.log('deleting expr from doc,. index = ',index);
         doc.expressions.splice(index,1);
         this.notify('delete');
+    },
+    moveExpressionUp: function(doc, expr, index) {
+        if(index <= 0) return;
+        doc.expressions.splice(index-1,0,expr);
+        this.notify('update');
+    },
+    moveExpressionDown: function(doc, expr, index) {
+        if(index >= doc.expressions.length) return;
+        doc.expressions.splice(index,1);
+        doc.expressions.splice(index+1,0,expr);
+        this.notify('update');
     }
 };
 

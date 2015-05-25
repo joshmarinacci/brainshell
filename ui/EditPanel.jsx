@@ -102,6 +102,12 @@ var EditPanel = React.createClass({
     doDeleteExpression: function() {
         DocsStore.deleteExpression(this.props.doc, this.props.expr, this.props.index);
     },
+    doMoveExpressionUp: function() {
+        DocsStore.moveExpressionUp(this.props.doc, this.props.expr, this.props.index);
+    },
+    doMoveExpressionDown: function() {
+        DocsStore.moveExpressionDown(this.props.doc, this.props.expr, this.props.index);
+    },
     toggleResult: function() {
         this.setState({
             resultVisible:!this.state.resultVisible
@@ -152,9 +158,9 @@ var EditPanel = React.createClass({
         var err = this.renderError(this.state.error);
         var sidebar =
             <div className='vbox'>
-                <button className='fa fa-sort-up'></button>
+                <button onClick={this.doMoveExpressionUp} className='fa fa-sort-up'></button>
                 <button onClick={this.doDeleteExpression} className='fa fa-remove'></button>
-                <button className='fa fa-sort-down'></button>
+                <button onClick={this.doMoveExpressionDown} className='fa fa-sort-down'></button>
                 <button onClick={this.toggleResult} className='fa fa-caret-square-o-right'></button>
             </div>;
         var resout = <div className='hidden'></div>;

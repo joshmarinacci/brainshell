@@ -3,7 +3,6 @@ var SymbolsPanel = React.createClass({
     render: function() {
         var items = this.props.items.map(function(item) {
             var desc = "";
-            console.log("item symbol = ",item.symbol);
             if(item.symbol._value.doc) {
                 var doc = item.symbol._value.doc;
                 if(doc.short) desc = <div>{doc.short}</div>
