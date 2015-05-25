@@ -5,6 +5,7 @@ var Expressions = require('../src/Expressions');
 var Symbols = require('../src/Symbols');
 var Context = require('../src/Context');
 var ometajs = require('ometa-js');
+var moment = require('moment');
 var Parser = require('../parser_compiled.js').Parser;
 var DocsStore = require('./DocsStore');
 var TableOutput = require('./TableOutput.jsx');
@@ -25,6 +26,7 @@ var EditPanel = React.createClass({
             result: ".",
             error:null,
             resultVisible:true,
+            evalTime:0
         }
     },
     componentWillUnmount: function() {
@@ -32,12 +34,19 @@ var EditPanel = React.createClass({
             this.expr.removeListener(this.cb);
         }
     },
+    updateEvalTime: function() {
+        this.setState({
+            evalTime:moment().diff(this.start_time)
+        });
+    },
     doEval: function(raw) {
         if(this.props.expr.type !== 'code') return;
         var self = this;
+        this.start_time = moment();
         try {
             var expr = ParseExpression(raw);
         } catch (err) {
+            this.updateEvalTime();
             this.setError(err);
             return;
         }
@@ -57,8 +66,10 @@ var EditPanel = React.createClass({
         expr.value(Context.global()).then(function(v) {
             self.props.onChange(self.props.expr,raw);
             self.setResult(v);
+            self.updateEvalTime();
             self.setError(null);
         },function(err) {
+            self.updateEvalTime();
             self.setError(err);
         }).done();
     },
@@ -143,6 +154,7 @@ var EditPanel = React.createClass({
                     <button onClick={this.doEval}>eval</button>
                     <button onClick={this.doAppendExpression}>+ expr</button>
                     <button onClick={this.doAppendText}>+ text</button>
+                    <span>{this.state.evalTime} msec</span>
                 </div>
             if(this.state.resultVisible === true) {
                 var resout = <div className="results">{res}</div>
