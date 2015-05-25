@@ -26,7 +26,8 @@ var EditPanel = React.createClass({
             result: ".",
             error:null,
             resultVisible:true,
-            evalTime:0
+            evalTime:0,
+            evaluating:false
         }
     },
     componentWillUnmount: function() {
@@ -43,6 +44,9 @@ var EditPanel = React.createClass({
         if(this.props.expr.type !== 'code') return;
         var self = this;
         this.start_time = moment();
+        this.setState({
+            evaluating:true
+        });
         try {
             var expr = ParseExpression(raw);
         } catch (err) {
@@ -68,9 +72,15 @@ var EditPanel = React.createClass({
             self.setResult(v);
             self.updateEvalTime();
             self.setError(null);
+            self.setState({
+                evaluating:false
+            });
         },function(err) {
             self.updateEvalTime();
             self.setError(err);
+            self.setState({
+                evaluating:false
+            });
         }).done();
     },
     setResult: function(v) {
@@ -165,8 +175,12 @@ var EditPanel = React.createClass({
                 <button onClick={this.doAppendText}>+ text</button>
             </div>
         }
+        var cls = "hbox edit-box";
+        if(this.state.evaluating === true) {
+            cls += ' evaluating';
+        }
         return (<div className="vbox edit-panel">
-                <div className='hbox'>
+                <div className={cls}>
                     <div className='vbox'>{sidebar}</div>
                     <CodeTextArea content={this.props.expr.content} doEval={this.doEval}/>
                     <div className='vbox'>{toolbar}</div>
