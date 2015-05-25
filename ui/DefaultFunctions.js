@@ -352,7 +352,7 @@ var BarChartDoc = {
         "yaxis: column to use for the bar heights"
     ],
     examples:[
-        "BarChart( [ [fruit:'banana',count:1], [fruit:'apple',count:2], [fruit:'pear',count:3] ], xaxis:'fruit', yaxis:'y')"
+        "BarChart( [ [fruit:'banana',count:1], [fruit:'apple',count:2], [fruit:'pear',count:3] ], xaxis:'fruit', yaxis:'count')"
     ]
 };
 
