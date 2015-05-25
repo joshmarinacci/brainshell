@@ -1,5 +1,6 @@
 var React = require('react');
 var DataUtil = require('../src/DataUtil');
+var Literals = require('../src/Literals');
 
 var BarChart = React.createClass({
     componentDidMount: function() {
@@ -31,6 +32,9 @@ var BarChart = React.createClass({
         if(!yaxisDef) {
             var yinfo = {
                 getValue: function(row) {
+                    if(row.type == 'string') {
+                        return Literals.makeNumber(parseFloat(row.getString()));
+                    }
                     if(row.kind == 'literal') return row;
                     return {
                         getNumber: function() {

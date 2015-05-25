@@ -336,6 +336,120 @@ function UseColumns(data) {
     };
 }
 
+var GetColumnDoc = {
+    short: 'extract one column of a table',
+    examples: [
+        "get column example here"
+    ]
+};
+function GetColumn(data, name) {
+    if(!name) throw new Error("missing column name parameter");
+    return {
+        type: 'list-wrapper',
+        getIterator: function() {
+            function ArrayIterator(data) {
+                var it = data.getIterator();
+                this.hasNext = function() {
+                    return it.hasNext();
+                };
+                this.next = function() {
+                    var row = it.next();
+                    if(row.type == 'list') {
+                        return row.itemByKey(name.getString());
+                    }
+                    return row;
+                }
+            }
+            return new ArrayIterator(data);
+        },
+        getColumnInfos: function() {
+            var cinfos = data.getColumnInfos().slice();
+            var info = DataUtil.findColumnInfoFor(data,name.getString());
+            return [{
+                id: function() {
+                    return 0;
+                },
+                title: function () {
+                    return this.id() + "";
+                },
+                type: function() {
+                    return info.type();
+                },
+                getValue: function(row) {
+                    return row;
+                },
+                print: function(row) {
+                    return this.getValue(row).toCode();
+                }
+            }];
+        },
+        value : function() {
+            var self = this;
+            return Q.fcall(function() {
+                return self;
+            });
+        },
+        toString: function() {
+            return "list wrapper";
+        }
+    }
+}
+var SetFormatDoc = {
+    short:'set format of list',
+    examples: [
+        "SetFormat(['1','2'], 'number') prints [1,2]"
+    ]
+};
+function SetFormat(data, type) {
+    return {
+        type: 'list-wrapper',
+        getIterator: function() {
+            return data.getIterator();
+        },
+        getColumnInfos: function() {
+            if(type.getString() == 'number') {
+                return [{
+                    id: function () {
+                        return 0;
+                    },
+                    title: function () {
+                        return this.id() + "";
+                    },
+                    type: function () {
+                        return 'number';
+                    },
+                    getValue: function (row) {
+                        var val = this.getValue(row);
+                        if (val.type == 'number') return val;
+                        var vv = val.getString();
+                        if (val.type == 'string') return Literals.makeNumber(parseFloat(vv));
+                        console.log("unexpcted type");
+                        return row;
+                    },
+                    print: function (row) {
+                        var val = this.getValue(row);
+                        if (val.type == 'number') return val.toCode();
+                        var vv = val.getString();
+                        if (val.type == 'string') return Literals.makeNumber(parseFloat(vv)).toCode();
+                        console.log("unexpcted type");
+                        return this.getValue(row).toCode();
+                    }
+                }]
+            }
+            throw new Error('only number type is supported');
+        },
+        value : function() {
+            var self = this;
+            return Q.fcall(function() {
+                return self;
+            });
+        },
+        toString: function() {
+            return "list wrapper";
+        }
+    }
+}
+
 var SetColumnFormatDoc = {
     short:"set formatting on a column in a table",
     examples:[
@@ -391,6 +505,8 @@ exports.makeDefaultFunctions = function(ctx) {
     regSimple(ctx, Extendo(BaseValue, { name: "FilterByDateRange", fun: FilterByDateRange }));
     regSimple(ctx, Extendo(BaseValue, { name: "BucketByDateTime",  fun: BucketByDateTime }));
     regSimple(ctx, Extendo(BaseValue, { name: "UseColumns",  fun: UseColumns, doc:UseColumnsDoc }));
+    regSimple(ctx, Extendo(BaseValue, { name: "GetColumn",   fun: GetColumn,  doc:GetColumnDoc }));
+    regSimple(ctx, Extendo(BaseValue, { name: "SetFormat",   fun: SetFormat,  doc:SetFormatDoc }));
 
     regSimple(ctx,{
         name:'setColumnFormat',
