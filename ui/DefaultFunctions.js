@@ -222,6 +222,13 @@ function MakeDate(month, day) {
     return Literals.makeDate(date);
 }
 
+var FilterByDateRangeDoc = {
+    short:"filter a table by a date range from the requested column",
+    examples: [
+        "FilterByDateRange(data, timestamp, start: MakeDate( month: 'May') )"
+    ]
+};
+
 function FilterByDateRange(data, column, start, end) {
     //console.log('start is ', start.getValue().type);
     function CustomListIterator() {
@@ -418,21 +425,18 @@ function SetFormat(data, type) {
                     type: function () {
                         return 'number';
                     },
-                    getValue: function (row) {
-                        var val = this.getValue(row);
-                        if (val.type == 'number') return val;
-                        var vv = val.getString();
-                        if (val.type == 'string') return Literals.makeNumber(parseFloat(vv));
-                        console.log("unexpcted type");
-                        return row;
+                    getValue: function (val) {
+                        if (DataUtil.isNumber(val)) return val;
+                        if (val.type == 'string') return Literals.makeNumber(parseFloat(val.getString()));
+                        console.log("unexpcted type",val);
+                        return null;
                     },
                     print: function (row) {
                         var val = this.getValue(row);
-                        if (val.type == 'number') return val.toCode();
-                        var vv = val.getString();
-                        if (val.type == 'string') return Literals.makeNumber(parseFloat(vv)).toCode();
-                        console.log("unexpcted type");
-                        return this.getValue(row).toCode();
+                        if(DataUtil.isNumber(val)) return val.toCode();
+                        if (val.type == 'string') return Literals.makeNumber(parseFloat(val.getString())).toCode();
+                        console.log("unexpcted type ", val);
+                        return null;///greturn this.getValue(row).toCode();
                     }
                 }]
             }
@@ -502,7 +506,7 @@ exports.makeDefaultFunctions = function(ctx) {
     regSimple(ctx, Extendo(BaseValue, { name: "SplitUnique", fun: SplitUnique }));
     regSimple(ctx, Extendo(BaseValue, { name: "NDJSON",      fun: NDJSON, doc:NDJSONDoc }));
     regSimple(ctx, Extendo(BaseValue, { name: "Date",        fun: MakeDate, doc:DateDoc }));
-    regSimple(ctx, Extendo(BaseValue, { name: "FilterByDateRange", fun: FilterByDateRange }));
+    regSimple(ctx, Extendo(BaseValue, { name: "FilterByDateRange", fun: FilterByDateRange, doc:FilterByDateRangeDoc }));
     regSimple(ctx, Extendo(BaseValue, { name: "BucketByDateTime",  fun: BucketByDateTime }));
     regSimple(ctx, Extendo(BaseValue, { name: "UseColumns",  fun: UseColumns, doc:UseColumnsDoc }));
     regSimple(ctx, Extendo(BaseValue, { name: "GetColumn",   fun: GetColumn,  doc:GetColumnDoc }));
@@ -741,16 +745,24 @@ exports.makeDefaultFunctions = function(ctx) {
         doc:StockHistoryDoc,
         init: function() {
             this._cbs=[];
+            this.cache = {}
         },
         fun: function() {
+            var self = this;
+            if(this.cache['AAPL']) {
+                console.log("returning stock history from cache");
+                return this.cache['AAPL'];
+            }
             return utils.invokeService("StockHistory",["AAPL"]).then(function(rows) {
-                return Literals.makeList(rows.map(function(row) {
+                var retval = Literals.makeList(rows.map(function(row) {
                     var vals = [];
                     for(var name in row) {
                         vals.push(Literals.makeKeyValue(name,Literals.makeString(row[name])));
                     }
                     return Literals.makeList(vals);
                 }));
+                self.cache['AAPL'] = retval;
+                return self.cache['AAPL'];
             });
         }
     }));

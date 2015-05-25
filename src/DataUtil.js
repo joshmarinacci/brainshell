@@ -30,6 +30,12 @@ var DataUtil = {
         }
         return false;
     },
+    isNumber: function(val) {
+        if(val.type == 'numeric') return true;
+    },
+    getNumber: function(val) {
+        return val.getNumber();
+    },
     reduce: function(data, func, initVal, post) {
         var it = data.getIterator();
         var acc = initVal;
