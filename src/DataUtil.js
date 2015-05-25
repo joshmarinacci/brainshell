@@ -3,6 +3,18 @@
  */
 var Literals = require('./Literals');
 
+function ArrayIterator(data) {
+    this.index = 0;
+    this.hasNext = function() {
+        return (this.index < data.length);
+    };
+    this.next = function() {
+        var row = data[this.index];
+        this.index++;
+        return row;
+    }
+}
+
 var DataUtil = {
     getFirstItem: function(data) {
         var it = data.getIterator();
@@ -30,8 +42,15 @@ var DataUtil = {
         }
         return false;
     },
+    isPair: function(val) {
+        return val.type == 'pair';
+    },
+    isDate: function(val) {
+        return val.type == 'date';
+    },
     isNumber: function(val) {
         if(val.type == 'numeric') return true;
+        return false;
     },
     getNumber: function(val) {
         return val.getNumber();
@@ -91,6 +110,17 @@ var DataUtil = {
     findColumnInfoFor: function(data, name) {
         var cinfos = data.getColumnInfos();
         return cinfos.filter(function(cinfo) { return cinfo.id() == name})[0];
+    },
+    listToJSArray: function(list) {
+        var arr = [];
+        var it = list.getIterator();
+        while(it.hasNext()) {
+            arr.push(it.next());
+        }
+        return arr;
+    },
+    JSArrayToIterator: function(arr) {
+        return new ArrayIterator(arr);
     }
 };
 

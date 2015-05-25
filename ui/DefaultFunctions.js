@@ -204,50 +204,63 @@ function NDJSON(filename, len){
 var DateDoc = {
     short: "Creates a new date object",
     examples: [
-        "Date( month: 'May', day:5) => May 5th 2015",
-        "Date( month: 5, day:5) => May 5th 2015"
+        "Date( month: 'May', date:5) => May 5th 2015",
+        "Date( month: 5, date:5) => May 5th 2015"
     ]
 };
 
 function MakeDate(month, day) {
-    //console.log("making a date", month.getValue().toString(), day.getValue().toString());
-    var mval = month.getValue()._value;
-    var dval = day.getValue()._value;
-    //console.log("mval = ", mval);
-    //console.log('dval = ', dval);
+    var kargs = FuncUtils.getKeyValues(arguments);
     var date = moment();
-    date.month(mval);
-    date.date(dval);
-    //console.log('date = ', date.toString());
+    if(kargs.month) {
+        date.month(kargs.month.getString());
+    }
+    if(kargs.date) {
+        date.date(kargs.date.getNumber());
+    }
+    if(kargs.year) {
+        date.year(kargs.year.getNumber());
+    }
     return Literals.makeDate(date);
 }
 
 var FilterByDateRangeDoc = {
     short:"filter a table by a date range from the requested column",
     examples: [
-        "FilterByDateRange(data, timestamp, start: MakeDate( month: 'May') )"
+        "FilterByDateRange(data, 'date_column', start: Date( month: 'May', year:1997) )"
     ]
 };
 
-function FilterByDateRange(data, column, start, end) {
-    //console.log('start is ', start.getValue().type);
-    function CustomListIterator() {
-        this.index = 0;
-        this.hasNext = function() {
-            return (this.index < 5);
-        };
-        this.next = function() {
-            //console.log("index is ", this.index);
-            var row = data.item(this.index);
-            this.index++;
-            return row;
-        }
+function FilterByDateRange(data, column) {
+    var kargs = FuncUtils.getKeyValues(arguments);
+    if(!kargs['start'] && !kargs['end']) throw new Error("start or end parameter missing");
+    if(kargs['start']) {
+        var start = kargs['start'].getDate();
+    } else {
+        var start = null;
+    }
+    if(kargs['end']) {
+        var end = kargs['end'].getDate();
+    } else {
+        var end = null;
     }
 
     function ListWrapper() {
         this.type = 'list-wrapper';
         this.getIterator = function() {
-            return new CustomListIterator();
+            var arr = DataUtil.listToJSArray(data);
+            var info = DataUtil.findColumnInfoFor(data,column.getString());
+            var res = arr.filter(function(row) {
+                var date = info.getValue(row);
+                if(start != null ) {
+                    if(start.isAfter(date)) return false;
+                }
+                if(end != null) {
+                    if(end.isBefore(date)) return false;
+                }
+                return true;
+            });
+            return DataUtil.JSArrayToIterator(res);
         };
         this.getColumnInfos = function() {
             return data.getColumnInfos();
@@ -291,6 +304,16 @@ function BucketByDateTime(data, column, byArg) {
 var FuncUtils = {
     getArgs: function(args) {
         return Array.prototype.slice.call(args);
+    },
+    getKeyValues: function(args) {
+        var arr = Array.prototype.slice.call(args);
+        var kvarr = arr.filter(DataUtil.isPair);
+        var kvmap = {};
+        for(var i =0; i<kvarr.length; i++) {
+            var pair = kvarr[i];
+            kvmap[pair.getKey()] = pair.getValue();
+        }
+        return kvmap;
     }
 }
 
@@ -458,6 +481,7 @@ var SetColumnFormatDoc = {
     short:"set formatting on a column in a table",
     examples:[
         "setColumnFormat(table, 'timestamp', type:'date', parsePattern:'x')  set 'timestamp' column to be a date",
+        "setColumnFormat(table, 'timestamp', type:'date')  set 'timestamp' column to be a date",
         "setColumnFormat(table, 'ending', type:'date', parsePattern:'MM dd yyyy')  set 'ending' column to be a date"
     ]
 };
@@ -515,15 +539,16 @@ exports.makeDefaultFunctions = function(ctx) {
     regSimple(ctx,{
         name:'setColumnFormat',
         doc:SetColumnFormatDoc,
-        fun: function(data, columnArg, typeArg, parseArg, patternArg) {
-            var column = columnArg._value;
-            //console.log('column is',column);
-            var type = typeArg._value._value;
-            //console.log('type is ',type);
-            if(parseArg._key !== 'parsePattern') {
-                throw new Error("parse pattern is missing");
+        fun: function(data, columnArg) {
+            var kargs = FuncUtils.getKeyValues(arguments);
+            var column = columnArg.getString();
+            var type = kargs['type'].getString();
+            var parsePattern = null;
+            if(kargs['parsePattern']) {
+                parsePattern = kargs['parsePattern'].getString();
             }
-            var parsePattern = parseArg._value._value;
+
+            //var parsePattern = parseArg._value._value;
             //console.log(parsePattern);
 
             function StdColumnInfo(id,type) {
@@ -569,6 +594,9 @@ exports.makeDefaultFunctions = function(ctx) {
                     }
                     if(options.type == 'date') {
                         newInfo.getValue = function(row) {
+                            if(options.parsePattern == null) {
+                                return moment(oldInfo.getValue(row).getString());
+                            }
                             return  moment(oldInfo.getValue(row), options.parsePattern);
                         };
                         newInfo.print = function(row) {
@@ -593,7 +621,7 @@ exports.makeDefaultFunctions = function(ctx) {
             return new setColumnFormat(data, column,
                 {
                     type:type,
-                    parsePattern:parsePattern,
+                    parsePattern: parsePattern,
                     printPattern: 'MMM DD YYYY, hh:mm'
                 });
         }

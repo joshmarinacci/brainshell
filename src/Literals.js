@@ -234,6 +234,7 @@ function KeyValuePair(key,value) {
     this.type = 'pair';
     this._key = key;
     this._value = value;
+    this._realvalue = value;
     this.toString = function() {
         return this._key + ":"+this._value.toString();
     };
@@ -241,12 +242,20 @@ function KeyValuePair(key,value) {
         return this._key;
     };
     this.getValue = function() {
-        return this._value;
+        return this._realvalue;
     };
     this.toCode = function() {
         return this._key + ':' + this._value;
+    };
+    this.value = function() {
+        var self = this;
+        return this._value.value().then(function(v) {
+            self._realvalue = v;
+            return self;
+        });
     }
-}
+};
+
 util.inherits(KeyValuePair, LiteralBase);
 
 
