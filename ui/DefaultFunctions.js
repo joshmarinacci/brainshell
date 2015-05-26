@@ -201,6 +201,23 @@ function NDJSON(filename, len){
     });
 }
 
+var TweetStreamDoc = {
+    short:"Loads a realtime twitter stream",
+    examples: [
+        "TweetStream('#kardashian') prints a realtime table of tweets w/ text and username"
+    ]
+};
+function TweetStream(query) {
+    return utils.invokeLiveService("TweetStream",[query]).then(function(stream) {
+        stream.on('message', function() {
+            console.log("got a message from the server");
+            //update the list
+        });
+        console.log("got rows back",rows);
+        return Literals.makeNumber(99);
+    });
+}
+
 var DateDoc = {
     short: "Creates a new date object",
     examples: [
@@ -581,6 +598,7 @@ exports.makeDefaultFunctions = function(ctx) {
 
     regSimple(ctx, Extendo(BaseValue, { name: "SplitUnique", fun: SplitUnique }));
     regSimple(ctx, Extendo(BaseValue, { name: "NDJSON",      fun: NDJSON, doc:NDJSONDoc }));
+    regSimple(ctx, Extendo(BaseValue, { name: "TweetStream", fun: TweetStream, doc:TweetStreamDoc }));
     regSimple(ctx, Extendo(BaseValue, { name: "Date",        fun: MakeDate, doc:DateDoc }));
     regSimple(ctx, Extendo(BaseValue, { name: "FilterByDateRange", fun: FilterByDateRange, doc:FilterByDateRangeDoc }));
     regSimple(ctx, Extendo(BaseValue, { name: "BucketByDateTime",  fun: BucketByDateTime }));

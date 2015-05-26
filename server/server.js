@@ -10,6 +10,10 @@ DB.initDB();
 var express = require('express');
 var cors = require('cors');
 var bodyParser = require('body-parser');
+var WebSocket = require('nodejs-websocket');
+var util = require('util');
+var Writable = require('stream').Writable;
+var querystring = require('querystring');
 
 var app = express();
 app.use(cors());
@@ -85,3 +89,27 @@ var server = app.listen(30045,function() {
     console.log("listening on ", server.address().address);
     console.log("listening on ", server.address().port);
 });
+
+
+function WebsocketConnectionStream(conn) {
+    Writable.call(this, {objectMode:true});
+    this._write = function(obj, encoding,callback) {
+        console.log('sending an object',obj);
+        conn.sendText(JSON.stringify(obj));
+        callback();
+    }
+}
+util.inherits(WebsocketConnectionStream, Writable);
+
+var wsserver = WebSocket.createServer().listen(30046);
+wsserver.on('connection',function(conn) {
+    //console.log("tried to connect to ",conn.path);
+    var parts = conn.path.match(/\/(.*)\?(.*)/);
+    //console.log('match = ',parts);
+    var id = parts[1];
+    //console.log("id = ", id);
+    var query = parts[2];
+    //console.log('query = ', querystring.parse(query));
+    ServiceManager.connect(id,querystring.parse(query),new WebsocketConnectionStream(conn));
+});
+console.log("listening websocket on ",30046);

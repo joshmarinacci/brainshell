@@ -9,7 +9,10 @@ var fs = require('fs');
 var es = require("event-stream");
 var moment = require('moment');
 var JSONStream = require("JSONStream");
-var ndjson = require('ndjson')
+var ndjson = require('ndjson');
+var MLParser = require('./MLParser');
+var TweetStream = require('./TweetStream.js');
+
 
 function loadCSV(file) {
     console.log("invoking load CSV on file",file);
@@ -139,7 +142,11 @@ var services = {
     loadCSV: loadCSV,
     StockHistory: StockHistory,
     EarthquakeHistory: EarthquakeHistory,
-    NDJSON: NDJSON
+    NDJSON: NDJSON,
+    MLParser: MLParser.Parser
+}
+var live_services = {
+    TweetStream:TweetStream
 };
 
 exports.invoke = function(id, args) {
@@ -149,3 +156,9 @@ exports.invoke = function(id, args) {
     });
     return services[id].apply(null,args);
 };
+
+exports.connect = function(id, args, stream) {
+    //console.log('checking for id',id);
+    if(!live_services[id]) throw new Error("unknown service " + id);
+    live_services[id].pipe(args,stream);
+}
