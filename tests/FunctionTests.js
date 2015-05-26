@@ -69,7 +69,7 @@ test("Test Elements", function(t) {
         t.end();
     }).done();
 });
-
+/*
 test("Test StockHistory", function(t) {
     t.ok(ctx.hasSymbol("StockHistory"), "symbol exists");
     var exp = Parser.matchAll("StockHistory('AAPL')",'start');
@@ -93,9 +93,9 @@ test("Test EarthquakeHistory", function(t) {
         t.end();
     }).done();
 });
+*/
 
 
-/*
 test("Test RandomWalk",function(t) {
     t.ok(ctx.hasSymbol("RandomWalk"),"symbol exists");
     var expr = Parser.matchAll('RandomWalk()','start');
@@ -103,12 +103,15 @@ test("Test RandomWalk",function(t) {
         ex.value().then(function(v){
             if(v.length() == 2) {
                 expr.removeListener(cb);
+                console.log("random walk is done");
                 t.end();
             }
         }).done();
     });
+    expr.value(ctx).then(function(v) {
+        //console.log("inital value is",v);
+    });
 });
-*/
 
 
 test("Test RunningAverage", function(t) {
@@ -140,6 +143,7 @@ test("Test TakeFive", function(t) {
     var out = Parser.matchAll("TakeFive([0,1,2,3,4,5,6,7,8])","start");
     out.value(ctx).then(function(v) {
         t.equal(v.length(),5);
+        console.log('take five is done.');
         t.end();
     }).done();
 });

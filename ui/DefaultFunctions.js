@@ -683,22 +683,18 @@ exports.makeDefaultFunctions = function(ctx) {
 
     regSimple(ctx, Extendo(BaseValue,{
         name:'RandomWalk',
-        list:[],
-        init: function(){
-            this._cbs=[];
-            this.items = [];
-            this.list = Literals.makeList(this.items);
-            this.num = 0;
-            setInterval(this.appendNumber.bind(this),1000);
-        },
-        appendNumber: function() {
-            this.num += (Math.random()*10)-5;
-            this.items.push(Literals.makeNumber(this.num));
-            this.list.update(this.items);
-            this.notify();
-        },
-        fun: function (data) {
-            return this.list;
+        dataUpdate:true,
+        fun: function () {
+            var items = [];
+            var list = Literals.makeList(items);
+            var num = 0;
+            function appendNumber() {
+                num += (Math.random()*10)-5;
+                items.push(Literals.makeNumber(num));
+                list.update(items);
+            }
+            setInterval(appendNumber,1000);
+            return list;
         }
     }));
 
