@@ -157,8 +157,15 @@ exports.invoke = function(id, args) {
     return services[id].apply(null,args);
 };
 
-exports.connect = function(id, args, stream) {
+exports.connect = function(id, args, conn, stream) {
     //console.log('checking for id',id);
     if(!live_services[id]) throw new Error("unknown service " + id);
+    conn.on('close', function(){
+        console.log('closed it');
+        live_services[id].unpipe(stream);
+    });
+    conn.on('error',function() {
+        console.log('errored it');
+    });
     live_services[id].pipe(args,stream);
 }

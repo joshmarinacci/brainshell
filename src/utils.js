@@ -3,6 +3,7 @@
  */
 
 var Q = require('q');
+var WebSocket = require('nodejs-websocket');
 
 var ServiceManager = require('../server/ServiceManager');
 
@@ -67,6 +68,42 @@ exports.invokeService = function (id, args) {
     return exports.POSTJSON('http://localhost:30045/service/'+id,{
         type:'invoke',
         arguments:args
+    });
+};
+
+exports.invokeLiveService = function(id, args) {
+    return Q.promise(function(resolve, reject, notify) {
+        //console.log("invoking a live service", id, args);
+        //console.log("qs = ",require('querystring').stringify(args));
+        var url = 'ws:localhost:30046/' + id + '?' + require('querystring').stringify(args);
+        console.log("connecting to "+url);
+        var conn = WebSocket.connect(url);
+        var retobj = {
+            cbs:[],
+            listen: function (cb) {
+                //console.log("listening on a callback");
+                this.cbs.push(cb);
+            },
+            dispatch: function(obj) {
+                this.cbs.forEach(function(cb) {
+                    cb(obj);
+                });
+            }
+        };
+        conn.on('connect', function () {
+            console.log("got connected");
+        });
+        conn.on('text', function (str) {
+            //console.log('got a message string', str);
+            retobj.dispatch(JSON.parse(str));
+        });
+        conn.on('close', function () {
+            console.log("closed");
+        });
+        conn.on('error', function () {
+            console.log("an error happened");
+        });
+        resolve(retobj);
     });
 };
 

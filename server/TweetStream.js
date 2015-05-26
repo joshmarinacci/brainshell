@@ -26,6 +26,7 @@ function TwitterStream(query) {
     var self = this;
     function connect() {
         client.stream('statuses/filter', {track: query}, function(stream) {
+            self.currentStream = stream;
             stream.on('data', function(tweet) {
                 //console.log(tweet.text, tweet.user.screen_name);
                 self.push({
@@ -37,35 +38,29 @@ function TwitterStream(query) {
             stream.on('error', function(error) {
                 console.log("got an error",error);
                 console.log('reconnecting');
-                connect();
+                //connect();
                 //throw error;
             });
         });
     }
     connect();
+    this.stop = function() {
+        console.log("stopping the tweet stream");
+        if(this.currentStream) {
+            console.log('destroying the stream');
+            this.currentStream.destroy();
+        }
+    }
 }
 util.inherits(TwitterStream, Readable);
 
+var current_stream;
 exports.pipe = function(args, stream) {
-    //console.log('opening a twitter stream. args =  ',args);
-    new TwitterStream(args.query).pipe(stream);
+    current_stream = new TwitterStream(args.query);
+    current_stream.pipe(stream);
 };
-
-
-/*function() {
-        console.log("generating a twitter stream");
-        return Q.promise(function(resolve, reject, notify) {
-            resolve([{username:'alice', text:'yo'}, {username:'bob', text:'sup'}]);
-        });
-    }
-}*/
-
-
-/*
-
-
-
-new TwitterStream("#android").pipe(new LogStream());
-
-*/
+exports.unpipe = function(args, stream) {
+    current_stream.unpipe(stream);
+    current_stream.stop();
+};
 

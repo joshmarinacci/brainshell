@@ -103,13 +103,9 @@ util.inherits(WebsocketConnectionStream, Writable);
 
 var wsserver = WebSocket.createServer().listen(30046);
 wsserver.on('connection',function(conn) {
-    //console.log("tried to connect to ",conn.path);
     var parts = conn.path.match(/\/(.*)\?(.*)/);
-    //console.log('match = ',parts);
     var id = parts[1];
-    //console.log("id = ", id);
     var query = parts[2];
-    //console.log('query = ', querystring.parse(query));
-    ServiceManager.connect(id,querystring.parse(query),new WebsocketConnectionStream(conn));
+    ServiceManager.connect(id,querystring.parse(query),conn,new WebsocketConnectionStream(conn));
 });
 console.log("listening websocket on ",30046);

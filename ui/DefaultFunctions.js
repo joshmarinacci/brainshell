@@ -208,13 +208,15 @@ var TweetStreamDoc = {
     ]
 };
 function TweetStream(query) {
-    return utils.invokeLiveService("TweetStream",[query]).then(function(stream) {
-        stream.on('message', function() {
-            console.log("got a message from the server");
-            //update the list
+    console.log("query = ", query);
+    return utils.invokeLiveService("TweetStream",{query:'arduino'}).then(function(stream) {
+        var items = [];
+        var list = Literals.makeList(items);
+        stream.listen(function(obj) {
+            items.push(obj);
+            list.update(items);
         });
-        console.log("got rows back",rows);
-        return Literals.makeNumber(99);
+        return list;
     });
 }
 
@@ -598,7 +600,7 @@ exports.makeDefaultFunctions = function(ctx) {
 
     regSimple(ctx, Extendo(BaseValue, { name: "SplitUnique", fun: SplitUnique }));
     regSimple(ctx, Extendo(BaseValue, { name: "NDJSON",      fun: NDJSON, doc:NDJSONDoc }));
-    regSimple(ctx, Extendo(BaseValue, { name: "TweetStream", fun: TweetStream, doc:TweetStreamDoc }));
+    regSimple(ctx, Extendo(BaseValue, { name: "TweetStream", fun: TweetStream, doc:TweetStreamDoc, dataUpdate:true }));
     regSimple(ctx, Extendo(BaseValue, { name: "Date",        fun: MakeDate, doc:DateDoc }));
     regSimple(ctx, Extendo(BaseValue, { name: "FilterByDateRange", fun: FilterByDateRange, doc:FilterByDateRangeDoc }));
     regSimple(ctx, Extendo(BaseValue, { name: "BucketByDateTime",  fun: BucketByDateTime }));
