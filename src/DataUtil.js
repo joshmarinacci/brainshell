@@ -49,11 +49,22 @@ var DataUtil = {
         return val.type == 'date';
     },
     isNumber: function(val) {
+        if(!val) return false;
+        if(val == null) return false;
         if(val.type == 'numeric') return true;
         return false;
     },
     getNumber: function(val) {
         return val.getNumber();
+    },
+    isList: function(val) {
+        if(!val) return false;
+        if(val == null) return false;
+        if(val.type == 'list') return true;
+        return false;
+    },
+    listLength: function(val) {
+        return val.length();
     },
     reduce: function(data, func, initVal, post) {
         var it = data.getIterator();

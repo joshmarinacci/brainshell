@@ -11,9 +11,10 @@ var ctx = Context.global();
 
 DefaultFunctions.makeDefaultFunctions(ctx);
 
-Parser.matchAll("StockHistory('NNOK')",'start').value(ctx).then(function(v){
+/*Parser.matchAll("StockHistory('NNOK')",'start').value(ctx).then(function(v){
     runTests();
 });
+*/
 function runTests() {
     test("dates after 1997", function (t) {
         //Parser.matchAll("StockHistory('NNOK') => setColumnFormat('Date', type:'date') => FilterByDateRange('Date', start: Date(month:'May', date:22))",'start').value(ctx).then(function(v){
@@ -46,3 +47,38 @@ function runTests() {
         }).done();
     });
 }
+function p(str,cb) {
+    return Parser.matchAll(str,'start').value(ctx).then(cb).done();
+}
+
+function RandomTests() {
+    test('Random', function(t) {
+        p("Random()",function(v) {
+            t.isEqual(DataUtil.isNumber(v),true,'got back a number');
+            t.end();
+        });
+    });
+    test('Random(10)', function(t) {
+        p("Random(10)",function(v) {
+            t.isEqual(DataUtil.isList(v),true,'got back a list');
+            t.isEqual(DataUtil.listLength(v),10,'len 10');
+            t.end();
+        })
+    });
+    test('Random(min:10,max:20)', function(t) {
+        p("Random(min:10,max:20)",function(v) {
+            t.end();
+        });
+    });
+    test('Accumulate', function(t) {
+        p("Accumulate([1,2,3])", function (v) {
+            t.isEqual(DataUtil.isList(v),true,'got back a list');
+            t.isEqual(DataUtil.listLength(v),2,'correct length');
+            t.isEqual(v.item(0).getNumber(),3,'list[0] == 3');
+            t.isEqual(v.item(1).getNumber(),6,'list[1] == 6');
+            t.end();
+        });
+    });
+
+}
+RandomTests();

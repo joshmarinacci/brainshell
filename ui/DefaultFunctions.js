@@ -508,6 +508,58 @@ var BarChart =  function(data, xaxis, yaxis) {
 };
 
 
+var RandomDoc = {
+    short:"generate random numbers",
+    examples: [
+        "Random()  one random number from 0 to 1",
+        "Random(10) a list of 10 random numbers from 0 to 1",
+        "Random(min:-1) one random number from -1 to 1",
+        "Random(max:100) one random number from 0 to 100"
+    ]
+};
+
+function Random() {
+    function makeRand(min,max) {
+        return Literals.makeNumber(Math.random()*(max-min) + min);
+    }
+    var args = FuncUtils.getArgs(arguments);
+    var kargs = FuncUtils.getKeyValues(arguments);
+    var count = 1;
+    var min = 0;
+    var max = 1;
+    if(kargs['min']) min = kargs['min'].getNumber();
+    if(kargs['max']) max = kargs['max'].getNumber();
+    if(DataUtil.isNumber(args[0])) {
+        count = DataUtil.getNumber(args[0]);
+        var arr = [];
+        for(var i=0; i<count; i++) {
+            arr.push(makeRand(min,max));
+        }
+        return Literals.makeList(arr);
+    } else {
+        return makeRand(min,max);
+    }
+}
+
+var AccumulateDoc = {
+    short:'running total of a list of numbers',
+    examples: [
+        "Accumulate([1,2,3,4]) prints [3, 6, 10]"
+    ]
+};
+function Accumulate(data) {
+    var arr = [];
+    if(!DataUtil.isList(data)) throw new Error("argument is not a list");
+    var it = data.getIterator();
+    var total = it.next().getNumber();
+    while(it.hasNext()) {
+        total += it.next().getNumber();
+        arr.push(Literals.makeNumber(total));
+    }
+    return Literals.makeList(arr);
+}
+
+
 /*
  NDJSON('events.json',100)
  => UseColumns(include:'Timestamp', include:'Publisher')
@@ -535,6 +587,8 @@ exports.makeDefaultFunctions = function(ctx) {
     regSimple(ctx, Extendo(BaseValue, { name: "UseColumns",  fun: UseColumns, doc:UseColumnsDoc }));
     regSimple(ctx, Extendo(BaseValue, { name: "GetColumn",   fun: GetColumn,  doc:GetColumnDoc }));
     regSimple(ctx, Extendo(BaseValue, { name: "SetFormat",   fun: SetFormat,  doc:SetFormatDoc }));
+    regSimple(ctx, Extendo(BaseValue, { name: "Random",      fun: Random,  doc:RandomDoc }));
+    regSimple(ctx, Extendo(BaseValue, { name: "Accumulate",  fun: Accumulate, doc:AccumulateDoc }));
 
     regSimple(ctx,{
         name:'setColumnFormat',
