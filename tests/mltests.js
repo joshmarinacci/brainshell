@@ -238,7 +238,7 @@ test('NDJSON => UseColumns', function(t) {
 
 //var startDate = Date(month:4, day:1) // may 1st
 test('date create', function(t) {
-    var str = "Date(month:3, day:1)";
+    var str = "Date(month:3, date:1)";
     Parser.matchAll(str, 'start').value(ctx).then(function(v){
         t.equal(v.type,'date','type is date');
         t.equal(v.getDate().month(),3,'month is april/3');
@@ -248,7 +248,7 @@ test('date create', function(t) {
 
 //var endDate = Date(month:’may’, day:10) // may 10th
 test('date create 2', function(t) {
-    var str = "Date(month:'june', day:19)";
+    var str = "Date(month:'june', date:19)";
     Parser.matchAll(str, 'start').value(ctx).then(function(v){
         t.equal(v.type,'date','type is date');
         t.equal(v.getDate().month(),5,'month is june/3');
@@ -300,7 +300,7 @@ test('filter by date range', function(t) {
     var sym = Symbols.make('data');
     sym.update(Literals.makeList(makeTimestampData(100,0,0,0,1)));
     ctx.register(sym);
-    var str = "FilterByDateRange(data, 'timestamp', start:Date(month:'may', day:3), end:Date(month:'may', day:7) )";
+    var str = "FilterByDateRange(data, 'timestamp', start:Date(month:'may', date:3), end:Date(month:'may', date:7) )";
     Parser.matchAll(str, 'start').value(ctx).then(function(v){
         var it = v.getIterator();
         var cis = v.getColumnInfos();

@@ -81,4 +81,42 @@ function RandomTests() {
     });
 
 }
-RandomTests();
+//RandomTests();
+
+function ListUpdateTests() {
+    var sym = Symbols.make('UpdateFunc');
+    sym.update({
+        kind:'function',
+        type:'simple',
+        dataUpdate:true,
+        fun: function() {
+            console.log("inside UpdateFunc");
+            var items = [Literals.makeNumber(99)];
+            var list = Literals.makeList(items);
+            var count = 0;
+            setInterval(function(){
+                //console.log("triggering an update");
+                count++;
+                items.push(Literals.makeNumber(count));
+                list.update(items);
+            },1000);
+            return list;
+        }
+    });
+    ctx.register(sym);
+    function doit() {
+        var expr = Parser.matchAll("UpdateFunc()", 'start');
+        expr.onChange(function () {
+            //console.log("the expression changed",expr);
+            expr.value(ctx).then(function (v) {
+                console.log("new value is", v.length());
+            })
+        });
+        expr.value(ctx).then(function (v) {
+            console.log("result is ", v.length());
+        }).done();
+    }
+    doit();
+    setTimeout(doit,3500);
+}
+ListUpdateTests();

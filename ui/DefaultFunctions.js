@@ -213,7 +213,7 @@ function MakeDate(month, day) {
     var kargs = FuncUtils.getKeyValues(arguments);
     var date = moment();
     if(kargs.month) {
-        date.month(kargs.month.getString());
+        date.month(kargs.month._value);
     }
     if(kargs.date) {
         date.date(kargs.date.getNumber());

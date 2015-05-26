@@ -56,7 +56,18 @@ var Expressions = {
                             return self.invokeComplex(v);
                         }
                         if(v.type == 'simple') {
-                            return self.invokeSimple(v);
+                            if(v.dataUpdate === true && typeof self.oldValue !== 'undefined') {
+                                return self.oldValue;
+                            }
+                            return self.invokeSimple(v).then(function(vv){
+                                if(v.dataUpdate === true) {
+                                    self.oldValue = vv;
+                                    vv.onChange(function() {
+                                        self.notify();
+                                    });
+                                }
+                                return vv;
+                            });
                         }
                         throw Error('unknown function type',v.type);
                     });

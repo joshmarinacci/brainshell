@@ -95,7 +95,7 @@ test("Test EarthquakeHistory", function(t) {
 });
 
 
-
+/*
 test("Test RandomWalk",function(t) {
     t.ok(ctx.hasSymbol("RandomWalk"),"symbol exists");
     var expr = Parser.matchAll('RandomWalk()','start');
@@ -108,7 +108,7 @@ test("Test RandomWalk",function(t) {
         }).done();
     });
 });
-
+*/
 
 
 test("Test RunningAverage", function(t) {
@@ -121,7 +121,7 @@ test("Test RunningAverage", function(t) {
     }).done();
 });
 
-
+/*
 test("Test Piped RunningAverage", function(t) {
     var expr = Parser.matchAll('RandomWalk() => RunningAverage()','start');
     var cb = expr.onChange(function(ex) {
@@ -134,7 +134,7 @@ test("Test Piped RunningAverage", function(t) {
     });
 
 });
-
+*/
 test("Test TakeFive", function(t) {
     t.ok(ctx.hasSymbol("TakeFive"), "symbol exists");
     var out = Parser.matchAll("TakeFive([0,1,2,3,4,5,6,7,8])","start");
@@ -143,7 +143,7 @@ test("Test TakeFive", function(t) {
         t.end();
     }).done();
 });
-
+/*
 test("Test Piped TakeFive", function(t) {
     var expr = Parser.matchAll('RandomWalk() => TakeFive()','start');
     var cb = expr.onChange(function(ex){
@@ -156,7 +156,7 @@ test("Test Piped TakeFive", function(t) {
         }).done();
     });
 });
-
+*/
 return;
 
 test("Test Take Update", function(t) {
