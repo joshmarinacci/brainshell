@@ -342,6 +342,14 @@ test("time units", function(t) {
 });
 
 
+test("superman",function(t){
+    compareCompoundUnit(t,"6 m / (3 m/s)",2,['second',1]);
+    compareCompoundUnit(t,"40075000 m / (346 m/s * 2)",40075000/(346*2),['second',1]);
+    //compareCompoundUnit(t,"40075 km / (346 m/s * 2)",40075000/(346*2),['second',1]);
+    //compareCompoundUnit(t,"24902 mi / (346 m/s * 2)",40075000/(346*2),['second',1]);
+    //compareCompoundUnit(t,"24902 mi / (346 m/s * 2) as hours",40075000/(346*2),['second',1]);
+    t.end();
+})
 
 /*
 test("variable equations", function(t) {
@@ -562,7 +570,7 @@ function compareUnit(t,str,val,unit,dim, DEBUG) {
 function compareCompoundUnit(t,str,val,units) {
     var epsilon = 0.01;
     parse(str).value().then(function(v){
-        //console.log("became " + v);
+        //console.log("became " + v.toString());
         //console.log("number = ", v.getNumber());
         if(Math.abs(val-v.getNumber())/val > epsilon) {
             t.fail("not equal " + val + " " +v.getNumber());
