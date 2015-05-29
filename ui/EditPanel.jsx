@@ -10,6 +10,7 @@ var Parser = require('../parser_compiled.js').Parser;
 var DocsStore = require('./DocsStore');
 var TableOutput = require('./TableOutput.jsx');
 var BarChart = require('./BarChart.jsx');
+var UISlider = require('./UISlider.jsx');
 
 function ParseExpression(str) {
     console.log("parsing expression",str);
@@ -118,6 +119,9 @@ var EditPanel = React.createClass({
         if(!res) return "";
         if(typeof res == 'string') return res;
         try {
+            if (res.type == 'slider') {
+                return <UISlider data={res}/>
+            }
             if (res.type == 'schart') {
                 return <SChart data={res}/>
             }

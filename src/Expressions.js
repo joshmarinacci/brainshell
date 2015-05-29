@@ -6,7 +6,7 @@ var utils = require('./utils');
 var Literals = require('./Literals');
 var Expressions = {
     makeFunctionCall: function(fun,arr,nam) {
-        //console.log("Making a function call for",arr,fun);
+        //console.log("Making a function call for",fun,arr);
         var fcall = {
             kind:'funcall',
             type:'funcall',
@@ -17,6 +17,9 @@ var Expressions = {
             },
             cbs:[],
             init: function() {
+                if(fun.type == 'symbol' && fun._value.firstRaw === true) {
+                    //console.log("this is a raw one. don't listen for changes");
+                }
                 var cb = this.dependentUpdated.bind(this);
                 arr.forEach(function(arg) {
                     if(!arg.onChange) return;
@@ -80,6 +83,9 @@ var Expressions = {
                 });
             },
             invokeSimple: function(v) {
+                if(v.firstRaw === true) {
+                    return Q.spread(arr.slice(), v.fun.bind(v));
+                }
                 var args = arr.map(function(arg){
                     return arg.value();
                 });

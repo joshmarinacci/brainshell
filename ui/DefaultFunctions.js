@@ -579,6 +579,20 @@ function Accumulate(data) {
 }
 
 
+var SliderDoc = {
+    short:"bind a Slider to a symbol",
+    examples: [
+        "x=50; Slider(x); x=75"
+    ]
+};
+function Slider(symbol) {
+    return {
+        kind: 'control',
+        type: 'slider',
+        symbol: symbol,
+    }
+}
+
 /*
  NDJSON('events.json',100)
  => UseColumns(include:'Timestamp', include:'Publisher')
@@ -609,6 +623,7 @@ exports.makeDefaultFunctions = function(ctx) {
     regSimple(ctx, Extendo(BaseValue, { name: "SetFormat",   fun: SetFormat,  doc:SetFormatDoc }));
     regSimple(ctx, Extendo(BaseValue, { name: "Random",      fun: Random,  doc:RandomDoc }));
     regSimple(ctx, Extendo(BaseValue, { name: "Accumulate",  fun: Accumulate, doc:AccumulateDoc }));
+    regSimple(ctx, Extendo(BaseValue, { name: "Slider",      fun: Slider, doc:SliderDoc, firstRaw:true }));
 
     regSimple(ctx,{
         name:'setColumnFormat',

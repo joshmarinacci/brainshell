@@ -14,6 +14,19 @@ var ctx = Context.global();
 DefaultFunctions.makeDefaultFunctions(ctx);
 
 
+test("Slider bound to symbol", function(t){
+    var sym = Symbols.make('x');
+    sym.update(Literals.makeNumber(3));
+    ctx.register(sym);
+    t.ok(ctx.hasSymbol('x'), 'symbol exists');
+    t.ok(ctx.hasSymbol('Slider'), 'symbol exists');
+    Parser.matchAll("Slider(x)",'start').value(ctx).then(function(v){
+        t.equal(v.symbol.name,'x');
+        t.end();
+    }).done();
+});
+
+
 test("Sum of list", function(t) {
     Parser.matchAll("MakeList(10) => Sum()",'start').value(ctx).then(function(v){
         console.log("final value is",v.toString());
