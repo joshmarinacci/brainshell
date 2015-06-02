@@ -11,6 +11,7 @@ var Parser = require('../../parser_compiled.js').Parser;
 var MainView = React.createClass({
     getInitialState: function() {
         return {
+            raw:null,
             result:null,
             error:null,
             rightPanelVisible:false,
@@ -19,6 +20,7 @@ var MainView = React.createClass({
     },
     evaluateExpression: function() {
         var txt = this.refs.input.getDOMNode().value;
+        this.setRaw(txt);
         console.log("evaluating",txt);
         var self = this;
         try {
@@ -34,6 +36,9 @@ var MainView = React.createClass({
             this.setError(err);
         }
     },
+    setRaw: function(raw) {
+        this.setState({raw:raw});
+    },
     setResult: function(res) {
         if(res == null) {
             return this.setState({error:"no result"});
@@ -42,6 +47,10 @@ var MainView = React.createClass({
     },
     setError: function(err) {
         this.setState({error: err});
+    },
+    renderCode: function() {
+        if(this.state.raw == null) return "";
+        return this.state.raw + " is ";
     },
     renderResult: function() {
         if(this.state.result == null) return "";
@@ -90,7 +99,7 @@ var MainView = React.createClass({
             </div>
             <div id="result">
                 <div id="pretty">
-                    8ft * 9ft * 10ft as gallons is
+                    {this.renderCode()}
                 </div>
                 <div id="answer">
                     {this.renderResult()}

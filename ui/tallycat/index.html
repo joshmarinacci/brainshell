@@ -39,11 +39,15 @@ server needs a logevent post function which simply appends a payload (max of 100
 
         .hbox {
             display: flex;
+            display: -webkit-flex;
             flex-direction: row;
+            -webkit-flex-direction: row;
         }
         .vbox {
             display: flex;
+            display: -webkit-flex;
             flex-direction: column;
+            -webkit-flex-direction: column;
         }
 
         #logo {
@@ -60,6 +64,7 @@ server needs a logevent post function which simply appends a payload (max of 100
             background-color: black;
             text-align: center;
             align-self: center;
+            -webkit-align-self: center;
         }
 
         #logo-slogan {
@@ -67,6 +72,7 @@ server needs a logevent post function which simply appends a payload (max of 100
             font-size: 30pt;
             text-align: center;
             align-self: center;
+            -webkit-align-self: center;
         }
 
         #content {
@@ -79,15 +85,18 @@ server needs a logevent post function which simply appends a payload (max of 100
             float: left;
             padding: 1em;
             flex: 1;
+            -webkit-flex: 1;
         }
 
         #center {
             border: 0px solid green;
             flex: 2;
+            -webkit-flex: 2;
         }
 
         #ideas2 {
             flex: 1;
+            -webkit-flex: 1;
             width: 300px;
         }
 
