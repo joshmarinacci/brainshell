@@ -1,5 +1,206 @@
+<!--
+
+The tally cat interface is a single text input line with a button to evaluate.
+There is no moving panels up or down.
+There is no saving or loading.
+Just type an expression and get the result.
+The expression is re-formatted below, then the result after that.
+It should be very clean and pretty.
+
+Implementation plan:
+
+new index.html with no extra js or fonts
+build a special bundle.js with just the needed parts
+create a new tally cat panel to replace editpanel.
+don't load the default functions. just pi and e
+add a logging system. logs to the server when loaded,
+  when evaluated, and with the results of the eval,
+  including if an exception was thrown.
+
+add an button to report if people got the answer they expected. sends event either way.
+if false, there is a text field to report the problem and correct answer. field to send email
+to hear back when it's fixed.
+
+server needs a logevent post function which simply appends a payload (max of 1000 bytes) to a log file.
+
+
+
+
+
+-->
 <html>
+<head>
+    <style type="text/css">
+        html, body {
+            padding: 0;
+            margin: 0;
+            font-family: sans-serif;
+        }
+
+        .hbox {
+            display: flex;
+            flex-direction: row;
+        }
+
+        #logo {
+            border: 1px solid black;
+            background-color: #fff2bd;
+        }
+
+        #logo-icon {
+            width: 1em;
+            height: 1em;
+            border: 1px solid black;
+            font-size: 45pt;
+            color: #fff2bd;
+            background-color: black;
+            text-align: center;
+            align-self: center;
+        }
+
+        #logo-slogan {
+            flex: 1;
+            font-size: 30pt;
+            text-align: center;
+            align-self: center;
+        }
+
+        #content {
+            margin-top: 2em;
+        }
+
+        #ideas1 {
+            border: 0px solid black;
+            width: 300px;
+            float: left;
+            padding: 1em;
+            flex: 1;
+        }
+
+        #center {
+            border: 0px solid green;
+            flex: 2;
+        }
+
+        #ideas2 {
+            flex: 1;
+            width: 300px;
+        }
+
+        #editor {
+            border: 0px solid black;
+        }
+
+        #editor input, #editor button {
+            font-size: 300%;
+            padding: 0.3em;
+            margin: 0;
+        }
+
+        #editor input {
+            background-color: #fff7d9;
+            border: 1px solid grey;
+            margin: 0;
+        }
+
+        #result {
+            padding-top: 0.5em;;
+        }
+
+        #pretty {
+            font-size: 200%;
+            text-align: center;
+            font-family: serif;
+        }
+        #answer {
+            font-size: 300%;
+            text-align: center;
+            font-family: serif;
+            margin-bottom: 1em;
+        }
+
+        #query {
+            border: 0px solid lightgrey;
+            text-align: right;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        dl dt {
+            font-family: sans-serif;
+        }
+
+        dl dd {
+            font-family: serif;
+            padding-bottom: 0.5em;
+            color: blue;
+            text-decoration: underline;
+        }
+
+    </style>
+</head>
 <body>
-tally cat
+<div class="hbox" id="logo">
+    <div id="logo-icon">T</div>
+    <div id="logo-slogan">Tallycat: Sums, conversions, and reckons; free of charge</div>
+</div>
+
+<div class="hbox" id="content">
+    <dl id="ideas1">
+        <dt>What's 99 to the 99th power?</dt>
+        <dd>99^99</dd>
+
+        <dt>How many shots in a bottle of tequila?</dt>
+        <dd>750ml / 2floz</dd>
+
+        <dt>How much is a teaspoon in gallons?</dt>
+        <dd>1 teaspoon as gallons</dd>
+
+        <dt>How far is 20,000 Leagues anyway?</dt>
+        <dd>20_000 leagues as miles</dd>
+
+        <dt>How much water does my office hold?</dt>
+        <dd>8ft * 9ft * 10ft as gallons</dd>
+    </dl>
+    <div id="center">
+        <div id="editor">
+            <input type="text" placeholder="8ft * 9ft * 10ft as gal"/>
+            <button>Go</button>
+        </div>
+        <div id="result">
+            <div id="pretty">
+                8ft * 9ft * 10ft as gallons is
+            </div>
+            <div id="answer">
+                2045.67 gallons
+            </div>
+            <div id="query">
+                Is this answer
+                <button>right</button>
+                or
+                <button>wrong</button>
+                ?
+            </div>
+            <div id="slideout-wrong" class="hidden">
+                What is the answer you were expecting?
+                <textarea id="correction"></textarea>
+                Optional: give us your email to be notified when it's fixed.
+                <input type="email">
+                <button>send</button>
+            </div>
+            <div id="slideout-right" class="hidden">
+                Awesome!
+                Can we have your email to let you know about updates?
+                <input type="email">
+                <button>send</button>
+            </div>
+        </div>
+    </div>
+    <dl id="ideas2">
+    </dl>
+</div>
+
 </body>
 </html>
