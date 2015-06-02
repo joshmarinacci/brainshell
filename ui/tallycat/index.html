@@ -41,6 +41,10 @@ server needs a logevent post function which simply appends a payload (max of 100
             display: flex;
             flex-direction: row;
         }
+        .vbox {
+            display: flex;
+            flex-direction: column;
+        }
 
         #logo {
             border: 1px solid black;
@@ -118,6 +122,10 @@ server needs a logevent post function which simply appends a payload (max of 100
             font-family: serif;
             margin-bottom: 1em;
         }
+        #error {
+            font-size: 200%;
+            color: #ff8888;
+        }
 
         #query {
             border: 0px solid lightgrey;
@@ -164,11 +172,14 @@ server needs a logevent post function which simply appends a payload (max of 100
         <dt>How much water does my office hold?</dt>
         <dd>8ft * 9ft * 10ft as gallons</dd>
     </dl>
-    <div id="center">
-        <div id="editor">
-            <input type="text" placeholder="8ft * 9ft * 10ft as gal"/>
-            <button>Go</button>
-        </div>
+    <div id="main"></div>
+    <!--
+    <div id="editor">
+        <input type="text" placeholder="8ft * 9ft * 10ft as gal"/>
+        <button>Go</button>
+    </div>
+    -->
+        <!--
         <div id="result">
             <div id="pretty">
                 8ft * 9ft * 10ft as gallons is
@@ -197,10 +208,11 @@ server needs a logevent post function which simply appends a payload (max of 100
                 <button>send</button>
             </div>
         </div>
-    </div>
+        -->
     <dl id="ideas2">
     </dl>
 </div>
 
+<script src="bundle.js"></script>
 </body>
 </html>
