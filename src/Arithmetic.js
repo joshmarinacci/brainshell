@@ -30,14 +30,12 @@ var Arithmetic = {
             //if just B has a unit
             if(!A.hasUnit() && B.hasUnit())  return Literals.makeNumber(A._value*B._value,B.getUnit());
 
-            if(A.getUnit().type != 'compound' && B.getUnit().type == 'compound') {
-                return MultiplyToCompound(A,B);
-            }
-            if(A.getUnit().type == 'compound' && B.getUnit().type != 'compound') {
+            if(A.getUnit().type == 'compound' || B.getUnit().type == 'compound') {
                 return MultiplyToCompound(A,B);
             }
 
             if(Units.sameName(A.getUnit(),B.getUnit())) {
+                //return MultiplyToCompound(A,B);
                 var dim = A.getUnit().getDimension()+B.getUnit().getDimension();
                 var name = B.getUnit().getName();
                 var nu = Units.Unit(name,dim);
@@ -46,6 +44,7 @@ var Arithmetic = {
 
 
             if(Units.sameType(A.getUnit(),B.getUnit())) {
+                //return MultiplyToCompound(A,B);
                 var bv = B._value;
                 var na = Arithmetic.ConvertUnit.fun(A,B.getUnit());
                 var nu = Units.Unit(B.getUnit().getName(),A.getUnit().getDimension()+B.getUnit().getDimension());
@@ -80,10 +79,7 @@ var Arithmetic = {
             if(A.hasUnit() && !B.hasUnit())  return Literals.makeNumber(A._value/B._value,A.getUnit());
             //if just B has a unit
             if(!A.hasUnit() && B.hasUnit())  return Literals.makeNumber(A._value/B._value,B.getUnit());
-            if(A.getUnit().type != 'compound' && B.getUnit().type == 'compound') {
-                return DivideToCompound(A,B);
-            }
-            if(A.getUnit().type == 'compound' && B.getUnit().type != 'compound') {
+            if(A.getUnit().type == 'compound' || B.getUnit().type == 'compound') {
                 return DivideToCompound(A,B);
             }
 

@@ -330,12 +330,12 @@ var unit_modifiers = {
 exports.Unit = function (name, dim, exp) {
     //console.log("making unit",name,dim,exp);
     if(typeof dim == 'string'){
-        console.log("WARNING. STRING DIMENSION",dim);
-        console.log(new Error().stack);
+        //console.log("WARNING. STRING DIMENSION",dim);
+        //console.log(new Error().stack);
     }
     if(typeof exp  == 'string'){
-        console.log("WARNING. STRING EXPONENT",exp);
-        console.log(new Error().stack);
+        //console.log("WARNING. STRING EXPONENT",exp);
+        //console.log(new Error().stack);
     }
     if(typeof exp !== 'undefined') dim = exp;
     //lower case longer names
