@@ -9,6 +9,7 @@
   "scripts": {
     "test": "node tests/parsing",
     "build-parser": "node tools/compile.js src/parser.ometajs > parser_compiled.js",
+    "pretest": "node tools/compile.js src/parser.ometajs > parser_compiled.js",
     "server": "node server/server.js",
     "build-ui": "browserify --transform reactify ui/main.jsx node_modules/appy-style/react/CustomList.jsx -o ui/bundle.js --debug --verbose ",
     "build-tallyui": "browserify --transform reactify ui/tallycat/tally.jsx -o ui/tallycat/bundle.js --debug --verbose ",
