@@ -5,6 +5,8 @@ notifications:
   email:
     - joshua@marinacci.org
 notifications:
-  slack: iotracks:oOfbUEsjr2BIjtwby0ikTM2G
+  slack:
+    - iotracks:oOfbUEsjr2BIjtwby0ikTM2G#general
+    - iotracks:oOfbUEsjr2BIjtwby0ikTM2G#random
 
 
