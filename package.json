@@ -2,7 +2,7 @@
   "name": "brainshell",
   "version": "1.0.0",
   "description": "A magical wordprocessor for your brain",
-  "main": "index.js",
+  "main": "server/server.js",
   "directories": {
     "test": "tests"
   },
