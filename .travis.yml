@@ -1,12 +1,6 @@
- language: node_js
- node_js:
-   - "0.10"
-notifications:
-  email:
-    - joshua@marinacci.org
+language: node_js
+node_js:
+- '0.10'
 notifications:
   slack:
-    - iotracks:oOfbUEsjr2BIjtwby0ikTM2G#general
-    - iotracks:oOfbUEsjr2BIjtwby0ikTM2G#random
-
-
+    secure: xErFo01n+CLWZAejJ0M8dj0jRBgBJ1mojxzNTNQI+1lnNeXVDC8ct8gE500NTK1nCXomInao6TB+d9XjUWqBvNI48eMXK2384pRDQ57YpVm3ziYGDc6GFcVXtn2u1jYecjqWDBVIL9YYU7nZT9m/TSrQWzm23+jo+7DDMcE3ceQUoFLr6wvHBcqIWnnUh2JolmCUU3b4RCKdmjAM+ertGhkylzCxf668wKlh4PpYYB1lgjC/p4HU7QsGxfJUNXt4IxoleaKafrbvT3BsJW/TtSfaQd1Pp830l+xtOU850WkLq+v8KcMi5OkWv5yilwRDRvrQWQE5djWtcRMKxcCOFtQJ5aCSRCWEb3T8n21bp+kA2Ho5YrdGTojI8yqjHa4jbJJlR8ijNXx6Fc6Wlbvy/QCTudsNj/TquBZgPYaqVO25Nnbq5rX8W4baUzslemQZ+10ZztzfX5Wr9rpn4Smw8h6ck9u5m/ETWpxgQJ85P44BgjoJcKrspakMgq8Qm5oNZEBgkkFxqGJsmtzJK5QoWjSAyvJrjZtWU5xUKrb2w2c6+4gNBxIAfyAoewcw2GpjiJJuUZhjtBY0qv4nl899U5HRg5H7ct51JbNyiJKVIU+DbWBJxbwG3kVcWaNR9EDk+nuG3vKq1CggK7fi9Ohezo9Y582+P33UR73Ei+kkZqE=
