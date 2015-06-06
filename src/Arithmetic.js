@@ -16,7 +16,6 @@ var Arithmetic = {
                 var av2 = Arithmetic.ConvertUnit.fun(A,B.getUnit());
                 return Literals.makeNumber(av2._value+bv,B.getUnit());
             }
-            console.log("throwing");
             throw new UnitConversionError("cannot convert between units",A.unit,B.unit);
         }
     },
@@ -31,14 +30,12 @@ var Arithmetic = {
             //if just B has a unit
             if(!A.hasUnit() && B.hasUnit())  return Literals.makeNumber(A._value*B._value,B.getUnit());
 
-            if(A.getUnit().type != 'compound' && B.getUnit().type == 'compound') {
-                return MultiplyCompoundPost(A,B);
-            }
-            if(A.getUnit().type == 'compound' && B.getUnit().type != 'compound') {
-                return MultiplyCompoundPost(B,A);
+            if(A.getUnit().type == 'compound' || B.getUnit().type == 'compound') {
+                return MultiplyToCompound(A,B);
             }
 
             if(Units.sameName(A.getUnit(),B.getUnit())) {
+                //return MultiplyToCompound(A,B);
                 var dim = A.getUnit().getDimension()+B.getUnit().getDimension();
                 var name = B.getUnit().getName();
                 var nu = Units.Unit(name,dim);
@@ -47,12 +44,13 @@ var Arithmetic = {
 
 
             if(Units.sameType(A.getUnit(),B.getUnit())) {
+                //return MultiplyToCompound(A,B);
                 var bv = B._value;
                 var na = Arithmetic.ConvertUnit.fun(A,B.getUnit());
                 var nu = Units.Unit(B.getUnit().getName(),A.getUnit().getDimension()+B.getUnit().getDimension());
                 return Literals.makeNumber(na._value*bv, nu);
             }
-            throw new Error("cannot convert between units " + A.getUnit() + " " + B.getUnit());
+            return MultiplyToCompound(A,B);
         }
     },
     Subtract: {
@@ -81,8 +79,8 @@ var Arithmetic = {
             if(A.hasUnit() && !B.hasUnit())  return Literals.makeNumber(A._value/B._value,A.getUnit());
             //if just B has a unit
             if(!A.hasUnit() && B.hasUnit())  return Literals.makeNumber(A._value/B._value,B.getUnit());
-            if(A.getUnit().type != 'compound' && B.getUnit().type == 'compound') {
-                return DivideCompoundPost(A,B);
+            if(A.getUnit().type == 'compound' || B.getUnit().type == 'compound') {
+                return DivideToCompound(A,B);
             }
 
             if(Units.sameName(A.getUnit(),B.getUnit())) {
@@ -99,7 +97,7 @@ var Arithmetic = {
                 var nu = Units.Unit(B.getUnit().getName(),A.getUnit().getDimension()-B.getUnit().getDimension());
                 return Literals.makeNumber(na._value/bv, nu);
             }
-            throw new Error("cannot convert between units " + A.getUnit() + " " + B.getUnit());
+            return DivideToCompound(A,B);
         }
     },
     Exponent: {
@@ -221,53 +219,105 @@ function printarray(lens) {
 }
 function reduceUnits(subunits,type) {
     var lens = subunits.filter(function(u) { return u.type == type; });
-    if(lens.length > 1) {
-        //console.log("have to reduce",type);
-        var dim = 0;
-        lens.forEach(function(u){
-            dim += u._dim;
-        });
-        //console.log("final dim = ", dim, lens[0]._name);
-        return Units.Unit(lens[0]._name,dim);
-    } else {
-        return Units.Unit(lens[0]._name,lens[0]._dim);
+    if(lens.length <= 0) return null;
+    if(lens.length == 1) {
+        return [1,Units.Unit(lens[0]._name,lens[0]._dim)];
     }
+
+    //multiple lengths
+    var val = 1;
+    var name = lens[0]._name;
+    //console.log("have to reduce",type, 'to',name);
+    var dim = 0;
+    lens.forEach(function(u){
+        dim += u._dim;
+        if(u._name != name) {
+            //console.log("TYPE MISMATCH", u._name,'to',name,u.base);
+            //reduce to the base
+            var us = 1;
+            while(u.getName() != name) {
+                us /= u.scale;
+                u = Units.Unit(u.base,u.getDimension());
+            }
+            //console.log("scale = ", us);
+            val *= us;
+        }
+    });
+    //console.log("final dim = ", dim, lens[0]._name);
+    //console.log("final val = ", val);
+    return [val,Units.Unit(lens[0]._name,dim)];
 }
 
-function MultiplyCompoundPost(A,B) {
+function produceFinalCompound(fval, finalunits) {
+    //console.log("producing final compound");
+    //strip units with dim 0 or null units
+    var out = [];
+    finalunits.forEach(function(uu){
+        if(uu == null) return;
+        var v = uu[0];
+        //console.log("v = ", v);
+        fval *= v;
+        var u = uu[1];
+        if(u.getDimension() == 0) return;
+        out.push(u);
+    });
+    //printarray(out);
+    return Literals.makeNumber(fval, Units.CompoundUnitFromList(out));
+}
+
+function MultiplyToCompound(A,B) {
+    //console.log("multiplying to compound",A.toString(),B.toString());
     var fval = A.getNumber() * B.getNumber();
-    var subunits = B.getUnit().subunits.slice();
-    subunits.push(A.getUnit());
-    //printarray(subunits);
+    var subunits = [];
+    if(B.getUnit().type == 'compound') {
+        B.getUnit().subunits.forEach(function(su) {
+            subunits.push(Units.Unit(su.getName(),su.getDimension()));
+        });
+    } else {
+        var bu = B.getUnit();
+        subunits.push(Units.Unit(bu.getName(),bu.getDimension()));
+    }
+    if(A.getUnit().type == 'compound') {
+        A.getUnit().subunits.forEach(function(su) {
+            subunits.push(su);
+        });
+    } else {
+        subunits.push(A.getUnit());
+    }
+
+    //reduce
     var finalunits = [];
     finalunits.push(reduceUnits(subunits,'length'));
     finalunits.push(reduceUnits(subunits,'duration'));
-    //printarray(finalunits);
-    return Literals.makeNumber(fval,Units.CompoundUnitFromList(finalunits));
+    return produceFinalCompound(fval, finalunits);
 }
 
-function DivideCompoundPost(A,B) {
+function DivideToCompound(A,B) {
+    //console.log("dividing to compound",A.toString(),B.toString());
     var fval = A.getNumber() / B.getNumber();
-    var subunits = B.getUnit().subunits.slice();
-    //flip the exponents
-    subunits = subunits.map(function(u) {
-        return Units.Unit(u.getName(), -u.getDimension());
-    });
-    //printarray(subunits);
-    subunits.push(A.getUnit());
-    //printarray(subunits);
+    var subunits = [];
+    if(A.getUnit().type == 'compound') {
+        A.getUnit().subunits.forEach(function(su) {
+            subunits.push(su);
+        });
+    } else {
+        subunits.push(A.getUnit());
+    }
+    if(B.getUnit().type == 'compound') {
+        B.getUnit().subunits.forEach(function(su) {
+            subunits.push(Units.Unit(su.getName(),-su.getDimension()));
+        });
+    } else {
+        var bu = B.getUnit();
+        subunits.push(Units.Unit(bu.getName(),-bu.getDimension()));
+    }
+
+     //reduce
     var finalunits = [];
     finalunits.push(reduceUnits(subunits,'length'));
     finalunits.push(reduceUnits(subunits,'duration'));
-    //strip units with dim 0
-    finalunits = finalunits.filter(function(u){
-        return (u.getDimension() != 0);
-    });
-    //printarray(finalunits);
-    return Literals.makeNumber(fval,Units.CompoundUnitFromList(finalunits));
+    return produceFinalCompound(fval, finalunits);
 }
-
-
 function findType(arr, type) {
     for(var i=0; i<arr.length; i++) {
         if(arr[i].type == type) return arr[i];

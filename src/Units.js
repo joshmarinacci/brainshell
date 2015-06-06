@@ -329,6 +329,14 @@ var unit_modifiers = {
 
 exports.Unit = function (name, dim, exp) {
     //console.log("making unit",name,dim,exp);
+    if(typeof dim == 'string'){
+        //console.log("WARNING. STRING DIMENSION",dim);
+        //console.log(new Error().stack);
+    }
+    if(typeof exp  == 'string'){
+        //console.log("WARNING. STRING EXPONENT",exp);
+        //console.log(new Error().stack);
+    }
     if(typeof exp !== 'undefined') dim = exp;
     //lower case longer names
     if (name.length >= 3) name = name.toLowerCase();
@@ -427,3 +435,27 @@ exports.hasUnit = function (A) {
     return true;
 };
 
+exports.isCompound = function(U) {
+    return U.type == 'compound';
+};
+
+exports.getSimpleName = function(U) {
+    return U.getName();
+};
+
+exports.getSimpleDimension = function(U) {
+    if(typeof U._dim == 'undefined') return 1;
+    return U._dim;
+};
+
+exports.getCompoundNumerators = function(U) {
+    return U.subunits.filter(function(su) {
+        return su._dim > 0;
+    });
+};
+
+exports.getCompoundDenominators = function(U) {
+    return U.subunits.filter(function(su) {
+        return su._dim < 0;
+    });
+}
