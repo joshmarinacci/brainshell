@@ -123,7 +123,7 @@ var MainView = React.createClass({
         }
         return <div id='center'>
             <div id='editor'>
-                <input ref='input' type="text" placeholder="8ft * 9ft * 10ft as gal"
+                <input ref='input' type="text" defaultValue="8ft * 9ft * 10ft as gal"
                     onKeyDown={this.keyDown}/>
                 <button onClick={this.evaluateExpression}>Go</button>
             </div>
