@@ -20,6 +20,44 @@ function postEvent(evt) {
         .done();
 }
 
+var demoLinks = [
+    {
+        desc:"What's 99 to the 99th power?",
+        expr:"99^99"
+    },
+    {
+        desc:"How many shots in a bottle of tequila?",
+        expr:"750ml / 2floz"
+    },
+    {
+        desc:"How much is a teaspoon in gallons?",
+        expr:"1 teaspoon as gallons"
+    },
+    {
+        desc:"How far is 20,000 leagues, anyway?",
+        expr:"20_000 leagues as miles"
+    },
+    {
+        desc:"How much watter does my office hold?",
+        expr:"8ft * 9ft * 10 ft as gallons"
+    }
+];
+
+var DemoLinks = React.createClass({
+    setExpression: function(i){
+        console.log("setting the expression ", this.props.links[i]);
+        this.props.setExpression(this.props.links[i].expr);
+    },
+    render: function() {
+        var links = this.props.links.map(function(link,i){
+            return <li key={link.expr}>
+                <i>{link.desc}</i><br/>
+                <a onClick={this.setExpression.bind(this,i)}>{link.expr}</a>
+            </li>;
+        },this);
+        return <ul id='ideas1'>{links}</ul>;
+    }
+});
 
 var MainView = React.createClass({
     componentDidMount: function() {
@@ -27,6 +65,7 @@ var MainView = React.createClass({
     },
     getInitialState: function() {
         return {
+            expression:'4*5ft',
             raw:null,
             result:null,
             error:null,
@@ -73,6 +112,9 @@ var MainView = React.createClass({
     },
     renderResult: function() {
         if(this.state.result == null) return "";
+        if(this.state.result.type == 'numeric') {
+            return ""+this.state.result.getNumber().toFixed(4);
+        }
         return this.state.result.toCode();
     },
     renderError: function() {
@@ -100,6 +142,13 @@ var MainView = React.createClass({
         });
         this.setState({wrongPanelVisible:false});
     },
+    changeExpression: function(e) {
+        var expr = this.refs.input.getDOMNode().value;
+        this.setState({expression:expr});
+    },
+    setExpression: function(expr) {
+        this.setState({expression:expr});
+    },
     keyDown: function(e) {
         if(e.key == 'Enter') {
             this.evaluateExpression();
@@ -121,46 +170,66 @@ var MainView = React.createClass({
         if(this.state.error != null || this.state.result != null) {
             queryClss = "";
         }
-        return <div id='center'>
-            <div id='editor'>
-                <input ref='input' type="text" defaultValue="8ft * 9ft * 10ft as gal"
-                    onKeyDown={this.keyDown}/>
-                <button onClick={this.evaluateExpression}>Go</button>
+        return <div className="hbox">
+            <DemoLinks links={demoLinks} setExpression={this.setExpression}/>
+            <div id="main">
+                <div id='center'>
+                    <div id='editor'>
+                        <input
+                                ref='input'
+                                type="text"
+                                value={this.state.expression}
+                                defaultValue="8ft * 9ft * 10ft as gal"
+                                onChange={this.changeExpression}
+                                onKeyDown={this.keyDown}/>
+                        <button onClick={this.evaluateExpression}>Go</button>
+                    </div>
+                    <div id="result">
+                        <div id="pretty">
+                            {this.renderCode()}
+                        </div>
+                        <div id="answer">
+                            {this.renderResult()}
+                        </div>
+                        <div id="error">
+                            {this.renderError()}
+                        </div>
+                        <div id="query" className={queryClss}>
+                            Is this answer
+                            <button onClick={this.rightAnswer}>right</button>
+                            or
+                            <button onClick={this.wrongAnswer}>wrong</button>
+                            ?
+                        </div>
+                        <div id="slideout-wrong" className={wrongClss}>
+                            What is the answer you were expecting?<br/>
+                            <textarea ref='wrongcorrection' id="correction" rows='4'></textarea><br/>
+                            Optional: give us your email to be notified when it's fixed.<br/>
+                            <input ref='wrongemail' type="email" placeholder='you@email.com'/><br/>
+                            <button onClick={this.sendWrong}>send</button>
+                        </div>
+                        <div id="slideout-right" className={rightClss}>
+                            Awesome!<br/>
+                            Can we have your email to let you know about updates?<br/>
+                            <input ref='rightemail' type="email" placeholder='you@email.com'/><br/>
+                            <button onClick={this.sendRight}>send</button>
+                            <br/>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <div id="result">
-                <div id="pretty">
-                    {this.renderCode()}
-                </div>
-                <div id="answer">
-                    {this.renderResult()}
-                </div>
-                <div id="error">
-                    {this.renderError()}
-                </div>
-                <div id="query" className={queryClss}>
-                    Is this answer
-                    <button onClick={this.rightAnswer}>right</button>
-                    or
-                    <button onClick={this.wrongAnswer}>wrong</button>
-                    ?
-                </div>
-                <div id="slideout-wrong" className={wrongClss}>
-                    What is the answer you were expecting?<br/>
-                    <textarea ref='wrongcorrection' id="correction" rows='4'></textarea><br/>
-                    Optional: give us your email to be notified when it's fixed.<br/>
-                    <input ref='wrongemail' type="email" placeholder='you@email.com'/><br/>
-                    <button onClick={this.sendWrong}>send</button>
-                </div>
-                <div id="slideout-right" className={rightClss}>
-                    Awesome!<br/>
-                    Can we have your email to let you know about updates?<br/>
-                    <input ref='rightemail' type="email" placeholder='you@email.com'/><br/>
-                    <button onClick={this.sendRight}>send</button><br/>
-                </div>
-            </div>
-        </div>
+            <dl id="ideas2">
+            </dl>
+        </div>;
     }
 });
 
 postEvent({state:'render-start'});
-React.render(<MainView/>,document.getElementById("main"));
+React.render(<MainView/>,document.getElementById("content"));
+/*
+ <dl id="ideas1">
+ </dl>
+ <dl id="ideas2">
+ </dl>
+
+ */

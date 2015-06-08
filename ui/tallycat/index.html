@@ -73,7 +73,6 @@ server needs a logevent post function which simply appends a payload (max of 100
             padding-left: 1em;
             -webkit-align-self: center;
         }
-
         #content {
             margin-top: 2em;
         }
@@ -144,15 +143,22 @@ server needs a logevent post function which simply appends a payload (max of 100
             display: none;
         }
 
-        dl dt {
-            font-family: sans-serif;
+        #ideas1 {
+            padding-top: 0;
+            margin-top: 0.5em;
         }
-
-        dl dd {
+        #ideas1 li {
+            list-style: none;
             font-family: serif;
-            padding-bottom: 0.5em;
-            color: blue;
+            padding-bottom: 1em;
+            padding-left: 1em;
+        }
+        #ideas1 li a {
+            padding-left: 1em;
             text-decoration: underline;
+            color: #1c8078;
+            font-weight: bold;
+            font-family: sans-serif;
         }
 
     </style>
@@ -163,28 +169,7 @@ server needs a logevent post function which simply appends a payload (max of 100
     <div id="logo-slogan">Tallycat: sums, conversions, and reckons; free of charge</div>
 </div>
 
-<div class="hbox" id="content">
-    <dl id="ideas1">
-        <dt>What's 99 to the 99th power?</dt>
-        <dd>99^99</dd>
-
-        <dt>How many shots in a bottle of tequila?</dt>
-        <dd>750ml / 2floz</dd>
-
-        <dt>How much is a teaspoon in gallons?</dt>
-        <dd>1 teaspoon as gallons</dd>
-
-        <dt>How far is 20,000 Leagues anyway?</dt>
-        <dd>20_000 leagues as miles</dd>
-
-        <dt>How much water does my office hold?</dt>
-        <dd>8ft * 9ft * 10ft as gallons</dd>
-    </dl>
-    <div id="main"></div>
-    <dl id="ideas2">
-    </dl>
-</div>
-
+<div id="content"></div>
 <script src="bundle.js"></script>
 </body>
 </html>
