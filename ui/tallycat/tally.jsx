@@ -220,6 +220,10 @@ var MainView = React.createClass({
                         <button onClick={this.share}>Share</button>
                     </div>
                     <div id="result">
+                        <div id='sharePanel' className={shareClss}>
+                            <input ref='shareField' type='text' value={this.state.sharingUrl} onFocus={this.selectShare} className='grow'/>
+                            <button onClick={this.closeSharePanel}>close</button>
+                        </div>
                         <div id="pretty">
                             {this.renderCode()}
                         </div>
@@ -228,10 +232,6 @@ var MainView = React.createClass({
                         </div>
                         <div id="error">
                             {this.renderError()}
-                        </div>
-                        <div id='sharePanel' className={shareClss}>
-                            <input ref='shareField' type='text' value={this.state.sharingUrl} onFocus={this.selectShare} className='grow'/>
-                            <button onClick={this.closeSharePanel}>close</button>
                         </div>
                         <div id="query" className={queryClss}>
                             Is this answer
