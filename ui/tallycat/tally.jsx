@@ -59,9 +59,20 @@ var DemoLinks = React.createClass({
     }
 });
 
+function getParameterByName(name) {
+    name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
+    var regex = new RegExp("[\\?&]" + name + "=([^&#]*)"),
+        results = regex.exec(location.search);
+    return results === null ? "" : decodeURIComponent(results[1].replace(/\+/g, " "));
+}
+
 var MainView = React.createClass({
     componentDidMount: function() {
         postEvent({state:'render-end'});
+        if(document.location.search != "") {
+            var ib = getParameterByName("ib");
+            this.setState({expression:ib});
+        }
     },
     getInitialState: function() {
         return {
@@ -70,7 +81,9 @@ var MainView = React.createClass({
             result:null,
             error:null,
             rightPanelVisible:false,
-            wrongPanelVisible:false
+            wrongPanelVisible:false,
+            sharingUrl:'foo',
+            sharePanelOpen:false
         }
     },
     evaluateExpression: function() {
@@ -136,7 +149,8 @@ var MainView = React.createClass({
         this.setState({rightPanelVisible:false});
     },
     sendWrong: function() {
-        postEvent({state:'wrong-answer',
+        postEvent({
+            state:'wrong-answer',
             email:""+this.refs.wrongemail.getDOMNode().value,
             correction:""+this.refs.wrongcorrection.getDOMNode().value
         });
@@ -156,6 +170,22 @@ var MainView = React.createClass({
             e.stopPropagation();
         }
     },
+    share: function() {
+        var parser = document.createElement('a');
+        parser.href = "./"+encodeURI("?ib="+this.state.expression);
+        var url = parser.protocol+'//'+parser.host+parser.pathname+parser.search;
+        console.log("sharing " + url);
+        this.setState({
+            sharePanelOpen:true,
+            sharingUrl:url
+        });
+    },
+    selectShare: function() {
+        this.refs.shareField.getDOMNode().select();
+    },
+    closeSharePanel: function() {
+        this.setState({sharePanelOpen:false});
+    },
     render: function() {
         console.log("rendering");
         var wrongClss = "hidden";
@@ -170,6 +200,10 @@ var MainView = React.createClass({
         if(this.state.error != null || this.state.result != null) {
             queryClss = "";
         }
+        var shareClss = "hbox hidden";
+        if(this.state.sharePanelOpen === true) {
+            shareClss = "hbox ";
+        }
         return <div className="hbox">
             <DemoLinks links={demoLinks} setExpression={this.setExpression}/>
             <div id="main">
@@ -183,6 +217,7 @@ var MainView = React.createClass({
                                 onChange={this.changeExpression}
                                 onKeyDown={this.keyDown}/>
                         <button onClick={this.evaluateExpression}>Go</button>
+                        <button onClick={this.share}>Share</button>
                     </div>
                     <div id="result">
                         <div id="pretty">
@@ -193,6 +228,10 @@ var MainView = React.createClass({
                         </div>
                         <div id="error">
                             {this.renderError()}
+                        </div>
+                        <div id='sharePanel' className={shareClss}>
+                            <input ref='shareField' type='text' value={this.state.sharingUrl} onFocus={this.selectShare} className='grow'/>
+                            <button onClick={this.closeSharePanel}>close</button>
                         </div>
                         <div id="query" className={queryClss}>
                             Is this answer
