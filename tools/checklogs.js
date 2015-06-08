@@ -10,7 +10,7 @@ stream
     })
     .pipe(ndjson.parse())
     .on('data', function (row) {
-        //console.log("row = ",row.state,row);
+        console.log("row = ",row.state,row);
         if(row.state == 'right-answer') console.log(row.email);
         if(row.state == 'wrong-answer') console.log(row.email);
     })

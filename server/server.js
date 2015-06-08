@@ -96,24 +96,6 @@ function logEvent(evt) {
     logfile.write(JSON.stringify(evt)+'\n','utf8');
 }
 
-
-/*
- //Record every load to log function.
- Save log with that Charlie log json stream .
- //Add post function to save arbitrary event objects.
- //Save on load finished.
- //Hit eval.
- //Eval done. Fail or succeed.
- //Answer to manual reporting.
-
- Make command line app to calc total events and hits and evals. And emails.
-
- //Make sure log appends.
- //Use other logging stream instead?
- //Auto timestamp all events.
- //Add unique number for the page load to correlate.
- */
-
 var server = app.listen(30045,function() {
     console.log("listening on ", server.address().address);
     console.log("listening on ", server.address().port);
