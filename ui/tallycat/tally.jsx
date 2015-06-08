@@ -126,7 +126,7 @@ var MainView = React.createClass({
     renderResult: function() {
         if(this.state.result == null) return "";
         if(this.state.result.type == 'numeric') {
-            return ""+this.state.result.getNumber().toFixed(4);
+            return ""+this.state.result.getNumber().toFixed(4) + " " + this.state.result.getUnit().toString();
         }
         return this.state.result.toCode();
     },
