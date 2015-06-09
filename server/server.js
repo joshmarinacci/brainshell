@@ -8,6 +8,7 @@ var ServiceManager = require('./ServiceManager');
 var DB = require('./database');
 DB.initDB();
 
+var compression   = require('compression');
 var express = require('express');
 var cors = require('cors');
 var bodyParser = require('body-parser');
@@ -17,6 +18,7 @@ var Writable = require('stream').Writable;
 var querystring = require('querystring');
 
 var app = express();
+app.use(compression());
 app.use(cors());
 app.use(bodyParser.json());
 app.use(express.static('ui'));
