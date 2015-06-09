@@ -439,3 +439,14 @@ exports.getCompoundDenominators = function(U) {
         return su._dim < 0;
     });
 }
+
+exports.canSimplifyCompound = function(U) {
+    if(!U.subunits) return false;
+    if(U.subunits.length == 1) return true;
+    return false;
+}
+
+exports.simplifyCompound = function(U) {
+    var uu = U.subunits[0];
+    return exports.Unit(uu._name,uu._dim);
+}

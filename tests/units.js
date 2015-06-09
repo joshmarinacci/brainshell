@@ -40,6 +40,7 @@ ct('div', '1 km / 100 m',10,['none',0],[]);
 ct('div', '1 m / 100 km',1/(100*1000),['none',0],[]);
 ct('div', '1 km / 100 m/gal',10,['gallon',1],[]);
 ct('div', '1 km / 100 m/s',10,['second',1],[]);
+ct('div', '24000 km / 100 m/s as hours',(24000*10)/(60*60),['hour',1],[]);
 //5mi / 30min * 120s  = (5/30)*120 mi/min or mi * min^-1 or in seconds?
 
 function printSimple(name,dim) {

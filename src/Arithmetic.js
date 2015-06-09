@@ -107,6 +107,10 @@ var Arithmetic = {
             if(au.type == 'compound' && u.type =='compound') {
                 return compoundToCompoundConversion(a,u);
             }
+            if(Units.canSimplifyCompound(au)) {
+                au = Units.simplifyCompound(au);
+            }
+
             var startu = u;
             if(au.type == u.type) {
                 var av = a.getNumber();
@@ -155,6 +159,7 @@ var Arithmetic = {
             }
 
             console.log("ERROR! CAN'T CONVERT " + a.getUnit().toString() + " to " + u);
+            throw new Error("ERROR! CAN'T CONVERT " + a.getUnit().toString() + " to " + u);
         }
     }
 };
