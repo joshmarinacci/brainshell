@@ -289,6 +289,8 @@ test("volume units", function(t) {
     compareUnit(t,'4 sq ft', 4,'feet',2);
     compareUnit(t,'4 cubic feet', 4,'feet',3);
     compareUnit(t,'4 ft^3', 4,'feet',3);
+    compareUnit(t,'8 fluidounce as pints',1/2,'pints');
+    compareUnit(t,'32 floz as pints',2,'pints');
     //compareUnit(t,'4 cuft as gal', 29.9221,'gal',1);
     t.end();
 });

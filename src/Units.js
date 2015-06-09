@@ -103,6 +103,7 @@ var units = [
     new UnitBase({ name: 'pint',    type: 'volume',  base: 'gallon',abbr: 'pt',  scale: 1 / 8,     dim: 1 }),
     new UnitBase({ name: 'cup',     type: 'volume',  base: 'gallon', abbr: 'cup', scale: 1 / 16,   dim: 1 }),
     new UnitBase({ name: 'gill',    type: 'volume',  base: 'pint',   abbr: 'gl',  scale: 1 / 4,    dim: 1 }),
+    new UnitBase({ name: 'fluidounce',type: 'volume',base: 'pint',  abbr: 'floz',scale: 1 / 16,   dim: 1 }),
 
     new UnitBase({ name: 'teaspoon', type: 'volume', base: 'cup',   abbr: 'tsp', scale: 1 / 48,   dim: 1 }),
     new UnitBase({ name: 'tablespoon', type: 'volume', base: 'cup', abbr: 'tbsp', scale: 1 / 16,  dim: 1 }),
