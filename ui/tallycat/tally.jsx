@@ -41,6 +41,10 @@ var demoLinks = [
     {
         desc:"How much watter does my office hold?",
         expr:"8ft * 9ft * 10 ft as gallons"
+    },
+    {
+        desc:"At faster than a speeding bullet, how fast can Superman fly around the world?",
+        expr:"24901 miles / 460 m/s as hours"
     }
 ];
 
