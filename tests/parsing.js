@@ -187,6 +187,8 @@ test("mass units", function(t) {
     compareUnit(t,'50 * 2g',100,'grams');
     compareUnit(t,"5lbs + 4oz",84,"ounces");
     compareUnit(t,"(5lbs + 4g) as kilograms",2.26796,"kilograms");
+    compareUnit(t,"5 stone as pounds",5*14,"pounds");
+    compareUnit(t,"6 st as pounds",6*14,"pounds");
     t.end();
 });
 

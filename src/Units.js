@@ -110,6 +110,7 @@ var units = [
     new UnitBase({ name:'grain', type:'mass', base:'pound', abbr:'gr', scale: 1/7000,  dim: 1 }),
     new UnitBase({ name:'ounce', type:'mass', base:'pound', abbr:'oz', scale: 1/16,    dim:1 }),
     new UnitBase({ name:'ton',   type:'mass', base:'pound',            scale: 2000,    dim:1 }),
+    new UnitBase({ name:'stone', type:'mass', base:'pound', abbr:'st', scale: 14,      dim:1 }),
     //area
     new UnitBase({ name:'acre',  type:'area', base:'acre',  abbr:'ac', scale: 1,       dim: 1 }),
 
