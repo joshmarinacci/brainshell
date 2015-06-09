@@ -55,6 +55,7 @@ var names = {
     'yards': 'yard',
     'miles': 'mile',
     'leagues':'league',
+    'furlongs':'furlong',
 
     'teaspoons': 'teaspoon',
     'tablespoons': 'tablespoon',
@@ -75,8 +76,8 @@ var names = {
     'hr':'hour',
     'hours':'hour',
     'days':'day',
-    'd':'day'
-
+    'd':'day',
+    'fortnights':'fortnight'
 };
 
 names['cubicfoot'] = 'cubicfoot';
@@ -87,20 +88,21 @@ names['sqft'] = 'squarefoot';
 
 //start with the non-metric units, since they aren't uniform
 var units = [
-    new UnitBase({ name: 'none', type: 'none',   base: 'none',   abbr: '',   scale: 1.0,  dim: 0 }),
+    new UnitBase({ name: 'none',    type: 'none',   base: 'none',   abbr: '',   scale: 1.0,     dim: 0 }),
     //length
-    new UnitBase({ name: 'foot', type: 'length', base: 'meter',  abbr: 'ft', scale: 0.3048, dim: 1 }),
-    new UnitBase({ name: 'inch', type: 'length', base: 'meter',  abbr: 'in', scale: 0.0254, dim: 1 }),
+    new UnitBase({ name: 'foot',    type: 'length', base: 'meter',  abbr: 'ft', scale: 0.3048,  dim: 1 }),
+    new UnitBase({ name: 'inch',    type: 'length', base: 'meter',  abbr: 'in', scale: 0.0254,  dim: 1 }),
 
-    new UnitBase({ name: 'yard', type: 'length', base: 'meter',  abbr: 'yd', scale: 0.9144, dim: 1 }),
-    new UnitBase({ name: 'mile', type: 'length', base: 'meter',  abbr: 'mi', scale: 1609.34,  dim: 1 }),
-    new UnitBase({ name: 'league',  type: 'length', base: 'mile',            scale: 3,      dim: 1 }),
+    new UnitBase({ name: 'yard',    type: 'length', base: 'meter',  abbr: 'yd', scale: 0.9144,  dim: 1 }),
+    new UnitBase({ name: 'mile',    type: 'length', base: 'meter',  abbr: 'mi', scale: 1609.34, dim: 1 }),
+    new UnitBase({ name: 'league',  type: 'length', base: 'mile',               scale: 3,       dim: 1 }),
+    new UnitBase({ name: 'furlong', type: 'length', base: 'mile',               scale: 1/8,     dim: 1 }),
     /// volume
-    new UnitBase({ name: 'gallon', type: 'volume',  base: 'litre', abbr: 'gal', scale: 3.7854118, dim: 1 }),
-    new UnitBase({ name: 'quart',  type:'volume',   base:'gallon', abbr: 'qt',  scale: 1 / 4,     dim: 1 }),
-    new UnitBase({ name: 'pint',   type: 'volume',  base: 'gallon',abbr: 'pt',  scale: 1 / 8,     dim: 1 }),
-    new UnitBase({ name: 'cup',    type: 'volume',  base: 'gallon', abbr: 'cup', scale: 1 / 16,   dim: 1 }),
-    new UnitBase({ name: 'gill',   type: 'volume',  base: 'pint',   abbr: 'gl',  scale: 1 / 4,    dim: 1 }),
+    new UnitBase({ name: 'gallon',  type: 'volume',  base: 'litre', abbr: 'gal', scale: 3.7854118, dim: 1 }),
+    new UnitBase({ name: 'quart',   type:'volume',   base:'gallon', abbr: 'qt',  scale: 1 / 4,     dim: 1 }),
+    new UnitBase({ name: 'pint',    type: 'volume',  base: 'gallon',abbr: 'pt',  scale: 1 / 8,     dim: 1 }),
+    new UnitBase({ name: 'cup',     type: 'volume',  base: 'gallon', abbr: 'cup', scale: 1 / 16,   dim: 1 }),
+    new UnitBase({ name: 'gill',    type: 'volume',  base: 'pint',   abbr: 'gl',  scale: 1 / 4,    dim: 1 }),
 
     new UnitBase({ name: 'teaspoon', type: 'volume', base: 'cup',   abbr: 'tsp', scale: 1 / 48,   dim: 1 }),
     new UnitBase({ name: 'tablespoon', type: 'volume', base: 'cup', abbr: 'tbsp', scale: 1 / 16,  dim: 1 }),
@@ -166,38 +168,11 @@ var units = [
 
 
     //time durations
-    new UnitBase({
-        name:'second',
-        abbr:'s',
-        type:'duration',
-        base:'second',
-        scale:1,
-        dim:1
-    }),
-    new UnitBase({
-        name:'minute',
-        abbr:'min',
-        type:'duration',
-        base:'second',
-        scale:60,
-        dim:1
-    }),
-    new UnitBase({
-        name:'hour',
-        abbr:'h',
-        type:'duration',
-        base:'second',
-        scale:60*60,
-        dim:1
-    }),
-    new UnitBase({
-        name:'day',
-        abbr:'d',
-        type:'duration',
-        base:'second',
-        scale:60*60*24,
-        dim:1
-    }),
+    new UnitBase({   name:'second',  abbr:'s',   type:'duration',   base:'second',    scale:1,     dim:1 }),
+    new UnitBase({   name:'minute',  abbr:'min', type:'duration',   base:'second',    scale:60,    dim:1 }),
+    new UnitBase({   name:'fortnight',           type:'duration',   base:'day',       scale:14,    dim:1 }),
+    new UnitBase({   name:'hour',    abbr:'h',   type:'duration',   base:'second',    scale:60*60, dim:1 }),
+    new UnitBase({   name:'day',     abbr:'d',   type:'duration',   base:'second',    scale:60*60*24,  dim:1 }),
 
 
 

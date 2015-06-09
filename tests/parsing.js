@@ -170,6 +170,7 @@ test("length units", function(t) {
     compareUnit(t,'4m + 12ft as m',4 + 3.6576,'m');
     compareUnit(t,'4mm + 12ft as mm',4 + (3.6576/0.001),'mm');
     compareUnit(t,'40mm + 40cm + 4m',4.440,'m');
+    compareUnit(t,'40 furlongs as mi',40/8,'miles');
     t.end();
 });
 
@@ -324,6 +325,8 @@ test("duration units", function(t) {
     compareUnit(t,'100000s as days',100000/(60*60*24),'days');
     compareUnit(t,'3hr + 30min as seconds',3.5*60*60,'seconds');
     compareUnit(t,'3hr + 30min as minutes',3*60+30,'minutes');
+    compareUnit(t,'3 fortnight as days',3*14,'days');
+    compareUnit(t,'3 fortnights as days',3*14,'days');
     //compareUnit(t,"date('august 31st, 1975')", moment([1975,8-1,31]),'date','date');
     //compareUnit(t,"date(year:1975)",moment('1975','YYYY'),'date','date');
     //compareUnit(t,"date('1975-08-31',format:'YYYY MM DD')",moment([1975,8-1,31]),'date','date');
