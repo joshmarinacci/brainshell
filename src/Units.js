@@ -379,6 +379,9 @@ exports.equal = function (a, b) {
     if (a._dim == 0 && b._dim == 0) return true;
     if (a._dim == 0 && b.getName()=='none') return true;
 
+    if(exports.isCompound(a) && a.subunits.length == 0 && b.getName() == 'none') {
+        return true;
+    }
     if (a._name == b._name) {
         if (a._dim == b._dim) {
             return true;

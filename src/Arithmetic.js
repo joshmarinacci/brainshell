@@ -79,24 +79,6 @@ var Arithmetic = {
             if(A.hasUnit() && !B.hasUnit())  return Literals.makeNumber(A._value/B._value,A.getUnit());
             //if just B has a unit
             if(!A.hasUnit() && B.hasUnit())  return Literals.makeNumber(A._value/B._value,B.getUnit());
-            if(A.getUnit().type == 'compound' || B.getUnit().type == 'compound') {
-                return DivideToCompound(A,B);
-            }
-
-            if(Units.sameName(A.getUnit(),B.getUnit())) {
-                var dim = A.getUnit().getDimension()-B.getUnit().getDimension();
-                var name = B.getUnit().getName();
-                var nu = Units.Unit(name,dim);
-                return Literals.makeNumber(A._value/B._value,nu);
-            }
-
-
-            if(Units.sameType(A.getUnit(),B.getUnit())) {
-                var bv = B._value;
-                var na = Arithmetic.ConvertUnit.fun(A,B.getUnit());
-                var nu = Units.Unit(B.getUnit().getName(),A.getUnit().getDimension()-B.getUnit().getDimension());
-                return Literals.makeNumber(na._value/bv, nu);
-            }
             return DivideToCompound(A,B);
         }
     },
@@ -226,26 +208,49 @@ function reduceUnits(subunits,type) {
 
     //multiple lengths
     var val = 1;
-    var name = lens[0]._name;
-    //console.log("have to reduce",type, 'to',name);
-    var dim = 0;
+    var b = lens.shift();
+    var fdim = b._dim;
+    //console.log("have to reduce",type, 'to',b._name,'scale=',b.scale);
     lens.forEach(function(u){
-        dim += u._dim;
-        if(u._name != name) {
-            //console.log("TYPE MISMATCH", u._name,'to',name,u.base);
+        fdim += u._dim;
+        if(u._name != b._name) {
+            //console.log("TYPE MISMATCH", u + ' to ' + b, ' base =',u.base);
             //reduce to the base
             var us = 1;
-            while(u.getName() != name) {
+            while(u.getName() != b.getName()) {
+                //console.log(u +" to " + b);
                 us /= u.scale;
                 u = Units.Unit(u.base,u.getDimension());
+                if(u.getName() == u.base) {
+                    //console.log("hit the end");
+                    break;
+                }
             }
-            //console.log("scale = ", us);
             val *= us;
         }
+        //if still not reduced then switch direction
+        if(u._name != b._name) {
+            var a=b;
+            b=u;
+            u=a;
+            //console.log("still not matched. switch direction");
+            var us = 1;
+            while(u.getName() != b.getName()) {
+                //console.log(u +" to " + b);
+                us /= u.scale;
+                u = Units.Unit(u.base,u.getDimension());
+                if(u.getName() == u.base) {
+                    //console.log("hit the end");
+                    break;
+                }
+            }
+            val /= us;
+        }
+
+        //console.log("final = " + u + " " + b, fdim);
     });
-    //console.log("final dim = ", dim, lens[0]._name);
-    //console.log("final val = ", val);
-    return [val,Units.Unit(lens[0]._name,dim)];
+    //console.log("final unit= name = " + b._name + " dim = " + fdim + " val = "+ val);
+    return [val,Units.Unit(b._name,fdim)];
 }
 
 function produceFinalCompound(fval, finalunits) {
