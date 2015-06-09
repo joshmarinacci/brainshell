@@ -27,10 +27,33 @@ ct('div','(60mi / 6hr) * 1mi',10,['mile',2],['hour',-1]);
 
 ct('div','(60mi / 6hr) / 1mi',10,[],['hour',-1]);
 ct('div','5mi / 1 min * 60 s',5,['mile',1],[]);
+
+ct('div','1000 m / 100 m/s',
+    10,['second',1],[]);
+//ct('div','1000 km / 100 m/s',
+//    10*1000,['second',1],[]);
 //ct('div','5mi / 1 hr * 60 min',5,['mile',1],[]);
 
 //5mi / 30min * 120s  = (5/30)*120 mi/min or mi * min^-1 or in seconds?
 
+function printSimple(name,dim) {
+    if(dim == 0) return "none";
+    if(dim == 1) return name;
+    return name + '^' + dim;
+}
+function prettyPrintUnit(u) {
+    if(Units.isCompound(u)) {
+        return "compound " + u.subunits.map(function(su) {
+                if(su._dim < 0) {
+                    return '/'+printSimple(su._name, -su._dim);
+                } else {
+                    return printSimple(su._name, su._dim);
+                }
+        }).join(" ");
+    } else {
+        return printSimple(u._name, u._dim);
+    }
+}
 
 function ct(desc, str, val, numer, denom) {
     var epsilon = 0.01;

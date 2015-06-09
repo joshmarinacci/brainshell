@@ -7,6 +7,7 @@ var ometajs = require('ometa-js');
 var moment = require('moment');
 var Parser = require('../../parser_compiled.js').Parser;
 var utils = require('../../src/utils');
+var Units = require('../../src/Units');
 
 var SESSION_ID = "session_"+Math.floor(Math.random()*100000000);
 
@@ -64,6 +65,26 @@ function getParameterByName(name) {
     var regex = new RegExp("[\\?&]" + name + "=([^&#]*)"),
         results = regex.exec(location.search);
     return results === null ? "" : decodeURIComponent(results[1].replace(/\+/g, " "));
+}
+
+function printSimple(name,dim) {
+    if(dim == 0) return "none";
+    if(dim == 1) return name;
+    return name + '^' + dim;
+}
+function prettyPrintUnit(u) {
+    if(!u) return "";
+    if(Units.isCompound(u)) {
+        return "compound " + u.subunits.map(function(su) {
+                if(su._dim < 0) {
+                    return '/'+printSimple(su._name, -su._dim);
+                } else {
+                    return printSimple(su._name, su._dim);
+                }
+            }).join(" ");
+    } else {
+        return printSimple(u._name, u._dim);
+    }
 }
 
 var MainView = React.createClass({
@@ -126,7 +147,9 @@ var MainView = React.createClass({
     renderResult: function() {
         if(this.state.result == null) return "";
         if(this.state.result.type == 'numeric') {
-            return ""+this.state.result.getNumber().toFixed(4) + " " + this.state.result.getUnit().toString();
+            return ""+
+                this.state.result.getNumber().toFixed(4) + " " +
+                prettyPrintUnit(this.state.result.getUnit());
         }
         return this.state.result.toCode();
     },
