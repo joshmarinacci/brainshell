@@ -1,4 +1,4 @@
-var ometajs = require('ometa-js');
+var ometajs = require('@joshmarinacci/ometa-js');
 var fs = require('fs');
 //console.log(ometajs);
 
@@ -39,5 +39,5 @@ if(!process.argv[2]) {
 //console.log('compiling',process.argv[2]);
 var text = fs.readFileSync(process.argv[2]).toString();
 var out = translateCode(text);
-console.log("var OMeta = require('ometa-js').core;");
+console.log("var OMeta = require('@joshmarinacci/ometa-js').core;");
 console.log(out);
