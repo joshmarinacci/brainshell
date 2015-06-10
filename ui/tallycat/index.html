@@ -30,12 +30,20 @@ server needs a logevent post function which simply appends a payload (max of 100
 -->
 <html>
 <head>
+    <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
     <style type="text/css">
         html, body {
             padding: 0;
             margin: 0;
             font-family: sans-serif;
         }
+
+        .hbox {
+            display: flex;
+            border: 1px solid black;
+        }
+        #ideas1 { order: 10;  }
+        #main { order: 1; }
 
         .hbox {
             display: flex;
@@ -53,11 +61,12 @@ server needs a logevent post function which simply appends a payload (max of 100
         #logo {
             border: 1px solid black;
             background-color: #fff2bd;
+            font-size: 30pt;
         }
 
         #logo-icon {
             height: 2em;
-            font-size: 45pt;
+            font-size: 100%;
             color: #fff2bd;
             padding-left: 1em;
         }
@@ -67,14 +76,14 @@ server needs a logevent post function which simply appends a payload (max of 100
 
         #logo-slogan {
             flex: 1;
-            font-size: 30pt;
+            font-size: 100%;
             text-align: center;
             align-self: center;
             padding-left: 1em;
             -webkit-align-self: center;
         }
         #content {
-            margin-top: 2em;
+            margin-top: 0em;
         }
 
         #ideas1 {
@@ -173,6 +182,29 @@ server needs a logevent post function which simply appends a payload (max of 100
             font-size: 150%;
         }
 
+        @media (max-width: 1024px) {
+            .hbox {
+                flex-direction: column;
+            }
+            #logo {
+                font-size: 20pt;
+            }
+            #editor {
+                padding: 0.25em 1em;
+            }
+            #editor input, #editor button {
+                font-size: 170%;
+            }
+        }
+        @media (max-width: 480px) {
+            #logo {
+                flex-direction: row;
+                font-size: 10pt;
+            }
+            #editor input, #editor button {
+                font-size: 100%;
+            }
+        }
     </style>
 </head>
 <body>
