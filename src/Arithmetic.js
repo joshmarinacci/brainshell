@@ -326,6 +326,7 @@ function DivideToCompound(A,B) {
     var finalunits = [];
     finalunits.push(reduceUnits(subunits,'length'));
     finalunits.push(reduceUnits(subunits,'duration'));
+    finalunits.push(reduceUnits(subunits,'volume'));
     return produceFinalCompound(fval, finalunits);
 }
 function findType(arr, type) {

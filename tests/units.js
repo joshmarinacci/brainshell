@@ -1,6 +1,5 @@
-var ometajs = require('ometa-js');
 var Parser = require('../parser_compiled.js').Parser;
-var Units = require('../src/Units')
+var Units = require('../src/Units');
 var test = require('tape');
 var Context = require('../src/Context');
 var ctx = Context.global();
@@ -42,6 +41,8 @@ ct('div', '1 km / 100 m/gal',10,['gallon',1],[]);
 ct('div', '1 km / 100 m/s',10,['second',1],[]);
 ct('div', '24000 km / 100 m/s as hours',(24000*10)/(60*60),['hour',1],[]);
 //5mi / 30min * 120s  = (5/30)*120 mi/min or mi * min^-1 or in seconds?
+ct('div', '750 ml / 2 floz',12.68,['none',1],[]);
+ct('div', '1000 ml / 1 liter',1,['none',1],[]);
 
 function printSimple(name,dim) {
     if(dim == 0) return "none";
