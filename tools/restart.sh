@@ -6,6 +6,7 @@
 git pull
 npm install
 npm run build-parser
+npm run build-react
 npm run build-tallyui
 
 forever stop tallycat

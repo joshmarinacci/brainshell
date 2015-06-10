@@ -4,7 +4,6 @@ var Arithmetic = require('../src/Arithmetic');
 var Expressions = require('../src/Expressions');
 var Symbols = require('../src/Symbols');
 var Context = require('../src/Context');
-var ometajs = require('@joshmarinacci/ometa-js');
 var moment = require('moment');
 var Parser = require('../parser_compiled.js').Parser;
 var DocsStore = require('./DocsStore');

@@ -12,7 +12,8 @@
     "pretest": "node tools/compile.js src/parser.ometajs > parser_compiled.js",
     "server": "node server/server.js",
     "build-ui": "browserify --transform reactify ui/main.jsx node_modules/appy-style/react/CustomList.jsx -o ui/bundle.js --debug --verbose ",
-    "build-tallyui": "browserify --transform reactify ui/tallycat/tally.jsx -o ui/tallycat/bundle.js",
+    "build-react": "browserify -r react -o ui/tallycat/react_bundle.js",
+    "build-tallyui": "browserify --transform reactify ui/tallycat/tally.jsx --exclude react --ignore colors/safe -o ui/tallycat/bundle.js",
     "watch-ui": "watchify --transform reactify ui/main.jsx node_modules/appy-style/react/CustomList.jsx -o ui/bundle.js --debug --verbose "
   },
   "repository": {

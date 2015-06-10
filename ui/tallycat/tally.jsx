@@ -3,7 +3,6 @@ var Context = require('../../src/Context');
 var ctx = Context.global();
 var Symbols = require('../../src/Symbols');
 var Q = require('q');
-var ometajs = require('@joshmarinacci/ometa-js');
 var moment = require('moment');
 var Parser = require('../../parser_compiled.js').Parser;
 var utils = require('../../src/utils');

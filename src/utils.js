@@ -3,9 +3,9 @@
  */
 
 var Q = require('q');
-var WebSocket = require('nodejs-websocket');
+//var WebSocket = require('nodejs-websocket');
 
-var ServiceManager = require('../server/ServiceManager');
+//var ServiceManager = require('../server/ServiceManager');
 
 exports.asCode = function asCode(obj) {
     if(obj.type == 'symbol') {
@@ -75,7 +75,7 @@ exports.invokeLiveService = function(id, args) {
     return Q.promise(function(resolve, reject, notify) {
         //console.log("invoking a live service", id, args);
         //console.log("qs = ",require('querystring').stringify(args));
-        var url = 'ws:localhost:30046/' + id + '?' + require('querystring').stringify(args);
+        //var url = 'ws:localhost:30046/' + id + '?' + require('querystring').stringify(args);
         console.log("connecting to "+url);
         var conn = WebSocket.connect(url);
         var retobj = {
