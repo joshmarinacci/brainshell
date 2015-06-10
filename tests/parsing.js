@@ -1,7 +1,7 @@
 /**
  * Created by josh on 4/27/15.
  */
-var ometajs = require('ometa-js');
+var ometajs = require('@joshmarinacci/ometa-js');
 var Parser = require('../parser_compiled.js').Parser;
 var Symbols = require('../src/Symbols');
 var Literals = require("../src/Literals");
