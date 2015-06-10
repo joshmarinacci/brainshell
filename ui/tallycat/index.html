@@ -40,6 +40,7 @@ server needs a logevent post function which simply appends a payload (max of 100
 
         .hbox {
             display: flex;
+            display: -webkit-flex;
             border: 1px solid black;
         }
         #ideas1 { order: 10;  }
@@ -76,6 +77,7 @@ server needs a logevent post function which simply appends a payload (max of 100
 
         #logo-slogan {
             flex: 1;
+            -webkit-flex: 1;
             font-size: 100%;
             text-align: center;
             align-self: center;
@@ -185,6 +187,7 @@ server needs a logevent post function which simply appends a payload (max of 100
         @media (max-width: 1024px) {
             .hbox {
                 flex-direction: column;
+                -webkit-flex-direction: column;
             }
             #logo {
                 font-size: 20pt;
@@ -199,6 +202,7 @@ server needs a logevent post function which simply appends a payload (max of 100
         @media (max-width: 480px) {
             #logo {
                 flex-direction: row;
+                -webkit-flex-direction: row;
                 font-size: 10pt;
             }
             #editor input, #editor button {
