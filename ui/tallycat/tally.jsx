@@ -95,7 +95,7 @@ var MainView = React.createClass({
         postEvent({state:'render-end'});
         if(document.location.search != "") {
             var ib = getParameterByName("ib");
-            this.setState({expression:ib});
+            this.setExpression(ib);
         }
     },
     getInitialState: function() {
@@ -111,13 +111,10 @@ var MainView = React.createClass({
         }
     },
     evaluateExpression: function() {
-        var txt = this.refs.input.getDOMNode().value;
-        postEvent({state:'evaluating', data:""+txt});
-        this.setRaw(txt);
-        console.log("evaluating",txt);
+        postEvent({state:'evaluating', data:""+this.state.expression});
         var self = this;
         try {
-            var expr = Parser.matchAll(txt,'start');
+            var expr = Parser.matchAll(this.state.expression,'start');
             expr.value(Context.global()).then(function(v) {
                 self.setResult(v);
             },function(err){
@@ -188,10 +185,16 @@ var MainView = React.createClass({
     },
     setExpression: function(expr) {
         this.setState({expression:expr});
+        var self = this;
+        setTimeout(function() {
+            self.evaluateExpression();
+        },100);
+    },
+    updateExpression: function() {
     },
     keyDown: function(e) {
         if(e.key == 'Enter') {
-            this.evaluateExpression();
+            this.setExpression(this.refs.input.getDOMNode().value);
             e.preventDefault();
             e.stopPropagation();
         }
