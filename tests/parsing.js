@@ -210,7 +210,7 @@ test("area units", function(t) {
     compareUnit(t,'(3ft * 6ft) as sq mi',6.4566e-7,'miles',2);
     compareUnit(t,'1000ac',1000,'acres');
     compareUnit(t,'1000ac as sq m',1000*4046.8564224,'meters',2);
-    //compareUnit(t,'40 acres as sq mi',0.0625,'miles',2);
+    compareUnit(t,'40 acres as sq mi',0.0625,'miles',2);
     //compareUnit(t,'25sqmi + 1000acres',68796559.1808,'meters',2);
     compareUnit(t,'10m^2',10,'meter',2);
 
@@ -220,7 +220,7 @@ test("area units", function(t) {
     compareUnit(t,'4 cu ft as tsp',22980.2,'tsp');
     compareUnit(t,'1m * 2m as squared feet',21.5278,'feet',2);
     compareUnit(t,'1m * 2m as sq ft',21.5278,'feet',2);
-    //compareUnit(t,'1m * 2m as sqft' ,21.5278,'feet',2);
+    compareUnit(t,'1m * 2m as sqft' ,21.5278,'feet',2);
     t.end();
 });
 
@@ -284,14 +284,14 @@ test("volume units", function(t) {
     compareUnit(t,'1ft * 2ft * 3ft as liter', 169.901,'liter');
     compareUnit(t,'1m * 2m * 3m as liter', 6000,'liter');
     compareUnit(t,'4ft * 5ft * 6ft as gallon',897.662,'gallon');
-    //compareUnit(t,'4 cuft', 4,'feet',3);
+    compareUnit(t,'4 cuft', 4,'feet',3);
     compareUnit(t,'4 cu ft', 4,'feet',3);
     compareUnit(t,'4 sq ft', 4,'feet',2);
     compareUnit(t,'4 cubic feet', 4,'feet',3);
     compareUnit(t,'4 ft^3', 4,'feet',3);
     compareUnit(t,'8 fluidounce as pints',1/2,'pints');
     compareUnit(t,'32 floz as pints',2,'pints');
-    //compareUnit(t,'4 cuft as gal', 29.9221,'gal',1);
+    compareUnit(t,'4 cuft as gal', 29.9221,'gal',1);
     t.end();
 });
 
@@ -353,11 +353,11 @@ test("time units", function(t) {
 test("superman",function(t){
     compareCompoundUnit(t,"6 m / (3 m/s)",2,['second',1]);
     compareCompoundUnit(t,"40075000 m / (346 m/s * 2)",40075000/(346*2),['second',1]);
-    //compareCompoundUnit(t,"40075 km / (346 m/s * 2)",40075000/(346*2),['second',1]);
-    //compareCompoundUnit(t,"24902 mi / (346 m/s * 2)",40075000/(346*2),['second',1]);
-    //compareCompoundUnit(t,"24902 mi / (346 m/s * 2) as hours",40075000/(346*2),['second',1]);
+    compareCompoundUnit(t,"40075 km / (346 m/s * 2)",40075000/(346*2),['second',1]);
+    compareCompoundUnit(t,"24902 mi / (346 m/s * 2)",40075000/(346*2),['second',1]);
+    compareUnit(t,"24902 mi / (346 m/s * 2) as hours",(40075000/(346*2))/(60*60),'hours');
     t.end();
-})
+});
 
 /*
 test("variable equations", function(t) {
