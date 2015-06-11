@@ -177,7 +177,7 @@ function CrossConvert(a,u) {
 
     var us = 1;
     while(u.getName() != u.base) {
-        us /= u.scale;
+        us /= Math.pow(u.scale,u.getDimension());
         u = Units.Unit(u.base,u.getDimension());
     }
     if(au.getName() == 'meter' && au.getDimension() == 3 && u.getName() == 'litre') {

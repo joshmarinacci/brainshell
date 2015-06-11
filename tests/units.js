@@ -44,6 +44,8 @@ ct('div', '24000 km / 100 m/s as hours',(24000*10)/(60*60),['hour',1],[]);
 ct('div', '750 ml / 2 floz',12.68,['none',1],[]);
 ct('div', '1000 ml / 1 liter',1,['none',1],[]);
 
+ct('conv', '1 acre as sqft',43560,['foot',2],[]);
+
 function printSimple(name,dim) {
     if(dim == 0) return "none";
     if(dim == 1) return name;
